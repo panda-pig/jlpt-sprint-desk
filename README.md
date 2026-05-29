@@ -1,6 +1,8 @@
 # JLPT Sprint Desk
 
-一个基于 React + TypeScript 的日语学习计划工作台，专为 JLPT（日本语能力测试）备考设计。
+🎯 **在线地址：** [https://jlpt-sprint-desk.vercel.app](https://jlpt-sprint-desk.vercel.app)
+
+一个基于 React + TypeScript 的日语学习计划工作台，专为 JLPT（日本语能力测试）备考设计。通过倒计时驱动的计划生成、每日学习记录与智能复盘分析，帮助考生建立可持续的备考节奏。
 
 ## 功能特性
 

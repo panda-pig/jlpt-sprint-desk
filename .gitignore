@@ -7,3 +7,4 @@ PRD*.md
 .playwright-mcp/
 .sisyphus/
 node_modules/
+.vercel
