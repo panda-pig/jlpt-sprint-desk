@@ -58,12 +58,12 @@ export function RecordPage() {
   const toggleStringField = useCallback((field: keyof StudyRecord, option: string) => {
     setForm((prev) => {
       const current = String((prev as Record<string, unknown>)[field] || "");
-      const parts = current.split(/,\s*|，\s*/).map((s) => s.trim()).filter(Boolean);
+      const parts = current.split(/；\s*/).map((s) => s.trim()).filter(Boolean);
       if (parts.includes(option)) {
-        const next = parts.filter((p) => p !== option).join(", ");
+        const next = parts.filter((p) => p !== option).join("；");
         return { ...prev, [field]: next };
       } else {
-        const next = current ? `${current}, ${option}` : option;
+        const next = current ? `${current}；${option}` : option;
         return { ...prev, [field]: next };
       }
     });
