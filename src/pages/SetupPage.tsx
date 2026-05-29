@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useStudyDesk } from "../lib/studyDeskContext";
 import { LEVEL_CONFIG, STATIC_SELECT_OPTIONS, STATIC_WEAKNESS_OPTIONS, STATIC_BLOCKER_OPTIONS } from "../lib/constants";
@@ -32,6 +32,14 @@ export function SetupPage() {
   } = useStudyDesk();
 
   const [newProfileName, setNewProfileName] = useState("");
+
+  const targetScoreRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (targetScoreRef.current) {
+      targetScoreRef.current.value = String(state.settings.targetScore || "");
+    }
+  }, [state.settings.targetScore]);
 
   const handleCreateProfile = useCallback((e: React.FormEvent) => {
     e.preventDefault();
@@ -234,10 +242,25 @@ export function SetupPage() {
             </div>
             <div className="field">
               <label htmlFor="targetScore">目标分数</label>
-              <input id="targetScore" type="text" value={state.settings.targetScore || ''} placeholder="例：115" onChange={(e) => {
-                const val = e.target.value;
-                setField("targetScore", val === '' ? 0 : Number(val));
-              }} />
+              <input
+                ref={targetScoreRef}
+                id="targetScore"
+                type="text"
+                inputMode="numeric"
+                defaultValue={state.settings.targetScore || ""}
+                placeholder="例：115"
+                onBlur={(e) => {
+                  const val = e.target.value;
+                  if (val === "") {
+                    setField("targetScore", 0);
+                  } else {
+                    const num = Number(val);
+                    if (!Number.isNaN(num)) {
+                      setField("targetScore", num);
+                    }
+                  }
+                }}
+              />
             </div>
           </div>
         </section>
