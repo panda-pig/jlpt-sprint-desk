@@ -1,0 +1,25 @@
+{
+  "name": "JLPT Sprint Desk",
+  "short_name": "JLPT Desk",
+  "description": "日语能力考试备考计划工作台 - 生成学习计划、记录每日表现、分析薄弱环节",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f6f7f4",
+  "theme_color": "#315f4f",
+  "orientation": "portrait",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

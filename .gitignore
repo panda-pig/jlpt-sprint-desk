@@ -1,0 +1,10 @@
+*.md
+CHANGELOG*
+TECH_SPECS*
+PRD*
+.DS_Store
+.codegraph/
+.cursor/
+.playwright-mcp/
+.sisyphus/
+node_modules/
