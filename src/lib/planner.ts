@@ -224,9 +224,11 @@ export function normalizeSettings(raw: Partial<PlanSettings>): PlanSettings {
   const reviewReserve = clamp(parseNumber(merged.reviewReserve, 0.3), 0.1, 0.6);
   const targets = (LEVEL_CONTENT_TARGETS as Record<string, { vocab: number; grammar: number }>)[level] || LEVEL_CONTENT_TARGETS.N2;
   const learnedVocab = clamp(parseNumber(merged.learnedVocab, 0), 0, targets.vocab);
-  const dailyVocabGoal = clamp(parseNumber(merged.dailyVocabGoal, 100), 5, 500);
+  const dailyVocabGoalRaw = parseNumber(merged.dailyVocabGoal, 100);
+  const dailyVocabGoal = dailyVocabGoalRaw === 0 ? 0 : clamp(dailyVocabGoalRaw, 5, 500);
   const learnedGrammar = clamp(parseNumber(merged.learnedGrammar, 0), 0, targets.grammar);
-  const dailyGrammarGoal = clamp(parseNumber(merged.dailyGrammarGoal, 10), 1, 50);
+  const dailyGrammarGoalRaw = parseNumber(merged.dailyGrammarGoal, 10);
+  const dailyGrammarGoal = dailyGrammarGoalRaw === 0 ? 0 : clamp(dailyGrammarGoalRaw, 1, 50);
 
   return {
     ...merged,
