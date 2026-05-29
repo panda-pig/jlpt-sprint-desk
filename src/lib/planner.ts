@@ -129,6 +129,8 @@ function buildContentBudget(settings: PlanSettings, weeklyMinutes: number) {
   const timeStatus = settings.weekdayMinutes >= 120 || settings.weekendMinutes >= 180 ? "强度充足" : settings.weekdayMinutes >= 60 ? "强度中等" : "低强度";
 
   return {
+    status,
+    timeStatus,
     targetVocab: targets.vocab,
     targetGrammar: targets.grammar,
     vocabRemaining,

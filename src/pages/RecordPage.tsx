@@ -55,6 +55,20 @@ export function RecordPage() {
     });
   }, []);
 
+  const toggleStringField = useCallback((field: keyof StudyRecord, option: string) => {
+    setForm((prev) => {
+      const current = String((prev as Record<string, unknown>)[field] || "");
+      const parts = current.split(/,\s*|，\s*/).map((s) => s.trim()).filter(Boolean);
+      if (parts.includes(option)) {
+        const next = parts.filter((p) => p !== option).join(", ");
+        return { ...prev, [field]: next };
+      } else {
+        const next = current ? `${current}, ${option}` : option;
+        return { ...prev, [field]: next };
+      }
+    });
+  }, []);
+
   const handleSubmit = useCallback(() => {
     saveRecord(form);
   }, [form, saveRecord]);
@@ -159,11 +173,7 @@ export function RecordPage() {
                       <input
                         type="checkbox"
                         checked={(form.overtimeReason || "").includes(option)}
-                        onChange={() => {
-                          const current = form.overtimeReason || "";
-                          const next = current.includes(option) ? "" : option;
-                          setFormField("overtimeReason", next);
-                        }}
+                        onChange={() => toggleStringField("overtimeReason", option)}
                       />
                       <span>{option}</span>
                     </label>
@@ -189,11 +199,7 @@ export function RecordPage() {
                       <input
                         type="checkbox"
                         checked={(form.accuracy || "").includes(option)}
-                        onChange={() => {
-                          const current = form.accuracy || "";
-                          const next = current.includes(option) ? "" : option;
-                          setFormField("accuracy", next);
-                        }}
+                        onChange={() => toggleStringField("accuracy", option)}
                       />
                       <span>{option}</span>
                     </label>
@@ -219,11 +225,7 @@ export function RecordPage() {
                       <input
                         type="checkbox"
                         checked={(form.timeNote || "").includes(option)}
-                        onChange={() => {
-                          const current = form.timeNote || "";
-                          const next = current.includes(option) ? "" : option;
-                          setFormField("timeNote", next);
-                        }}
+                        onChange={() => toggleStringField("timeNote", option)}
                       />
                       <span>{option}</span>
                     </label>
@@ -249,11 +251,7 @@ export function RecordPage() {
                       <input
                         type="checkbox"
                         checked={(form.tomorrowFocus || "").includes(option)}
-                        onChange={() => {
-                          const current = form.tomorrowFocus || "";
-                          const next = current.includes(option) ? "" : option;
-                          setFormField("tomorrowFocus", next);
-                        }}
+                        onChange={() => toggleStringField("tomorrowFocus", option)}
                       />
                       <span>{option}</span>
                     </label>
@@ -296,9 +294,17 @@ export function RecordPage() {
                       type="checkbox"
                       checked={(form.wrongQuestionText || "").includes(option)}
                       onChange={() => {
-                        const current = form.wrongQuestionText || "";
-                        const next = current.includes(option) ? current.replace(option, "") : current + (current ? "\n" : "") + option;
-                        setFormField("wrongQuestionText", next.trim());
+                        setForm((prev) => {
+                          const current = prev.wrongQuestionText || "";
+                          const lines = current.split("\n").map((s) => s.trim()).filter(Boolean);
+                          if (lines.includes(option)) {
+                            const next = lines.filter((l) => l !== option).join("\n");
+                            return { ...prev, wrongQuestionText: next };
+                          } else {
+                            const next = current ? `${current}\n${option}` : option;
+                            return { ...prev, wrongQuestionText: next };
+                          }
+                        });
                       }}
                     />
                     <span>{option}</span>
