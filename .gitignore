@@ -1,7 +1,6 @@
-*.md
-CHANGELOG*
-TECH_SPECS*
-PRD*
+CHANGELOG.md
+TECH_SPECS.md
+PRD*.md
 .DS_Store
 .codegraph/
 .cursor/
