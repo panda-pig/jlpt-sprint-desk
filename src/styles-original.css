@@ -2453,6 +2453,18 @@ tr:last-child td {
     grid-template-columns: 1fr;
   }
 
+  .analysis-split {
+    grid-template-columns: 1fr;
+  }
+
+  .module-pie-card {
+    min-width: 0;
+  }
+
+  .plan-calendar {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
   .toast-region {
     right: 12px;
     bottom: 72px;
