@@ -62,7 +62,7 @@ export function ExportPage() {
     const filenames: Record<string, string> = {
       markdown: `jlpt-plan-${profileName}-${new Date().toISOString().slice(0, 10)}.md`,
       csv: `jlpt-plan-${profileName}-${new Date().toISOString().slice(0, 10)}.csv`,
-      report: `jlpt-report-${profileName}-${new Date().toISOString().slice(0, 10)}.md`,
+      report: `jlpt-report-${profileName}-${new Date().toISOString().slice(0, 10)}.html`,
       backup: `jlpt-backup-${profileName}-${new Date().toISOString().slice(0, 10)}.json`,
       print: `jlpt-plan-${profileName}-${new Date().toISOString().slice(0, 10)}.html`,
     };
@@ -70,7 +70,7 @@ export function ExportPage() {
     const types: Record<string, string> = {
       markdown: "text/markdown",
       csv: "text/csv",
-      report: "text/markdown",
+      report: "text/html",
       backup: "application/json",
       print: "text/html",
     };
@@ -129,7 +129,7 @@ export function ExportPage() {
       desc: "带统计的完整报告",
       icon: BarChart3,
       color: "#b77a20",
-      ext: ".md",
+      ext: ".html",
     },
     {
       key: "backup",

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Save, RotateCcw, BookOpen } from "lucide-react";
+import { Save, RotateCcw, BookOpen, ClipboardList, ArrowRight, Settings } from "lucide-react";
 import { useStudyDesk } from "../lib/studyDeskContext";
 import { MODULE_COLORS, MODULE_SHORTS, RECORD_MODULE_KEYS, MODULE_LABELS, REFERENCE_PLAN } from "../lib/constants";
 import { mergeDayWithEdit, buildStudyBudget } from "../lib/planner";
@@ -57,8 +57,27 @@ export function PlanPage() {
       <div className="page-grid">
         <section className="stack">
           <div className="empty-state">
+            <div className="empty-state-icon">
+              <ClipboardList size={48} strokeWidth={1.5} />
+            </div>
             <h3>还没有生成学习计划</h3>
-            <p>先在计划设置页填写考试日期、可用时间和薄弱项，再生成一份可编辑的多日计划。</p>
+            <p>学习之前需要先制定计划。去设置页配置考试日期、每日时间和薄弱项，即可自动生成个性化学习路线。</p>
+            <div className="empty-state-steps">
+              <div className="empty-state-step">
+                <Settings size={16} />
+                <span>设置考试信息</span>
+              </div>
+              <ArrowRight size={14} className="empty-state-arrow" />
+              <div className="empty-state-step">
+                <BookOpen size={16} />
+                <span>生成学习计划</span>
+              </div>
+              <ArrowRight size={14} className="empty-state-arrow" />
+              <div className="empty-state-step">
+                <ClipboardList size={16} />
+                <span>查看每日任务</span>
+              </div>
+            </div>
             <a className="primary-button" href="#/setup" onClick={(e) => { e.preventDefault(); navigate("/setup"); }}>
               去生成计划
             </a>

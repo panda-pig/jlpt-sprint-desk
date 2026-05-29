@@ -122,58 +122,229 @@ export function buildReport(plan: GeneratedPlan, records: StudyRecord[], profile
 
   const topCauses = Object.entries(causeCounts).sort((a, b) => b[1] - a[1]).slice(0, 3);
 
-  const lines: string[] = [
-    `# JLPT ${plan.level} 学习报告`,
-    "",
-    `**档案：** ${profileName}  
-**生成时间：** ${todayISO()}  
-**考试日期：** ${plan.examDate || "未设置"}  
-**剩余天数：** ${plan.daysLeft === null ? "未设置" : `${plan.daysLeft} 天`}  
-**当前阶段：** ${plan.phase}`,
-    "",
-    "## 过去 7 天学习总览",
-    "",
-    `- 学习天数：${recentRecords.length} 天`,
-    `- 总学习时长：${totalMinutes} 分钟`,
-    `- 平均每天：${avgMinutes} 分钟`,
-    `- 平均完成度：${avgCompletion}%`,
-    "",
-    "## 各模块学习时间",
-    "",
-  ];
+  const reportDate = new Intl.DateTimeFormat("zh-CN", { dateStyle: "medium", timeStyle: "short" }).format(new Date());
 
-  Object.entries(moduleTotals).forEach(([key, minutes]) => {
-    if (minutes > 0) {
-      lines.push(`- ${MODULE_LABELS[key]}：${minutes} 分钟`);
-    }
-  });
+  const metricsHtml = [
+    { label: "学习天数", value: `${recentRecords.length} 天` },
+    { label: "总学习时长", value: `${totalMinutes} 分钟` },
+    { label: "平均每天", value: `${avgMinutes} 分钟` },
+    { label: "平均完成度", value: `${avgCompletion}%` },
+  ]
+    .map((m) => `<div class="metric"><span>${m.label}</span><strong>${m.value}</strong></div>`)
+    .join("");
 
-  lines.push("", "## 主要错因");
-  lines.push("");
-  if (topCauses.length) {
-    topCauses.forEach(([cause, count]) => {
-      lines.push(`- ${cause}：${count} 次`);
-    });
-  } else {
-    lines.push("- 暂无错因记录");
-  }
+  const moduleHtml = Object.entries(moduleTotals)
+    .filter(([, minutes]) => minutes > 0)
+    .map(([key, minutes]) => `<p><strong>${MODULE_LABELS[key]}</strong>${minutes} 分钟</p>`)
+    .join("") || "<p>暂无模块记录</p>";
 
-  lines.push("", "## 下周建议");
-  lines.push("");
-  if (avgCompletion < 70) {
-    lines.push("- 完成度偏低，建议把任务拆成更小的块。");
-  }
-  if (avgMinutes < plan.studyBudget.dailyMinutes * 0.7) {
-    lines.push("- 日均学习时间不足，建议优先保证核心模块。");
-  }
-  if (!topCauses.length) {
-    lines.push("- 还没有错因记录，开始记录错因可以获得更精准的建议。");
-  }
-  if (avgCompletion >= 70 && avgMinutes >= plan.studyBudget.dailyMinutes * 0.7) {
-    lines.push("- 整体节奏良好，继续保持！");
-  }
+  const causeHtml = topCauses.length
+    ? topCauses.map(([cause, count]) => `<span>${escapeHtml(cause)}<b>${count}</b></span>`).join("")
+    : "<span>暂无错因记录<b>0</b></span>";
 
-  return lines.join("\n");
+  const suggestions: string[] = [];
+  if (avgCompletion < 70) suggestions.push("完成度偏低，建议把任务拆成更小的块。");
+  if (avgMinutes < plan.studyBudget.dailyMinutes * 0.7) suggestions.push("日均学习时间不足，建议优先保证核心模块。");
+  if (!topCauses.length) suggestions.push("还没有错因记录，开始记录错因可以获得更精准的建议。");
+  if (avgCompletion >= 70 && avgMinutes >= plan.studyBudget.dailyMinutes * 0.7) suggestions.push("整体节奏良好，继续保持！");
+
+  const suggestionsHtml = suggestions.map((s) => `<li>${escapeHtml(s)}</li>`).join("");
+
+  const todayTasksHtml = plan.todayTasks
+    .map((task, i) => `
+      <article class="task-item">
+        <div><small>${String(i + 1).padStart(2, "0")}</small><strong>${task.minutes} min</strong></div>
+        <p>${escapeHtml(task.label)}：${escapeHtml(task.text)}</p>
+      </article>
+    `)
+    .join("");
+
+  const recordsHtml = [...records]
+    .sort((a, b) => String(b.date).localeCompare(String(a.date)))
+    .slice(0, 6)
+    .map((record) => {
+      const causesText = (record.causes || []).join("、") || "未填错因";
+      const accuracyText = record.accuracy || "";
+      return `
+        <article class="record-item">
+          <time>${escapeHtml(record.date)}</time>
+          <p>${getRecordMinutes(record)} 分钟</p>
+          <small>${escapeHtml(accuracyText || causesText)}</small>
+          <span>${escapeHtml(record.tomorrowPlan || "继续记录")}</span>
+        </article>
+      `;
+    })
+    .join("") || `<article class="record-item empty"><time>--</time><p>暂无记录</p><small>保存今日记录后自动补充</small><span>继续记录</span></article>`;
+
+  const roadmapHtml = (plan.roadmap || [])
+    .map((item, i) => `
+      <article>
+        <span>${String(i + 1).padStart(2, "0")}</span>
+        <strong>${escapeHtml(item.title)}</strong>
+        <b>${escapeHtml(item.dayRange)}</b>
+        <p>${escapeHtml(item.focus)}</p>
+      </article>
+    `)
+    .join("");
+
+  return `<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${escapeHtml(profileName)} JLPT ${escapeHtml(plan.level)} 学习报告</title>
+<style>
+:root {
+  --ink: #182522;
+  --muted: #70817a;
+  --paper: #f6f7f4;
+  --panel: #ffffff;
+  --line: rgba(49,95,79,0.16);
+  --line-strong: rgba(49,95,79,0.26);
+  --brand: #315f4f;
+  --accent: #b77a20;
+  --display: "Hiragino Mincho ProN", "Yu Mincho", "Songti SC", "Noto Serif CJK SC", serif;
+  --body: "Avenir Next", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: linear-gradient(90deg, rgba(49,95,79,0.035) 1px, transparent 1px), linear-gradient(rgba(49,95,79,0.035) 1px, transparent 1px), var(--paper);
+  background-size: 34px 34px;
+  color: var(--ink);
+  font-family: var(--body);
+}
+main { width: min(1120px, calc(100vw - 32px)); margin: 0 auto; padding: 28px 0 52px; }
+.report-cover {
+  min-height: 330px;
+  padding: 34px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) 320px;
+  gap: 28px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #182522, #315f4f 64%, #2f7c75);
+  color: #f8faf8;
+  box-shadow: 0 26px 70px rgba(34,53,48,0.18);
+}
+.eyebrow { display: inline-flex; width: max-content; border: 1px solid rgba(248,250,248,0.28); border-radius: 999px; padding: 8px 11px; color: rgba(248,250,248,0.82); font-size: 12px; font-weight: 850; }
+h1 { max-width: 780px; margin: 34px 0 18px; font: 900 clamp(42px, 7vw, 82px)/0.96 var(--display); }
+.cover-text { max-width: 74ch; margin: 0; color: rgba(248,250,248,0.82); font-size: 15px; line-height: 1.8; }
+.cover-meta {
+  align-self: end;
+  display: grid;
+  gap: 10px;
+  padding: 18px;
+  border: 1px solid rgba(248,250,248,0.18);
+  border-radius: 8px;
+  background: rgba(248,250,248,0.08);
+}
+.cover-meta div { display: flex; justify-content: space-between; gap: 16px; border-bottom: 1px solid rgba(248,250,248,0.14); padding-bottom: 9px; }
+.cover-meta div:last-child { border-bottom: 0; padding-bottom: 0; }
+.cover-meta span { color: rgba(248,250,248,0.64); font-size: 12px; font-weight: 800; }
+.cover-meta strong { text-align: right; font-size: 13px; }
+.metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 14px; }
+.metric { min-height: 132px; padding: 18px; border: 1px solid var(--line-strong); border-radius: 8px; background: var(--panel); }
+.metric span, .section-kicker, small { color: var(--muted); font-size: 12px; font-weight: 850; text-transform: uppercase; }
+.metric strong { display: block; margin-top: 18px; font: 900 38px/0.95 var(--display); color: var(--brand); }
+.metric p { margin: 8px 0 0; color: var(--muted); font-size: 12px; line-height: 1.45; }
+.report-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 14px; margin-top: 14px; }
+section { padding: 22px; border: 1px solid var(--line-strong); border-radius: 8px; background: rgba(255,255,255,0.94); break-inside: avoid; }
+h2 { margin: 0 0 16px; font: 900 24px/1.15 var(--display); }
+h3 { margin: 0; font-size: 15px; line-height: 1.35; }
+p { line-height: 1.68; }
+.risk-copy { margin: 0 0 16px; color: #2d3b37; }
+.tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.tags span { display: inline-flex; align-items: center; gap: 10px; border: 1px solid rgba(49,95,79,0.18); border-radius: 999px; background: #d9ebe4; color: var(--brand); padding: 8px 11px; font-size: 13px; font-weight: 850; }
+.tags b { min-width: 22px; border-radius: 999px; background: rgba(49,95,79,0.12); padding: 2px 7px; text-align: center; }
+.task-list, .record-list { display: grid; gap: 10px; }
+.task-item { display: grid; grid-template-columns: 90px minmax(0, 1fr); gap: 14px; padding: 13px; border: 1px solid var(--line); border-radius: 7px; background: #fbfbf8; }
+.task-item div { display: grid; align-content: start; gap: 5px; }
+.task-item strong { color: var(--accent); font-size: 14px; }
+.task-item p { margin: 0; font-size: 13px; line-height: 1.58; }
+.roadmap { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.roadmap article { min-height: 168px; padding: 15px; border: 1px solid var(--line); border-radius: 8px; background: #fbfbf8; }
+.roadmap span { display: grid; place-items: center; width: 32px; height: 32px; margin-bottom: 14px; border-radius: 50%; background: var(--brand); color: #fff; font-size: 12px; font-weight: 900; }
+.roadmap strong { display: block; margin-bottom: 7px; font-size: 15px; }
+.roadmap b { color: var(--muted); font-size: 12px; }
+.roadmap p { margin: 10px 0 0; color: var(--muted); font-size: 13px; line-height: 1.55; }
+.record-list { margin-top: 14px; }
+.record-item { display: grid; grid-template-columns: 110px 1fr auto auto; gap: 14px; align-items: center; padding: 12px 14px; border: 1px solid var(--line); border-radius: 7px; background: var(--panel); }
+.record-item.empty { opacity: 0.7; }
+.record-item time { color: var(--muted); font-size: 12px; font-weight: 850; }
+.record-item p { margin: 0; font-size: 13px; }
+.record-item small { color: var(--muted); font-size: 12px; }
+.record-item span { justify-self: end; color: var(--brand); font-size: 12px; font-weight: 850; }
+.suggestions { margin: 0; padding: 0 0 0 18px; }
+.suggestions li { margin-bottom: 8px; line-height: 1.65; }
+@media (max-width: 900px) {
+  .report-cover { grid-template-columns: 1fr; }
+  .metrics { grid-template-columns: repeat(2, 1fr); }
+  .report-grid, .roadmap { grid-template-columns: 1fr; }
+  .record-item { grid-template-columns: 1fr; gap: 6px; }
+}
+</style>
+</head>
+<body>
+<main>
+<header class="report-cover">
+  <div>
+    <span class="eyebrow">JLPT ${escapeHtml(plan.level)} 学习报告</span>
+    <h1>${escapeHtml(profileName)} 的学习报告</h1>
+    <p class="cover-text">${escapeHtml(plan.strategy?.summary || "按当前计划和每日记录生成学习报告。")}</p>
+  </div>
+  <div class="cover-meta">
+    <div><span>档案</span><strong>${escapeHtml(profileName)}</strong></div>
+    <div><span>考试日期</span><strong>${escapeHtml(plan.examDate || "未设置")}</strong></div>
+    <div><span>剩余天数</span><strong>${plan.daysLeft === null ? "未设置" : `${plan.daysLeft} 天`}</strong></div>
+    <div><span>当前阶段</span><strong>${escapeHtml(plan.phase)}</strong></div>
+    <div><span>生成时间</span><strong>${escapeHtml(reportDate)}</strong></div>
+  </div>
+</header>
+
+<div class="metrics">
+  ${metricsHtml}
+</div>
+
+<div class="report-grid">
+  <section>
+    <span class="section-kicker">MODULES</span>
+    <h2>各模块学习时间</h2>
+    ${moduleHtml}
+  </section>
+  <section>
+    <span class="section-kicker">CAUSES</span>
+    <h2>主要错因</h2>
+    <div class="tags">${causeHtml}</div>
+  </section>
+</div>
+
+<section>
+  <span class="section-kicker">SUGGESTIONS</span>
+  <h2>下周建议</h2>
+  <ul class="suggestions">${suggestionsHtml}</ul>
+</section>
+
+<section>
+  <span class="section-kicker">TODAY</span>
+  <h2>今日任务</h2>
+  <div class="task-list">${todayTasksHtml}</div>
+</section>
+
+<section>
+  <span class="section-kicker">RECORDS</span>
+  <h2>最近记录</h2>
+  <div class="record-list">${recordsHtml}</div>
+</section>
+
+<section>
+  <span class="section-kicker">ROADMAP</span>
+  <h2>阶段路线</h2>
+  <div class="roadmap">${roadmapHtml}</div>
+</section>
+
+</main>
+</body>
+</html>`;
 }
 
 export function buildBackupJSON(profileName: string, plan: GeneratedPlan | null, settings: PlanSettings, edits: Record<string, string>, records: StudyRecord[]): string {

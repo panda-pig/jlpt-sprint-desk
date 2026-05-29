@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { SideNav } from "./SideNav";
 import { TopBar } from "./TopBar";
 import { BottomNav } from "./BottomNav";
+import { useStudyDesk } from "../lib/studyDeskContext";
+import { toast } from "../lib/toast";
 import type { ReactNode } from "react";
 
 function AboutModal({ onClose }: { onClose: () => void }) {
@@ -46,6 +48,8 @@ export function AppLayout({ children }: { children: ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { generateNewPlan } = useStudyDesk();
   const route = location.pathname.slice(1) || "dashboard";
 
   useEffect(() => {
@@ -76,7 +80,14 @@ export function AppLayout({ children }: { children: ReactNode }) {
           <button
             className="secondary-button full"
             type="button"
-            onClick={() => window.dispatchEvent(new CustomEvent("quick-generate"))}
+            onClick={() => {
+              if (window.confirm("确定要重新生成计划吗？当前计划将被覆盖。")) {
+                generateNewPlan();
+                navigate("/plan");
+                setSidebarOpen(false);
+                toast("计划已重新生成");
+              }
+            }}
           >
             重新生成计划
           </button>

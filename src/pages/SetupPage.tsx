@@ -34,12 +34,26 @@ export function SetupPage() {
   const [newProfileName, setNewProfileName] = useState("");
 
   const targetScoreRef = useRef<HTMLInputElement>(null);
+  const dailyVocabGoalRef = useRef<HTMLInputElement>(null);
+  const dailyGrammarGoalRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (targetScoreRef.current) {
       targetScoreRef.current.value = String(state.settings.targetScore || "");
     }
   }, [state.settings.targetScore]);
+
+  useEffect(() => {
+    if (dailyVocabGoalRef.current) {
+      dailyVocabGoalRef.current.value = String(state.settings.dailyVocabGoal || "");
+    }
+  }, [state.settings.dailyVocabGoal]);
+
+  useEffect(() => {
+    if (dailyGrammarGoalRef.current) {
+      dailyGrammarGoalRef.current.value = String(state.settings.dailyGrammarGoal || "");
+    }
+  }, [state.settings.dailyGrammarGoal]);
 
   const handleCreateProfile = useCallback((e: React.FormEvent) => {
     e.preventDefault();
@@ -307,10 +321,18 @@ export function SetupPage() {
             </div>
             <div className="field">
               <label htmlFor="dailyVocabGoal">每天新词</label>
-              <input id="dailyVocabGoal" type="number" min={5} max={500} value={state.settings.dailyVocabGoal || ''} onChange={(e) => {
-  const val = e.target.value;
-  setField("dailyVocabGoal", val === '' ? 0 : Number(val));
-}} />
+              <input
+                id="dailyVocabGoal"
+                type="text"
+                inputMode="numeric"
+                defaultValue={state.settings.dailyVocabGoal || ""}
+                ref={dailyVocabGoalRef}
+                onBlur={(e) => {
+                  const val = e.target.value.trim();
+                  const num = val === "" ? 0 : Number(val);
+                  setField("dailyVocabGoal", Number.isNaN(num) ? 0 : num);
+                }}
+              />
             </div>
             <div className="field">
               <label htmlFor="learnedGrammar">已学文法</label>
@@ -321,10 +343,18 @@ export function SetupPage() {
             </div>
             <div className="field">
               <label htmlFor="dailyGrammarGoal">每天新文法</label>
-              <input id="dailyGrammarGoal" type="number" min={1} max={50} value={state.settings.dailyGrammarGoal || ''} onChange={(e) => {
-  const val = e.target.value;
-  setField("dailyGrammarGoal", val === '' ? 0 : Number(val));
-}} />
+              <input
+                id="dailyGrammarGoal"
+                type="text"
+                inputMode="numeric"
+                defaultValue={state.settings.dailyGrammarGoal || ""}
+                ref={dailyGrammarGoalRef}
+                onBlur={(e) => {
+                  const val = e.target.value.trim();
+                  const num = val === "" ? 0 : Number(val);
+                  setField("dailyGrammarGoal", Number.isNaN(num) ? 0 : num);
+                }}
+              />
             </div>
             <div className="field">
               <label htmlFor="reviewReserve">复习预留</label>

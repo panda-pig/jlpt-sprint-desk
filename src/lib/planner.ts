@@ -226,7 +226,7 @@ export function normalizeSettings(raw: Partial<PlanSettings>): PlanSettings {
   const learnedVocab = clamp(parseNumber(merged.learnedVocab, 0), 0, targets.vocab);
   const dailyVocabGoal = clamp(parseNumber(merged.dailyVocabGoal, 100), 5, 500);
   const learnedGrammar = clamp(parseNumber(merged.learnedGrammar, 0), 0, targets.grammar);
-  const dailyGrammarGoal = clamp(parseNumber(merged.dailyGrammarGoal, 8), 1, 50);
+  const dailyGrammarGoal = clamp(parseNumber(merged.dailyGrammarGoal, 10), 1, 50);
 
   return {
     ...merged,
@@ -276,7 +276,7 @@ function getDefaultSettings(): PlanSettings {
     learnedVocab: 0,
     dailyVocabGoal: 100,
     learnedGrammar: 0,
-    dailyGrammarGoal: 8,
+    dailyGrammarGoal: 10,
     reviewReserve: 0.3,
     weaknesses: ["vocab", "grammar"],
     blockers: ["procrastination", "confused"],

@@ -215,7 +215,7 @@ export const DEFAULT_SETTINGS = {
   learnedVocab: 0,
   dailyVocabGoal: 100,
   learnedGrammar: 0,
-  dailyGrammarGoal: 8,
+  dailyGrammarGoal: 10,
   reviewReserve: 0.3,
   weaknesses: ["vocab", "grammar"],
   blockers: ["procrastination", "confused"],

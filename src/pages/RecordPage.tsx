@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useStudyDesk } from "../lib/studyDeskContext";
+import { PenLine, BookOpen, ArrowRight, Settings } from "lucide-react";
 import { COMPLETION_OPTIONS, MODULE_COUNT_PLACEHOLDERS, MODULE_LABELS, MODULE_SHORTS, RECORD_CHOICE_OPTIONS, RECORD_MODULE_KEYS } from "../lib/constants";
 import { todayISO, completionLabel, getCompletionPercent, getRecordMinutes, getRecordTotalCount, getRecordAccuracyPercent, normalizeWrongQuestionText, buildRecordRecommendation, buildTomorrowTimePlan } from "../lib/utils";
 import { summarizeModuleCounts } from "../lib/planner";
@@ -65,8 +66,27 @@ export function RecordPage() {
       <div className="page-grid">
         <section className="stack">
           <div className="empty-state">
+            <div className="empty-state-icon">
+              <PenLine size={48} strokeWidth={1.5} />
+            </div>
             <h3>还没有可记录的计划</h3>
-            <p>每日记录会绑定到 generatedPlan 的当天任务。先生成计划，再开始反馈闭环。</p>
+            <p>每日记录需要绑定到当天的学习任务。先生成学习计划，然后每天完成任务并记录进度，形成闭环反馈。</p>
+            <div className="empty-state-steps">
+              <div className="empty-state-step">
+                <Settings size={16} />
+                <span>设置考试信息</span>
+              </div>
+              <ArrowRight size={14} className="empty-state-arrow" />
+              <div className="empty-state-step">
+                <BookOpen size={16} />
+                <span>生成学习计划</span>
+              </div>
+              <ArrowRight size={14} className="empty-state-arrow" />
+              <div className="empty-state-step">
+                <PenLine size={16} />
+                <span>记录每日进度</span>
+              </div>
+            </div>
             <a className="primary-button" href="#/setup" onClick={(e) => { e.preventDefault(); navigate("/setup"); }}>
               去生成计划
             </a>
