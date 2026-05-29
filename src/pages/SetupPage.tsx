@@ -379,41 +379,45 @@ export function SetupPage() {
             <div className="field">
               <span className="choice-label">最薄弱模块</span>
               <div className="choice-grid weakness-grid">
-                {STATIC_WEAKNESS_OPTIONS.map(([value, label]) => (
-                  <label
-                    key={value}
-                    className={`choice-card ${(state.settings.weaknesses || []).includes(value) ? "selected" : ""}`}
-                    onClick={() => toggleWeakness(value)}
-                  >
-                    <span className="choice-icon">{WEAKNESS_ICONS[value]}</span>
-                    <span className="choice-text">{label}</span>
-                    <input
-                      type="checkbox"
-                      checked={(state.settings.weaknesses || []).includes(value)}
-                      onChange={() => toggleWeakness(value)}
-                    />
-                  </label>
-                ))}
+                {STATIC_WEAKNESS_OPTIONS.map(([value, label]) => {
+                  const checked = (state.settings.weaknesses || []).includes(value);
+                  return (
+                    <label
+                      key={value}
+                      className={`choice-card ${checked ? "selected" : ""}`}
+                    >
+                      <span className="choice-icon">{WEAKNESS_ICONS[value]}</span>
+                      <span className="choice-text">{label}</span>
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() => toggleWeakness(value)}
+                      />
+                    </label>
+                  );
+                })}
               </div>
             </div>
             <div className="field">
               <span className="choice-label">学习阻碍</span>
               <div className="choice-grid blocker-grid">
-                {STATIC_BLOCKER_OPTIONS.map(([value, label]) => (
-                  <label
-                    key={value}
-                    className={`choice-card ${(state.settings.blockers || []).includes(value) ? "selected" : ""}`}
-                    onClick={() => toggleBlocker(value)}
-                  >
-                    <span className="choice-icon">{BLOCKER_ICONS[value]}</span>
-                    <span className="choice-text">{label}</span>
-                    <input
-                      type="checkbox"
-                      checked={(state.settings.blockers || []).includes(value)}
-                      onChange={() => toggleBlocker(value)}
-                    />
-                  </label>
-                ))}
+                {STATIC_BLOCKER_OPTIONS.map(([value, label]) => {
+                  const checked = (state.settings.blockers || []).includes(value);
+                  return (
+                    <label
+                      key={value}
+                      className={`choice-card ${checked ? "selected" : ""}`}
+                    >
+                      <span className="choice-icon">{BLOCKER_ICONS[value]}</span>
+                      <span className="choice-text">{label}</span>
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() => toggleBlocker(value)}
+                      />
+                    </label>
+                  );
+                })}
               </div>
             </div>
           </div>
