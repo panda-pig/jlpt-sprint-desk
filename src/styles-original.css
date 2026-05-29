@@ -1773,6 +1773,7 @@ tr:last-child td {
   color: var(--primary-strong);
   font-size: 26px;
   line-height: 1.1;
+  overflow-wrap: break-word;
 }
 
 .insight-card.is-primary strong {
@@ -1784,6 +1785,7 @@ tr:last-child td {
   color: var(--ink-soft);
   font-weight: 700;
   line-height: 1.55;
+  overflow-wrap: break-word;
 }
 
 .trend-chart {
@@ -1949,19 +1951,20 @@ tr:last-child td {
 .cause-priority-card strong {
   color: var(--ink);
   font-size: 18px;
+  overflow-wrap: break-word;
 }
 
 .cause-priority-card p {
   margin: 3px 0 9px;
   color: var(--ink-soft);
   font-weight: 700;
+  overflow-wrap: break-word;
 }
 
 .cause-priority-card em {
   color: var(--primary-strong);
   font-style: normal;
   font-weight: 900;
-  white-space: nowrap;
 }
 
 .cause-meter {
