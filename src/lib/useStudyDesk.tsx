@@ -241,7 +241,6 @@ export function StudyDeskProvider({ children }: { children: ReactNode }) {
     const nextSettings = normalizeSettings({ ...state.settings, ...patch });
     const next: StudyDeskState = { ...state, settings: nextSettings };
     commit(next);
-    toast("计划设置已保存。");
   }, [state, commit]);
 
   const generateNewPlan = useCallback(() => {

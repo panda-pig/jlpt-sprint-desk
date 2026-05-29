@@ -234,10 +234,10 @@ export function SetupPage() {
             </div>
             <div className="field">
               <label htmlFor="targetScore">目标分数</label>
-              <input id="targetScore" type="number" min={60} max={180} value={state.settings.targetScore || ''} placeholder="例：115" onChange={(e) => {
-  const val = e.target.value;
-  setField("targetScore", val === '' ? 0 : Number(val));
-}} />
+              <input id="targetScore" type="text" value={state.settings.targetScore || ''} placeholder="例：115" onChange={(e) => {
+                const val = e.target.value;
+                setField("targetScore", val === '' ? 0 : Number(val));
+              }} />
             </div>
           </div>
         </section>
