@@ -19,7 +19,7 @@ export function SideNav({ activeRoute, onNavigate }: SideNavProps) {
         <a
           key={item.key}
           href={`#/${item.key}`}
-          className={activeRoute === item.key ? "active" : ""}
+          className={activeRoute === item.key ? "is-active" : ""}
           onClick={onNavigate}
         >
           <span className="nav-icon">{item.icon}</span>

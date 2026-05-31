@@ -279,7 +279,7 @@ export function StudyDeskProvider({ children }: { children: ReactNode }) {
 
     const newRecord: StudyRecord = {
       id: existing?.id || `record-${Date.now()}`,
-      date: now,
+      date: existing?.date || record.date || now,
       profileId: state.activeProfileId,
       createdAt: existing?.createdAt || new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -309,7 +309,7 @@ export function StudyDeskProvider({ children }: { children: ReactNode }) {
 
     const next: StudyDeskState = { ...state, records: nextRecords };
     commit(next);
-    toast("今日学习记录已保存。");
+    toast(`${newRecord.date === now ? "今日" : newRecord.date}学习记录已保存。`);
   }, [state, commit]);
 
   const deleteRecord = useCallback((id: string) => {

@@ -206,7 +206,7 @@ export function completionLabel(value: string): string {
 export function normalizeWrongQuestionText(record: StudyRecord): string {
   if (!record) return "";
   if (Array.isArray(record.wrongQuestions) && record.wrongQuestions.length) return record.wrongQuestions.join("\n");
-  return String(record.wrongQuestionDetails || "");
+  return String(record.wrongQuestionText || record.wrongQuestionDetails || "");
 }
 
 export function getRecordModuleValue(record: StudyRecord, key: string): number {
@@ -235,8 +235,10 @@ export function buildRecordRecommendation(record: StudyRecord): string[] {
   const timeText = `${record.actualTime || ""} ${record.overtimeReason || ""} ${record.timeNote || ""}`;
   if (record.tomorrowFocus) actions.push(`明天第一步：${record.tomorrowFocus}`);
   const wrongQuestions = Array.isArray(record.wrongQuestions) ? record.wrongQuestions : [];
-  if (wrongQuestions.length) {
-    actions.push(`错题二刷 ${Math.min(12, wrongQuestions.length)} 题：只做同题型，不开新资料。`);
+  const wrongText = normalizeWrongQuestionText(record);
+  const wrongCount = wrongQuestions.length || (wrongText.trim() ? wrongText.trim().split(/\n+/).filter(Boolean).length : 0);
+  if (wrongCount) {
+    actions.push(`错题二刷 ${Math.min(12, wrongCount)} 题：只做同题型，不开新资料。`);
   }
   if (causes.includes("定位慢")) actions.push("阅读加 1 组限时定位训练：只找题干关键词、主题句、转折句。");
   if (causes.includes("听漏关键词")) actions.push("听力重听今天错题：记录人物关系、任务目标、转折和结论。");
@@ -267,7 +269,7 @@ export function buildTomorrowTimePlan(record: StudyRecord, plan: GeneratedPlan |
   const hasOvertime = /超时|超过|来不及|不够|太多|太慢|慢/.test(`${record.overtimeReason || ""} ${record.timeNote || ""}`);
   const rows = (["vocab", "grammar", "reading", "listening"] as string[])
     .map((module) => {
-      const actual = Number((record.moduleTimes as Record<string, number> || {})[module] || 0);
+      const actual = Number((record.minutes as Record<string, number> || {})[module] || 0);
       const base = Number(planned[module] || 0);
       if (!actual && !base) return null;
       let minutes = actual ? Math.round(actual * (hasOvertime ? 1.05 : 0.95)) : base;

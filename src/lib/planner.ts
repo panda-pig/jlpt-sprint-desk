@@ -611,13 +611,14 @@ export function getTodayTargetMinutes(settings: PlanSettings): number {
 
 export function getTodayPlanDay(plan: GeneratedPlan | null): DailyPlanItem | null {
   if (!plan || !Array.isArray(plan.dailyPlan)) return null;
-  return plan.dailyPlan.find((day) => day.date === todayISO()) || plan.dailyPlan[0] || null;
+  return plan.dailyPlan.find((day) => day.date === todayISO()) || null;
 }
 
 export function getUpcomingDays(plan: GeneratedPlan | null, count: number): DailyPlanItem[] {
   if (!plan || !Array.isArray(plan.dailyPlan)) return [];
   const today = todayISO();
-  const startIndex = Math.max(0, plan.dailyPlan.findIndex((day) => day.date >= today));
+  const startIndex = plan.dailyPlan.findIndex((day) => day.date >= today);
+  if (startIndex === -1) return [];
   return plan.dailyPlan.slice(startIndex, startIndex + count);
 }
 

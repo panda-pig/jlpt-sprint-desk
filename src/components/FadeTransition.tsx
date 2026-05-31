@@ -1,23 +1,29 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 interface FadeTransitionProps {
   children: ReactNode;
   duration?: number;
 }
 
-export function FadeTransition({ children, duration = 300 }: FadeTransitionProps) {
+export function FadeTransition({ children, duration = 200 }: FadeTransitionProps) {
+  const [isVisible, setIsVisible] = useState(true);
   const [displayChildren, setDisplayChildren] = useState(children);
-
-  const isVisible = children === displayChildren;
+  const pendingRef = useRef<ReactNode>(null);
 
   useEffect(() => {
-    if (children !== displayChildren) {
-      const timer = setTimeout(() => {
-        setDisplayChildren(children);
-      }, duration);
-      return () => clearTimeout(timer);
-    }
-  }, [children, displayChildren, duration]);
+    if (children === displayChildren) return;
+    pendingRef.current = children;
+    setIsVisible(false);
+    const timer = setTimeout(() => {
+      if (pendingRef.current !== null) {
+        setDisplayChildren(pendingRef.current);
+        pendingRef.current = null;
+      }
+      setIsVisible(true);
+    }, duration);
+    return () => clearTimeout(timer);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [children]);
 
   return (
     <div

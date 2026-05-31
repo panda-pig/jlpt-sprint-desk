@@ -86,17 +86,18 @@ export function ExportPage() {
     reader.onload = () => {
       try {
         const data = JSON.parse(String(reader.result));
-        if (data.planSettings) {
-          localStorage.setItem(`jlptSprintDesk:${state.activeProfileId}:planSettings`, JSON.stringify(data.planSettings));
-        }
-        if (data.generatedPlan) {
-          localStorage.setItem(`jlptSprintDesk:${state.activeProfileId}:generatedPlan`, JSON.stringify(data.generatedPlan));
-        }
-        if (data.planEdits) {
-          localStorage.setItem(`jlptSprintDesk:${state.activeProfileId}:planEdits`, JSON.stringify(data.planEdits));
-        }
-        if (data.records) {
-          localStorage.setItem(`jlptSprintDesk:${state.activeProfileId}:records`, JSON.stringify(data.records));
+        if (data.data && typeof data.data === "object") {
+          // Format: { data: { jlptSprintDesk...: "..." } } from SetupPage export
+          Object.entries(data.data).forEach(([key, value]) => {
+            localStorage.setItem(key, String(value));
+          });
+        } else {
+          // Format: { planSettings, generatedPlan, planEdits, records } from ExportPage
+          const profileId = state.activeProfileId;
+          if (data.planSettings) localStorage.setItem(`jlptSprintDesk:${profileId}:planSettings`, JSON.stringify(data.planSettings));
+          if (data.generatedPlan) localStorage.setItem(`jlptSprintDesk:${profileId}:generatedPlan`, JSON.stringify(data.generatedPlan));
+          if (data.planEdits) localStorage.setItem(`jlptSprintDesk:${profileId}:planEdits`, JSON.stringify(data.planEdits));
+          if (data.records) localStorage.setItem(`jlptSprintDesk:${profileId}:records`, JSON.stringify(data.records));
         }
         window.location.reload();
       } catch {

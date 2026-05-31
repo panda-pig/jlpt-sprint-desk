@@ -36,6 +36,8 @@ export function SetupPage() {
   const targetScoreRef = useRef<HTMLInputElement>(null);
   const dailyVocabGoalRef = useRef<HTMLInputElement>(null);
   const dailyGrammarGoalRef = useRef<HTMLInputElement>(null);
+  const weekdayMinutesRef = useRef<HTMLInputElement>(null);
+  const weekendMinutesRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (targetScoreRef.current) {
@@ -54,6 +56,18 @@ export function SetupPage() {
       dailyGrammarGoalRef.current.value = String(state.settings.dailyGrammarGoal || "");
     }
   }, [state.settings.dailyGrammarGoal]);
+
+  useEffect(() => {
+    if (weekdayMinutesRef.current) {
+      weekdayMinutesRef.current.value = String(state.settings.weekdayMinutes || "");
+    }
+  }, [state.settings.weekdayMinutes]);
+
+  useEffect(() => {
+    if (weekendMinutesRef.current) {
+      weekendMinutesRef.current.value = String(state.settings.weekendMinutes || "");
+    }
+  }, [state.settings.weekendMinutes]);
 
   const handleCreateProfile = useCallback((e: React.FormEvent) => {
     e.preventDefault();
@@ -145,10 +159,19 @@ export function SetupPage() {
                     reader.onload = () => {
                       try {
                         const data = JSON.parse(String(reader.result));
+                        const profileId = state.activeProfileId;
                         if (data.data && typeof data.data === "object") {
+                          // Format: { data: { jlptSprintDesk...: "..." } }
                           Object.entries(data.data).forEach(([key, value]) => {
                             localStorage.setItem(key, String(value));
                           });
+                          window.location.reload();
+                        } else if (profileId && (data.planSettings || data.generatedPlan || data.records)) {
+                          // Format: { planSettings, generatedPlan, planEdits, records }
+                          if (data.planSettings) localStorage.setItem(`jlptSprintDesk:${profileId}:planSettings`, JSON.stringify(data.planSettings));
+                          if (data.generatedPlan) localStorage.setItem(`jlptSprintDesk:${profileId}:generatedPlan`, JSON.stringify(data.generatedPlan));
+                          if (data.planEdits) localStorage.setItem(`jlptSprintDesk:${profileId}:planEdits`, JSON.stringify(data.planEdits));
+                          if (data.records) localStorage.setItem(`jlptSprintDesk:${profileId}:records`, JSON.stringify(data.records));
                           window.location.reload();
                         } else {
                           toast("备份文件格式错误");
@@ -226,17 +249,37 @@ export function SetupPage() {
             </div>
             <div className="field">
               <label htmlFor="weekdayMinutes">工作日时间</label>
-              <input id="weekdayMinutes" type="number" min={20} max={600} value={state.settings.weekdayMinutes || ''} placeholder="例：120" onChange={(e) => {
-  const val = e.target.value;
-  setField("weekdayMinutes", val === '' ? 0 : Number(val));
-}} />
+              <input
+                ref={weekdayMinutesRef}
+                id="weekdayMinutes"
+                type="number"
+                min={20}
+                max={600}
+                defaultValue={state.settings.weekdayMinutes || ""}
+                placeholder="例：120"
+                onBlur={(e) => {
+                  const val = e.target.value;
+                  if (val === "") { setField("weekdayMinutes", 0); }
+                  else { const num = Number(val); if (!Number.isNaN(num)) setField("weekdayMinutes", num); }
+                }}
+              />
             </div>
             <div className="field">
               <label htmlFor="weekendMinutes">周末时间</label>
-              <input id="weekendMinutes" type="number" min={20} max={720} value={state.settings.weekendMinutes || ''} placeholder="例：240" onChange={(e) => {
-  const val = e.target.value;
-  setField("weekendMinutes", val === '' ? 0 : Number(val));
-}} />
+              <input
+                ref={weekendMinutesRef}
+                id="weekendMinutes"
+                type="number"
+                min={20}
+                max={720}
+                defaultValue={state.settings.weekendMinutes || ""}
+                placeholder="例：240"
+                onBlur={(e) => {
+                  const val = e.target.value;
+                  if (val === "") { setField("weekendMinutes", 0); }
+                  else { const num = Number(val); if (!Number.isNaN(num)) setField("weekendMinutes", num); }
+                }}
+              />
             </div>
             <div className="field">
               <label htmlFor="state">当前状态</label>
