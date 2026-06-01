@@ -1,39 +1,41 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useReducer, useState, type ReactNode } from "react";
 
 interface FadeTransitionProps {
   children: ReactNode;
   duration?: number;
 }
 
+type TransitionState = { shown: ReactNode; opacity: number };
+type TransitionAction =
+  | { type: "fade_out" }
+  | { type: "swap"; next: ReactNode };
+
+function transitionReducer(state: TransitionState, action: TransitionAction): TransitionState {
+  if (action.type === "fade_out") return { ...state, opacity: 0 };
+  if (action.type === "swap") return { shown: action.next, opacity: 1 };
+  return state;
+}
+
 export function FadeTransition({ children, duration = 200 }: FadeTransitionProps) {
-  const [isVisible, setIsVisible] = useState(true);
-  const [displayChildren, setDisplayChildren] = useState(children);
-  const pendingRef = useRef<ReactNode>(null);
+  const [state, dispatch] = useReducer(transitionReducer, { shown: children, opacity: 1 });
 
   useEffect(() => {
-    if (children === displayChildren) return;
-    pendingRef.current = children;
-    setIsVisible(false);
-    const timer = setTimeout(() => {
-      if (pendingRef.current !== null) {
-        setDisplayChildren(pendingRef.current);
-        pendingRef.current = null;
-      }
-      setIsVisible(true);
-    }, duration);
+    if (children === state.shown) return;
+    dispatch({ type: "fade_out" });
+    const timer = setTimeout(() => dispatch({ type: "swap", next: children }), duration);
     return () => clearTimeout(timer);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [children]);
 
   return (
     <div
       style={{
-        opacity: isVisible ? 1 : 0,
+        opacity: state.opacity,
         transition: `opacity ${duration}ms ease-in-out`,
         minHeight: "100%",
       }}
     >
-      {displayChildren}
+      {state.shown}
     </div>
   );
 }
