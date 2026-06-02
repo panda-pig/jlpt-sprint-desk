@@ -50,6 +50,7 @@ export const en = {
     days: "days",
     daysLeft: "{n} days left",
     listSep: ", ",
+    total: "Total",
   },
   nav: {
     dashboard: "Dashboard",

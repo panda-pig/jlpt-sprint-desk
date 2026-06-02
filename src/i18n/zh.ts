@@ -50,6 +50,7 @@ export const zh = {
     days: "天",
     daysLeft: "剩余 {n} 天",
     listSep: "、",
+    total: "总计",
   },
   nav: {
     dashboard: "总览",

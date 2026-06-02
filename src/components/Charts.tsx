@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { t } from "../i18n";
 
 interface TrendChartProps {
   data: { date: string; value: number; target?: number }[];
@@ -128,7 +129,7 @@ export function PieChart({ data, size = 120 }: PieChartProps) {
         {total}
       </text>
       <text x={center} y={center + 10} textAnchor="middle" fontSize="9" fill="#70817a">
-        总计
+        {t("common.total")}
       </text>
     </svg>
   );
