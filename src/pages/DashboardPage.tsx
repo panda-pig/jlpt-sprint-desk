@@ -2,8 +2,10 @@ import { useNavigate } from "react-router-dom";
 import { useStudyDesk } from "../lib/studyDeskContext";
 import { daysUntil, clampPercent } from "../lib/utils";
 import { getTodayTargetMinutes } from "../lib/planner";
-import { LEVEL_CONFIG, MODULE_LABELS, MODULE_SHORTS } from "../lib/constants";
+import { LEVEL_CONFIG } from "../lib/constants";
 import { ReminderBanner } from "../components/Reminder";
+import { useLocale } from "../i18n/LocaleProvider";
+import { moduleLabel, moduleShort } from "../i18n";
 import type { StudyTask } from "../lib/types";
 
 function splitTaskPoints(text: string): string[] {
@@ -36,6 +38,7 @@ export function DashboardPage() {
     stats,
     nextAction,
   } = useStudyDesk();
+  const { t } = useLocale();
 
   const daysLeft = daysUntil(state.settings.examDate);
   const totalMinutes = state.records.reduce((sum, r) => {
@@ -64,7 +67,7 @@ export function DashboardPage() {
                 {nextAction.cta}
               </a>
               <a className="secondary-button" href="#/plan" onClick={(e) => { e.preventDefault(); navigate("/plan"); }}>
-                查看计划
+                {t("nav.plan")}
               </a>
             </div>
           </div>
@@ -73,9 +76,9 @@ export function DashboardPage() {
         <div className="three-col">
           <section className="card metric-card">
             <div>
-              <p className="metric-label">考试倒计时</p>
+              <p className="metric-label">{t("dashboard.countdown")}</p>
               <p className="metric-value">
-                {daysLeft === null ? "待设置" : daysLeft} <small>{daysLeft === null ? "去设置考试日期" : "Days left"}</small>
+                {daysLeft === null ? t("dashboard.pendingSetup") : daysLeft} <small>{daysLeft === null ? t("dashboard.daysToSet") : t("dashboard.daysLeftSmall")}</small>
               </p>
             </div>
             <div className="progress-track">
@@ -85,7 +88,7 @@ export function DashboardPage() {
 
           <section className="card metric-card">
             <div>
-              <p className="metric-label">今日目标</p>
+              <p className="metric-label">{t("dashboard.todayGoal")}</p>
               <p className="metric-value">
                 {getTodayTargetMinutes(state.settings)} <small>min</small>
               </p>
@@ -97,9 +100,9 @@ export function DashboardPage() {
 
           <section className="card metric-card">
             <div>
-              <p className="metric-label">累计投入</p>
+              <p className="metric-label">{t("dashboard.totalInvested")}</p>
               <p className="metric-value">
-                {(totalMinutes / 60).toFixed(1)} <small>hours</small>
+                {(totalMinutes / 60).toFixed(1)} <small>{t("dashboard.hours")}</small>
               </p>
             </div>
             <div className="progress-track">
@@ -111,8 +114,8 @@ export function DashboardPage() {
         <section className="panel">
           <div className="section-head">
             <div>
-              <h2>今日学习循环</h2>
-              <p>从计划到记录再到复盘，保持一个轻量闭环。</p>
+              <h2>{t("dashboard.todayLoop")}</h2>
+              <p>{t("dashboard.todayLoopDesc")}</p>
             </div>
             <span className="metric-chip"><strong>{health.label}</strong>{health.score}/100</span>
           </div>
@@ -121,7 +124,7 @@ export function DashboardPage() {
               <ul className="task-list">
                 {todayPlan.tasks.map((task: StudyTask) => (
                   <li key={task.id} className="task-item">
-                    <span className={`module-dot ${task.module}`}>{MODULE_SHORTS[task.module] || "项"}</span>
+                    <span className={`module-dot ${task.module}`}>{moduleShort(task.module)}</span>
                     <div className="task-main">
                       <strong>{task.title || task.label}</strong>
                       <TaskPoints text={task.text} />
@@ -130,14 +133,14 @@ export function DashboardPage() {
                   </li>
                 ))}
               </ul>
-              <p className="muted">{todayRecord ? "今日已记录，可按真实表现更新。" : "建议先完成这些任务，再进入每日记录。"}</p>
+              <p className="muted">{todayRecord ? t("dashboard.todayRecordedHint") : t("dashboard.finishTasksHint")}</p>
             </div>
           ) : (
             <div className="empty-state">
-              <h3>还没有生成计划</h3>
-              <p>先完成计划设置，系统会按考试日期、可用时间和薄弱项生成每日任务。</p>
+              <h3>{t("dashboard.noPlanTitle")}</h3>
+              <p>{t("dashboard.noPlanDesc")}</p>
               <a className="primary-button" href="#/setup" onClick={(e) => { e.preventDefault(); navigate("/setup"); }}>
-                去设置
+                {t("dashboard.goSetup")}
               </a>
             </div>
           )}
@@ -146,14 +149,14 @@ export function DashboardPage() {
         <section className="panel">
           <div className="section-head">
             <div>
-              <h2>计划健康</h2>
+              <h2>{t("dashboard.planHealth")}</h2>
               <p>{health.message}</p>
             </div>
             <a className="ghost-button" href="#/analysis" onClick={(e) => { e.preventDefault(); navigate("/analysis"); }}>
-              查看分析
+              {t("dashboard.viewAnalysis")}
             </a>
           </div>
-          <div className="progress-track" aria-label="计划健康分">
+          <div className="progress-track" aria-label={t("dashboard.planHealthScore")}>
             <div className="progress-fill" style={{ ["--value" as string]: `${health.score}%` }} />
           </div>
         </section>
@@ -164,28 +167,28 @@ export function DashboardPage() {
           <div className="section-head">
             <div>
               <h3>{profile?.name}</h3>
-              <p>{levelLabel} · 目标 {targetScore} 分</p>
+              <p>{levelLabel} · {t("dashboard.targetScore", { n: targetScore })}</p>
             </div>
             <a className="secondary-button" href="#/setup" onClick={(e) => { e.preventDefault(); navigate("/setup"); }}>
-              管理
+              {t("dashboard.manage")}
             </a>
           </div>
           <div className="bar-list">
             <div className="list-item">
-              <span>考试日期</span>
-              <strong>{state.settings.examDate || "未设置"}</strong>
+              <span>{t("dashboard.examDate")}</span>
+              <strong>{state.settings.examDate || t("dashboard.notSet")}</strong>
             </div>
             <div className="list-item">
-              <span>当前阶段</span>
-              <strong>{todayPlan ? todayPlan.phase : "待生成"}</strong>
+              <span>{t("dashboard.currentPhase")}</span>
+              <strong>{todayPlan ? todayPlan.phase : t("dashboard.pendingGen")}</strong>
             </div>
             <div className="list-item">
-              <span>今日记录</span>
-              <strong>{todayRecord ? "已完成" : "未记录"}</strong>
+              <span>{t("dashboard.todayRecord")}</span>
+              <strong>{todayRecord ? t("dashboard.doneShort") : t("dashboard.notRecorded")}</strong>
             </div>
             <div className="list-item">
-              <span>连续记录</span>
-              <strong>{stats.streak} 天</strong>
+              <span>{t("dashboard.streak")}</span>
+              <strong>{t("dashboard.streakDays", { n: stats.streak })}</strong>
             </div>
           </div>
         </section>
@@ -193,27 +196,27 @@ export function DashboardPage() {
         <section className="card">
           <div className="section-head">
             <div>
-              <h3>7 天趋势</h3>
-              <p>真实记录驱动后续建议。</p>
+              <h3>{t("dashboard.trend7")}</h3>
+              <p>{t("dashboard.trend7Desc")}</p>
             </div>
           </div>
           <div className="bar-list">
             <div className="bar-row">
-              <strong>学习天数</strong>
+              <strong>{t("dashboard.studyDays")}</strong>
               <span className="bar-track">
                 <span className="bar-fill" style={{ ["--value" as string]: `${clampPercent((stats.recordedDays / 7) * 100)}%` }} />
               </span>
-              <span className="muted">{stats.recordedDays}天</span>
+              <span className="muted">{t("dashboard.daysUnit", { n: stats.recordedDays })}</span>
             </div>
             <div className="bar-row">
-              <strong>投入时间</strong>
+              <strong>{t("dashboard.investTime")}</strong>
               <span className="bar-track">
                 <span className="bar-fill" style={{ ["--value" as string]: `${clampPercent((stats.totalMinutes / Math.max(1, getTodayTargetMinutes(state.settings) * 7)) * 100)}%` }} />
               </span>
               <span className="muted">{Math.round(stats.totalMinutes)}min</span>
             </div>
             <div className="bar-row">
-              <strong>平均完成</strong>
+              <strong>{t("dashboard.avgCompletion")}</strong>
               <span className="bar-track">
                 <span className="bar-fill" style={{ ["--value" as string]: `${clampPercent(stats.avgCompletion)}%` }} />
               </span>
@@ -225,13 +228,13 @@ export function DashboardPage() {
         <section className="card">
           <div className="section-head">
             <div>
-              <h3>本周提醒</h3>
-              <p>{stats.streak >= 5 ? "连续记录已经形成节奏，本周重点是压低重复错因。" : stats.avgCompletion < 65 && stats.recordedDays > 0 ? "不要硬扛完整任务，把每日计划拆小一点，先稳住反馈闭环。" : `${state.settings.focusModules?.map((key) => MODULE_LABELS[key]).join("、") || "重点模块"}保持主线，错因复盘放在每天前 15 分钟。`}</p>
+              <h3>{t("dashboard.weeklyTip")}</h3>
+              <p>{stats.streak >= 5 ? t("dashboard.tipStreak") : stats.avgCompletion < 65 && stats.recordedDays > 0 ? t("dashboard.tipLowCompletion") : t("dashboard.tipFocus", { modules: state.settings.focusModules?.map((key) => moduleLabel(key)).join(t("common.listSep")) || t("dashboard.focusFallback") })}</p>
             </div>
           </div>
           <div className="button-row">
             <a className="primary-button full" href="#/record" onClick={(e) => { e.preventDefault(); navigate("/record"); }}>
-              填写今日记录
+              {t("dashboard.fillRecord")}
             </a>
           </div>
         </section>

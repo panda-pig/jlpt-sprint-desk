@@ -33,7 +33,7 @@ import {
 import { todayISO } from "./utils";
 import { toast } from "./toast";
 import { schedulePush } from "./cloudSync";
-import { getLocale } from "../i18n";
+import { getLocale, t } from "../i18n";
 
 import { StudyDeskContext, type StudyDeskContextValue } from "./studyDeskContext";
 
@@ -157,7 +157,7 @@ export function StudyDeskProvider({ children }: { children: ReactNode }) {
     };
     setActiveProfileId(profile.id);
     commit(next);
-    toast("新学习档案已创建。");
+    toast(t("toast.profileCreated"));
   }, [state, commit]);
 
   const deleteProfile = useCallback((id: string) => {
@@ -174,7 +174,7 @@ export function StudyDeskProvider({ children }: { children: ReactNode }) {
       records: nextActiveId ? getRecords(nextActiveId) : [],
     };
     setState(next);
-    toast("学习档案已删除。");
+    toast(t("toast.profileDeleted"));
   }, [state]);
 
   const setActiveProfile = useCallback((id: string) => {
@@ -187,7 +187,7 @@ export function StudyDeskProvider({ children }: { children: ReactNode }) {
       planEdits: getPlanEdits(id),
       records: getRecords(id),
     };
-    toast("已切换学习档案。");
+    toast(t("toast.profileSwitched"));
     setState(next);
   }, [state]);
 
@@ -210,7 +210,7 @@ export function StudyDeskProvider({ children }: { children: ReactNode }) {
     const plan = generatePlan(state.settings, state.activeProfileId);
     const next: StudyDeskState = { ...state, generatedPlan: plan, planEdits: {} };
     commit(next);
-    toast("新学习计划已生成。");
+    toast(t("toast.planGenerated"));
   }, [state, commit]);
 
   const savePlanEdit = useCallback((dayIndex: number, text: string) => {
@@ -223,7 +223,7 @@ export function StudyDeskProvider({ children }: { children: ReactNode }) {
     }
     const next: StudyDeskState = { ...state, planEdits: nextEdits };
     commit(next);
-    toast(`Day ${dayIndex} 的调整已保存。`);
+    toast(t("toast.dayEditSaved", { n: dayIndex }));
   }, [state, commit]);
 
   const deletePlanEdit = useCallback((dayIndex: number) => {
@@ -231,7 +231,7 @@ export function StudyDeskProvider({ children }: { children: ReactNode }) {
     delete nextEdits[String(dayIndex)];
     const next: StudyDeskState = { ...state, planEdits: nextEdits };
     commit(next);
-    toast(`Day ${dayIndex} 已恢复为生成计划。`);
+    toast(t("toast.dayEditReset", { n: dayIndex }));
   }, [state, commit]);
 
   const saveRecord = useCallback((record: Partial<StudyRecord>) => {
@@ -271,14 +271,14 @@ export function StudyDeskProvider({ children }: { children: ReactNode }) {
 
     const next: StudyDeskState = { ...state, records: nextRecords };
     commit(next);
-    toast(`${newRecord.date === now ? "今日" : newRecord.date}学习记录已保存。`);
+    toast(newRecord.date === now ? t("record.savedToday") : t("record.savedOn", { date: newRecord.date }));
   }, [state, commit]);
 
   const deleteRecord = useCallback((id: string) => {
     const nextRecords = state.records.filter((r) => r.id !== id);
     const next: StudyDeskState = { ...state, records: nextRecords };
     commit(next);
-    toast("学习记录已删除。");
+    toast(t("record.deleted"));
   }, [state, commit]);
 
   const value: StudyDeskContextValue = {

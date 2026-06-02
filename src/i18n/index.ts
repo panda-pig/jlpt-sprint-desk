@@ -74,8 +74,8 @@ export function t(key: string, params?: Record<string, string | number>): string
  * resolution.
  */
 export function tOption(group: string, value: string): string {
-  const lookup = (d: Dict): string | undefined => {
-    const opts = d.options;
+  const fromNs = (d: Dict, ns: string): string | undefined => {
+    const opts = d[ns];
     if (opts && typeof opts === "object") {
       const g = (opts as Dict)[group];
       if (g && typeof g === "object") {
@@ -85,5 +85,14 @@ export function tOption(group: string, value: string): string {
     }
     return undefined;
   };
+  const lookup = (d: Dict): string | undefined => fromNs(d, "options") ?? fromNs(d, "optionsExtra");
   return lookup(DICTS[currentLocale]) ?? lookup(DICTS.zh) ?? value;
+}
+
+/** Locale-aware module label (kanji/vocab/...) and short badge. */
+export function moduleLabel(key: string): string {
+  return t(`module.${key}`);
+}
+export function moduleShort(key: string): string {
+  return t(`moduleShort.${key}`);
 }
