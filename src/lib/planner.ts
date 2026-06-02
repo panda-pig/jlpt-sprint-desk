@@ -115,18 +115,19 @@ function buildContentBudget(settings: PlanSettings, weeklyMinutes: number) {
   const availableLearningDays = Math.max(0, planningDays - desiredReviewDays);
   const reviewDaysLeft = Math.max(0, planningDays - (Number.isFinite(learningDays) ? learningDays : 0));
 
-  let status = "节奏充足";
+  // Stable keys (translated at display via tOption). Avoids fragile string matching.
+  let status = "ample";
   if (!Number.isFinite(learningDays)) {
-    status = "缺少每日量";
+    status = "lackDaily";
   } else if (daysLeft !== null && daysLeft <= 3 && (vocabRemaining > 0 || grammarRemaining > 0)) {
-    status = "临考复盘";
+    status = "examReview";
   } else if (learningDays > Math.max(1, planningDays)) {
-    status = "时间不够";
+    status = "notEnough";
   } else if (learningDays > Math.max(1, availableLearningDays)) {
-    status = "能学完但复习偏少";
+    status = "canFinishLowReview";
   }
 
-  const timeStatus = settings.weekdayMinutes >= 120 || settings.weekendMinutes >= 180 ? "强度充足" : settings.weekdayMinutes >= 60 ? "强度中等" : "低强度";
+  const timeStatus = settings.weekdayMinutes >= 120 || settings.weekendMinutes >= 180 ? "strong" : settings.weekdayMinutes >= 60 ? "medium" : "low";
 
   return {
     status,
@@ -155,18 +156,18 @@ function buildContentBudget(settings: PlanSettings, weeklyMinutes: number) {
 
 function buildAdvice(status: string, timeStatus: string): string[] {
   const advice: string[] = [];
-  if (status === "时间不够") {
-    advice.push("建议提高每日学习时间，或延长备考周期。");
-    advice.push("优先保证核心词汇和语法的学习。");
-  } else if (status === "能学完但复习偏少") {
-    advice.push("新内容可以学完，但复习时间不足，建议适当增加复习预留比例。");
-  } else if (status === "缺少每日量") {
-    advice.push("请设置每日词汇和语法学习目标。");
+  if (status === "notEnough") {
+    advice.push(t("planner.advNotEnough1"));
+    advice.push(t("planner.advNotEnough2"));
+  } else if (status === "canFinishLowReview") {
+    advice.push(t("planner.advLowReview"));
+  } else if (status === "lackDaily") {
+    advice.push(t("planner.advLackDaily"));
   }
-  if (timeStatus === "低强度") {
-    advice.push("当前学习时间偏少，建议每天至少投入 60 分钟。");
+  if (timeStatus === "low") {
+    advice.push(t("planner.advLowIntensity"));
   }
-  if (!advice.length) advice.push("当前学习节奏良好，继续保持！");
+  if (!advice.length) advice.push(t("planner.advGood"));
   return advice;
 }
 
