@@ -15,27 +15,18 @@ import {
 import { useStudyDesk } from "../lib/studyDeskContext";
 import {
   MODULE_COLORS,
-  MODULE_LABELS,
   RECORD_MODULE_KEYS,
 } from "../lib/constants";
 import { getTodayTargetMinutes } from "../lib/planner";
 import { clampPercent } from "../lib/utils";
 import { PieChart } from "../components/Charts";
+import { useLocale } from "../i18n/LocaleProvider";
+import { t as gt, moduleLabel } from "../i18n";
 
 function getCauseAction(cause: string): string {
-  const actions: Record<string, string> = {
-    词义差别: "把相近词放进同一张对照表，只用例句区分语感。",
-    固定搭配: "明天先复盘固定搭配错词，再进入新词。",
-    接续形式: "每个错句型保留接续、例句和一个自造句。",
-    定位慢: "阅读改成限时定位训练，只找题干关键词和转折句。",
-    听漏关键词: "听力重听错题，记录人物、任务、转折和结论。",
-    时间不够: "下一轮减少新内容，把题组全部加计时。",
-    复盘不足: "每天开始前先回看昨日错题，限制在 10-15 分钟。",
-    任务过量: "计划页下调新学量，保留主攻模块和最低复盘。",
-  };
-  return (
-    actions[cause] || "先把这个原因对应的错题集中二刷，再决定是否加量。"
-  );
+  const key = `causeAction.${cause}`;
+  const mapped = gt(key);
+  return mapped === key ? gt("causeAction._default") : mapped;
 }
 
 export function AnalysisPage() {
@@ -47,6 +38,7 @@ export function AnalysisPage() {
     moduleTotals,
     causeCounts,
   } = useStudyDesk();
+  const { t, tOption } = useLocale();
 
   const records = state.records;
 
@@ -55,13 +47,10 @@ export function AnalysisPage() {
       <div className="page-grid">
         <section className="stack">
           <div className="empty-state">
-            <h3>还没有复盘数据</h3>
-            <p>
-              保存至少一条每日记录后，这里会显示 7
-              天趋势、模块投入、错误原因和计划健康建议。
-            </p>
+            <h3>{t("analysis.emptyTitle")}</h3>
+            <p>{t("analysis.emptyDesc")}</p>
             <a className="primary-button" href="#/record">
-              去记录今天
+              {t("analysis.recordToday")}
             </a>
           </div>
         </section>
@@ -74,11 +63,11 @@ export function AnalysisPage() {
     (stats.totalMinutes / Math.max(1, target)) * 100
   );
   const paceLabel =
-    pacePercent >= 90 ? "接近目标" : pacePercent >= 60 ? "需要补齐" : "节奏偏低";
+    pacePercent >= 90 ? t("analysis.paceClose") : pacePercent >= 60 ? t("analysis.paceCatchUp") : t("analysis.paceLow");
 
   const moduleEntries = RECORD_MODULE_KEYS.map((key) => ({
     key,
-    label: MODULE_LABELS[key],
+    label: moduleLabel(key),
     value: Number(moduleTotals[key] || 0),
   })).sort((a, b) => b.value - a.value);
   const totalModule = Math.max(
@@ -99,7 +88,7 @@ export function AnalysisPage() {
 
   const pieEntries = RECORD_MODULE_KEYS.map((key) => ({
     key,
-    label: MODULE_LABELS[key],
+    label: moduleLabel(key),
     value: Number(moduleTotals[key] || 0),
     color: MODULE_COLORS[key] || MODULE_COLORS.review,
   })).filter((item) => item.value > 0);
@@ -179,7 +168,8 @@ export function AnalysisPage() {
     (r) =>
       r.overtimeReason &&
       r.overtimeReason.length > 0 &&
-      !r.overtimeReason.includes("没有明显超时")
+      !r.overtimeReason.includes("没有明显超时") &&
+      !r.overtimeReason.includes("No notable overtime")
   ).length;
   const overtimeRate =
     recentRecords.length > 0
@@ -192,8 +182,8 @@ export function AnalysisPage() {
   );
   const avgAccuracyText =
     recordsWithAccuracy.length > 0
-      ? `${Math.round((recordsWithAccuracy.length / recentRecords.length) * 100)}% 有记录`
-      : "未记录";
+      ? t("analysis.avgAccuracyHasRecord", { n: Math.round((recordsWithAccuracy.length / recentRecords.length) * 100) })
+      : t("analysis.notRecorded");
 
   return (
     <div className="page-grid">
@@ -203,9 +193,9 @@ export function AnalysisPage() {
           <div className="kpi-card">
             <div className="kpi-header">
               <Calendar size={16} />
-              <span>7天学习日</span>
+              <span>{t("analysis.kpiStudyDays")}</span>
             </div>
-            <div className="kpi-value">{stats.recordedDays}<small>/7 天</small></div>
+            <div className="kpi-value">{stats.recordedDays}<small>{t("analysis.kpiUnit7days")}</small></div>
             <div className="kpi-bar">
               <div className="kpi-fill" style={{ width: `${clampPercent((stats.recordedDays / 7) * 100)}%` }} />
             </div>
@@ -213,7 +203,7 @@ export function AnalysisPage() {
           <div className="kpi-card">
             <div className="kpi-header">
               <Clock size={16} />
-              <span>7天投入</span>
+              <span>{t("analysis.kpiInvest")}</span>
             </div>
             <div className="kpi-value">{Math.round(stats.totalMinutes)}<small>min</small></div>
             <div className="kpi-bar">
@@ -223,7 +213,7 @@ export function AnalysisPage() {
           <div className="kpi-card">
             <div className="kpi-header">
               <CheckCircle2 size={16} />
-              <span>平均完成</span>
+              <span>{t("analysis.kpiAvgComplete")}</span>
             </div>
             <div className="kpi-value">{Math.round(stats.avgCompletion)}<small>%</small></div>
             <div className="kpi-bar">
@@ -233,9 +223,9 @@ export function AnalysisPage() {
           <div className="kpi-card">
             <div className="kpi-header">
               <Zap size={16} />
-              <span>连续记录</span>
+              <span>{t("analysis.kpiStreak")}</span>
             </div>
-            <div className="kpi-value">{stats.streak}<small>天</small></div>
+            <div className="kpi-value">{stats.streak}<small>{t("analysis.kpiStreakUnit")}</small></div>
             <div className="kpi-bar">
               <div className="kpi-fill" style={{ width: `${clampPercent((stats.streak / 7) * 100)}%` }} />
             </div>
@@ -243,9 +233,9 @@ export function AnalysisPage() {
           <div className="kpi-card is-highlight">
             <div className="kpi-header">
               <Gauge size={16} />
-              <span>计划健康</span>
+              <span>{t("analysis.kpiHealth")}</span>
             </div>
-            <div className="kpi-value">{clampPercent(health.score)}<small>分</small></div>
+            <div className="kpi-value">{clampPercent(health.score)}<small>{t("analysis.kpiHealthUnit")}</small></div>
             <div className="kpi-bar">
               <div className="kpi-fill" style={{ width: `${clampPercent(health.score)}%` }} />
             </div>
@@ -253,7 +243,7 @@ export function AnalysisPage() {
           <div className="kpi-card">
             <div className="kpi-header">
               <Target size={16} />
-              <span>时间效率</span>
+              <span>{t("analysis.kpiEfficiency")}</span>
             </div>
             <div className="kpi-value">{timeUtilization}<small>%</small></div>
             <div className="kpi-bar">
@@ -266,50 +256,45 @@ export function AnalysisPage() {
         <section className="panel analysis-brief-panel">
           <div className="section-head">
             <div>
-              <h2>复盘结论</h2>
-              <p>先给出最该看的判断，再往下看具体图表。</p>
+              <h2>{t("analysis.briefTitle")}</h2>
+              <p>{t("analysis.briefDesc")}</p>
             </div>
           </div>
           <div className="analysis-insight-grid">
             <article className="insight-card is-primary">
-              <span>总体判断</span>
+              <span>{t("analysis.overallJudge")}</span>
               <strong>{health.label}</strong>
               <p>{health.message}</p>
             </article>
             <article className="insight-card">
-              <span>投入节奏</span>
+              <span>{t("analysis.pace")}</span>
               <strong>{paceLabel}</strong>
-              <p>
-                7 天目标 {Math.round(target)} min，当前{" "}
-                {Math.round(stats.totalMinutes)} min，达成 {pacePercent}%。
-              </p>
+              <p>{t("analysis.paceDetail", { target: Math.round(target), current: Math.round(stats.totalMinutes), percent: pacePercent })}</p>
             </article>
             <article className="insight-card">
-              <span>时间重心</span>
-              <strong>{topModule ? topModule.label : "暂无记录"}</strong>
+              <span>{t("analysis.timeCenter")}</span>
+              <strong>{topModule ? topModule.label : t("analysis.noRecordYet")}</strong>
               <p>
                 {topModule
-                  ? `${Math.round(topModule.value)} min，占 ${Math.round(
-                      (topModule.value / totalModule) * 100
-                    )}%。`
-                  : "先保存每日记录，才能判断重心。"}
+                  ? t("analysis.timeCenterDetail", { min: Math.round(topModule.value), share: Math.round((topModule.value / totalModule) * 100) })
+                  : t("analysis.timeCenterEmpty")}
               </p>
             </article>
             <article className="insight-card">
-              <span>优先处理</span>
+              <span>{t("analysis.priority")}</span>
               <strong>
                 {topCause
-                  ? topCause[0]
+                  ? tOption("errorCause", topCause[0])
                   : quietModule
-                  ? `${quietModule.label}偏少`
-                  : "继续记录"}
+                  ? t("analysis.quietLow", { label: quietModule.label })
+                  : t("analysis.continueRecord")}
               </strong>
               <p>
                 {topCause
-                  ? `出现 ${topCause[1]} 次，明天先做同因复盘。`
+                  ? t("analysis.priorityDetailCause", { n: topCause[1] })
                   : quietModule
-                  ? `${quietModule.label}近 7 天投入较少，确认它是否真的是强项。`
-                  : "错因数据还不够，先保持记录。"}
+                  ? t("analysis.priorityDetailQuiet", { label: quietModule.label })
+                  : t("analysis.priorityDetailEmpty")}
               </p>
             </article>
           </div>
@@ -320,16 +305,16 @@ export function AnalysisPage() {
           <div className="section-head">
             <div>
               <h2>
-                <Activity size={18} /> 学习节奏驾驶舱
+                <Activity size={18} /> {t("analysis.rhythmTitle")}
               </h2>
-              <p>看清时间分配规律，找出效率杠杆点。</p>
+              <p>{t("analysis.rhythmDesc")}</p>
             </div>
           </div>
           <div className="rhythm-grid">
             <article className="rhythm-card">
-              <span>工作日平均</span>
+              <span>{t("analysis.weekdayAvg")}</span>
               <strong>{Math.round(weekdayAvg)} min</strong>
-              <p>目标 {state.settings.weekdayMinutes} min</p>
+              <p>{t("analysis.goalMin", { n: state.settings.weekdayMinutes })}</p>
               <div className="rhythm-bar">
                 <div
                   className="rhythm-fill"
@@ -340,9 +325,9 @@ export function AnalysisPage() {
               </div>
             </article>
             <article className="rhythm-card">
-              <span>周末平均</span>
+              <span>{t("analysis.weekendAvg")}</span>
               <strong>{Math.round(weekendAvg)} min</strong>
-              <p>目标 {state.settings.weekendMinutes} min</p>
+              <p>{t("analysis.goalMin", { n: state.settings.weekendMinutes })}</p>
               <div className="rhythm-bar">
                 <div
                   className="rhythm-fill"
@@ -353,9 +338,9 @@ export function AnalysisPage() {
               </div>
             </article>
             <article className="rhythm-card">
-              <span>日均投入</span>
+              <span>{t("analysis.dailyAvg")}</span>
               <strong>{Math.round(stats.avgMinutes)} min</strong>
-              <p>目标 {targetMinutes} min</p>
+              <p>{t("analysis.goalMin", { n: targetMinutes })}</p>
               <div className="rhythm-bar">
                 <div
                   className="rhythm-fill"
@@ -368,7 +353,7 @@ export function AnalysisPage() {
           </div>
 
           {/* 7 天投入趋势 */}
-          <div className="trend-chart" aria-label="最近 7 天学习投入趋势">
+          <div className="trend-chart" aria-label={t("analysis.trend7Aria")}>
             {dates.map((date) => {
               const record = byDate.get(date);
               const minutes = record
@@ -396,7 +381,7 @@ export function AnalysisPage() {
                     />
                   </div>
                   <strong>{date.slice(5).replace("-", "/")}</strong>
-                  <small>{record ? `${Math.round(minutes)}m` : "缺口"}</small>
+                  <small>{record ? `${Math.round(minutes)}m` : t("analysis.gap")}</small>
                 </article>
               );
             })}
@@ -404,9 +389,9 @@ export function AnalysisPage() {
           <div className="chart-note">
             <span>
               <i className="note-line" />
-              每日目标 {Math.round(targetMinutes)} min
+              {t("analysis.dailyGoalMin", { n: Math.round(targetMinutes) })}
             </span>
-            <span>低于目标的日期，优先在计划页下调任务切片。</span>
+            <span>{t("analysis.trendNote")}</span>
           </div>
         </section>
 
@@ -415,9 +400,9 @@ export function AnalysisPage() {
           <div className="section-head">
             <div>
               <h2>
-                <Award size={18} /> 7 天完成度趋势
+                <Award size={18} /> {t("analysis.completionTrend")}
               </h2>
-              <p>每天的任务完成质量，是计划健康的前置指标。</p>
+              <p>{t("analysis.completionTrendDesc")}</p>
             </div>
           </div>
           <div className="completion-trend">
@@ -443,8 +428,8 @@ export function AnalysisPage() {
                     }}
                     title={
                       val !== null
-                        ? `完成度 ${val}%`
-                        : "未记录"
+                        ? t("analysis.completionTitle", { n: val })
+                        : t("analysis.notRecorded")
                     }
                   />
                   <strong>{date.slice(5).replace("-", "/")}</strong>
@@ -460,15 +445,15 @@ export function AnalysisPage() {
           <div className="chart-note">
             <span>
               <i className="note-line" style={{ background: "#3d7757" }} />
-              完成 ≥80%
+              {t("analysis.complete80")}
             </span>
             <span>
               <i className="note-line" style={{ background: "#b77a20" }} />
-              完成 50-79%
+              {t("analysis.complete50")}
             </span>
             <span>
               <i className="note-line" style={{ background: "#c44" }} />
-              完成 &lt;50%
+              {t("analysis.completeLow")}
             </span>
           </div>
         </section>
@@ -478,9 +463,9 @@ export function AnalysisPage() {
           <div className="section-head">
             <div>
               <h2>
-                <BarChart3 size={18} /> 模块投入深度分析
+                <BarChart3 size={18} /> {t("analysis.moduleDeep")}
               </h2>
-              <p>看清时间重心是否真的压在当前薄弱项上。</p>
+              <p>{t("analysis.moduleDeepDesc")}</p>
             </div>
           </div>
           {pieTotal > 0 ? (
@@ -557,10 +542,10 @@ export function AnalysisPage() {
                     );
                     const status =
                       item.value === 0
-                        ? "未投入"
+                        ? t("analysis.statusNoInvest")
                         : share >= 35
-                        ? "占比偏高"
-                        : "辅助模块";
+                        ? t("analysis.statusHigh")
+                        : t("analysis.statusAux");
                     return (
                       <article
                         key={item.key}
@@ -588,10 +573,10 @@ export function AnalysisPage() {
             </div>
           ) : (
             <div className="empty-state">
-              <h3>还没有模块用时</h3>
-              <p>每日记录中填写模块实际用时后，这里会自动生成结构分析。</p>
+              <h3>{t("analysis.noModuleTime")}</h3>
+              <p>{t("analysis.noModuleTimeDesc")}</p>
               <a className="primary-button" href="#/record">
-                去记录
+                {t("analysis.goRecord")}
               </a>
             </div>
           )}
@@ -602,9 +587,9 @@ export function AnalysisPage() {
           <div className="section-head">
             <div>
               <h2>
-                <AlertTriangle size={18} /> 错因热力分布
+                <AlertTriangle size={18} /> {t("analysis.causeHeat")}
               </h2>
-              <p>把错因按出现频次排出处理顺序，不只看数量。</p>
+              <p>{t("analysis.causeHeatDesc")}</p>
             </div>
           </div>
           {causeEntries.length > 0 ? (
@@ -612,7 +597,7 @@ export function AnalysisPage() {
               <div className="cause-heat-chart">
                 {causeEntries.map(([cause, value]) => (
                   <div key={cause} className="heat-row">
-                    <span className="heat-label">{cause}</span>
+                    <span className="heat-label">{tOption("errorCause", cause)}</span>
                     <div className="heat-track">
                       <div
                         className="heat-fill"
@@ -621,7 +606,7 @@ export function AnalysisPage() {
                         }}
                       />
                     </div>
-                    <span className="heat-value">{value} 次</span>
+                    <span className="heat-value">{t("analysis.timesUnit", { n: value })}</span>
                   </div>
                 ))}
               </div>
@@ -630,7 +615,7 @@ export function AnalysisPage() {
                   <li key={cause} className="cause-priority-card">
                     <span className="cause-rank">{index + 1}</span>
                     <div>
-                      <strong>{cause}</strong>
+                      <strong>{tOption("errorCause", cause)}</strong>
                       <p>{getCauseAction(cause)}</p>
                       <span className="cause-meter">
                         <i
@@ -642,17 +627,17 @@ export function AnalysisPage() {
                         />
                       </span>
                     </div>
-                    <em>{value} 次</em>
+                    <em>{t("analysis.timesUnit", { n: value })}</em>
                   </li>
                 ))}
               </ol>
             </>
           ) : (
             <div className="empty-state">
-              <h3>还没有错因数据</h3>
-              <p>每日记录中选择错误原因后，这里会按原因输出处理优先级。</p>
+              <h3>{t("analysis.noCause")}</h3>
+              <p>{t("analysis.noCauseDesc")}</p>
               <a className="primary-button" href="#/record">
-                去记录
+                {t("analysis.goRecord")}
               </a>
             </div>
           )}
@@ -663,37 +648,37 @@ export function AnalysisPage() {
           <div className="section-head">
             <div>
               <h2>
-                <Zap size={18} /> 学习质量指标
+                <Zap size={18} /> {t("analysis.quality")}
               </h2>
-              <p>从正确率和超时频率判断学习质量。</p>
+              <p>{t("analysis.qualityDesc")}</p>
             </div>
           </div>
           <div className="quality-grid">
             <article className="quality-card">
-              <span>正确率记录率</span>
+              <span>{t("analysis.accuracyRate")}</span>
               <strong>{avgAccuracyText}</strong>
-              <p>建议每次记录时填写正确率，方便追踪。</p>
+              <p>{t("analysis.accuracyTip")}</p>
             </article>
             <article className="quality-card">
-              <span>超时频率</span>
+              <span>{t("analysis.overtimeFreq")}</span>
               <strong>{overtimeRate}%</strong>
               <p>
                 {overtimeRate > 30
-                  ? "超时频率较高，建议检查任务量是否合理。"
+                  ? t("analysis.overtimeHigh")
                   : overtimeRate > 10
-                  ? "偶尔超时，属于正常范围。"
-                  : "时间控制良好，保持节奏。"}
+                  ? t("analysis.overtimeMid")
+                  : t("analysis.overtimeLow")}
               </p>
             </article>
             <article className="quality-card">
-              <span>任务断档</span>
-              <strong>{stats.gapDays} 天</strong>
+              <span>{t("analysis.taskGap")}</span>
+              <strong>{t("analysis.gapUnit", { n: stats.gapDays })}</strong>
               <p>
                 {stats.gapDays > 2
-                  ? "断档较多，建议降低每日任务量以保证连续性。"
+                  ? t("analysis.gapHigh")
                   : stats.gapDays > 0
-                  ? "少量断档，注意保持节奏。"
-                  : "连续 7 天无断档，节奏优秀。"}
+                  ? t("analysis.gapMid")
+                  : t("analysis.gapNone2")}
               </p>
             </article>
           </div>
@@ -704,9 +689,9 @@ export function AnalysisPage() {
           <div className="section-head">
             <div>
               <h2>
-                <Lightbulb size={18} /> 调整建议
+                <Lightbulb size={18} /> {t("analysis.adjustSuggest")}
               </h2>
-              <p>下一次修改计划时优先处理这些问题。</p>
+              <p>{t("analysis.adjustDesc")}</p>
             </div>
           </div>
           {suggestions.length > 0 ? (
@@ -720,7 +705,7 @@ export function AnalysisPage() {
               ))}
             </div>
           ) : (
-            <p className="muted">暂无建议，继续保持记录。</p>
+            <p className="muted">{t("analysis.noSuggest")}</p>
           )}
         </section>
       </section>
@@ -730,7 +715,7 @@ export function AnalysisPage() {
         <section className="card">
           <div className="section-head">
             <div>
-              <h3>计划健康</h3>
+              <h3>{t("analysis.planHealth")}</h3>
               <p>{health.message}</p>
             </div>
           </div>
@@ -741,7 +726,7 @@ export function AnalysisPage() {
                 ["--score" as string]: `${clampPercent(health.score)}%`,
               }}
               role="img"
-              aria-label={`计划健康 ${clampPercent(health.score)} 分`}
+              aria-label={t("analysis.healthAria", { n: clampPercent(health.score) })}
             >
               <span>
                 <strong>{clampPercent(health.score)}</strong>
@@ -752,10 +737,7 @@ export function AnalysisPage() {
               <p>
                 <strong>{health.label}</strong>
               </p>
-              <small>
-                {stats.recordedDays}/7 天已记录 · 平均完成{" "}
-                {Math.round(stats.avgCompletion)}%
-              </small>
+              <small>{t("analysis.recordedComplete", { days: stats.recordedDays, avg: Math.round(stats.avgCompletion) })}</small>
             </div>
           </div>
         </section>
@@ -763,11 +745,11 @@ export function AnalysisPage() {
         <section className="card">
           <div className="section-head">
             <div>
-              <h3>记录缺口</h3>
+              <h3>{t("analysis.recordGap")}</h3>
               <p>
                 {stats.gapDays > 0
-                  ? `最近 7 天缺少 ${stats.gapDays} 天记录。`
-                  : "最近 7 天记录完整。"}
+                  ? t("analysis.gapSome", { n: stats.gapDays })
+                  : t("analysis.gapNone")}
               </p>
             </div>
           </div>
@@ -776,10 +758,7 @@ export function AnalysisPage() {
               const record = byDate.get(date);
               const isGap = !record;
               const parsed = new Date(date + "T00:00:00");
-              const weekDay =
-                ["日", "一", "二", "三", "四", "五", "六"][
-                  parsed.getDay()
-                ];
+              const weekDay = t("analysis.weekdayShort").split(",")[parsed.getDay()];
               return (
                 <span
                   key={date}
@@ -796,14 +775,14 @@ export function AnalysisPage() {
         <section className="card">
           <div className="section-head">
             <div>
-              <h3>最近记录</h3>
-              <p>用于快速回看。</p>
+              <h3>{t("analysis.recent")}</h3>
+              <p>{t("analysis.recentDesc")}</p>
             </div>
           </div>
           {recentRecords.length > 0 ? (
             <ul className="list record-history-list">
               {recentRecords.map((record) => {
-                const accuracy = record.accuracy || "未填正确率";
+                const accuracy = record.accuracy || t("analysis.noAccuracy");
                 const causes = record.causes || [];
                 const mins = Object.values(record.minutes || {}).reduce(
                   (a, b) => a + Number(b || 0),
@@ -817,21 +796,21 @@ export function AnalysisPage() {
                     <div className="history-main">
                       <strong>{record.date}</strong>
                       <p className="muted">
-                        {mins} 分钟 ·{" "}
+                        {t("analysis.minUnit", { n: mins })} ·{" "}
                         {record.completion === "done"
-                          ? "完成"
+                          ? t("analysis.compDone")
                           : record.completion === "partial"
-                          ? "部分"
+                          ? t("analysis.compPartial")
                           : record.completion === "minimum"
-                          ? "保底"
-                          : "断档"}
+                          ? t("analysis.compMin")
+                          : t("analysis.compMissed")}
                         · {accuracy}
                       </p>
                       {causes.length > 0 && (
                         <div className="tag-row">
                           {causes.slice(0, 3).map((cause) => (
                             <span key={cause} className="tag">
-                              {cause}
+                              {tOption("errorCause", cause)}
                             </span>
                           ))}
                         </div>
@@ -842,7 +821,7 @@ export function AnalysisPage() {
               })}
             </ul>
           ) : (
-            <p className="muted">暂无记录。</p>
+            <p className="muted">{t("analysis.noRecords")}</p>
           )}
         </section>
       </aside>
