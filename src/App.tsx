@@ -3,6 +3,7 @@ import { AppLayout } from "./components/AppLayout";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { FadeTransition } from "./components/FadeTransition";
 import { KeyboardShortcuts } from "./components/KeyboardShortcuts";
+import { ReminderNotifier } from "./components/Reminder";
 import { StudyDeskProvider } from "./lib/useStudyDesk";
 import { DashboardPage } from "./pages/DashboardPage";
 import { SetupPage } from "./pages/SetupPage";
@@ -33,6 +34,7 @@ export default function App() {
     <StudyDeskProvider>
       <HashRouter>
         <KeyboardShortcuts />
+        <ReminderNotifier />
         <AppLayout>
           <ErrorBoundary>
             <AnimatedRoutes />

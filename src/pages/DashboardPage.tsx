@@ -3,6 +3,7 @@ import { useStudyDesk } from "../lib/studyDeskContext";
 import { daysUntil, clampPercent } from "../lib/utils";
 import { getTodayTargetMinutes } from "../lib/planner";
 import { LEVEL_CONFIG, MODULE_LABELS, MODULE_SHORTS } from "../lib/constants";
+import { ReminderBanner } from "../components/Reminder";
 import type { StudyTask } from "../lib/types";
 
 function splitTaskPoints(text: string): string[] {
@@ -52,6 +53,7 @@ export function DashboardPage() {
   return (
     <div className="page-grid">
       <section className="stack">
+        <ReminderBanner />
         <section className="hero-panel">
           <div>
             <p className="eyebrow">Next Action</p>
