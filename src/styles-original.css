@@ -2549,6 +2549,77 @@ tr:last-child td {
   border-left-color: var(--red);
 }
 
+/* ── Cloud sync panel ── */
+.cloud-sync-panel {
+  border-color: rgba(49, 95, 79, 0.18);
+  background: linear-gradient(135deg, rgba(49, 95, 79, 0.05), rgba(255, 255, 255, 0.94));
+}
+
+.cloud-sync-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.cloud-sync-icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  color: #fff;
+  background: var(--primary);
+}
+
+.cloud-sync-form {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.cloud-sync-form input {
+  flex: 1 1 220px;
+}
+
+.cloud-sync-form .primary-button {
+  flex: 0 0 auto;
+}
+
+.cloud-sync-account {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.cloud-sync-user {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--primary-strong);
+}
+
+.cloud-sync-user strong {
+  font-size: 15px;
+}
+
+.cloud-sync-sent p {
+  margin: 0 0 8px;
+  color: var(--ink-soft);
+}
+
+@media (max-width: 560px) {
+  .cloud-sync-account {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .cloud-sync-form .primary-button {
+    width: 100%;
+  }
+}
+
 .reference-plan-card {
   display: grid;
   gap: 14px;

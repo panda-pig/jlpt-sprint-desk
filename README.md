@@ -57,6 +57,22 @@ npm run build
 npm run lint
 ```
 
+### 云同步（可选）
+
+默认纯本地模式（数据只存浏览器 localStorage）。如需跨设备同步与备份，可接入自己的 Supabase 项目：
+
+1. 在 [supabase.com](https://supabase.com) 创建免费项目
+2. 在项目的 SQL Editor 里运行 `supabase/schema.sql`
+3. 从 Project Settings → API 复制 URL 和 anon key
+4. 复制 `.env.example` 为 `.env`，填入：
+
+```bash
+VITE_SUPABASE_URL=https://xxxx.supabase.co
+VITE_SUPABASE_ANON_KEY=xxxx
+```
+
+配置后，计划设置页会出现「云同步」面板，使用 Magic Link 邮箱登录即可自动跨设备同步（last-write-wins，按 `updated_at` 取最新）。未配置时该面板自动隐藏，应用照常以本地模式运行。
+
 ## 项目结构
 
 ```
@@ -85,7 +101,7 @@ src/
 
 ## 核心设计理念
 
-- **数据隐私**：所有数据存储在浏览器 localStorage，不上传服务器
+- **数据隐私**：默认所有数据存储在浏览器 localStorage，不上传服务器；云同步为可选项，由用户自行接入私有 Supabase 项目
 - **快速反馈**：记录表单控制在 2 分钟内完成
 - **可复盘**：每日记录自动汇总为周/月趋势分析
 - **可调整**：计划支持每日微调，不覆盖原始生成计划

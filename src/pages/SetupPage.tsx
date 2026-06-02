@@ -4,6 +4,7 @@ import { useStudyDesk } from "../lib/studyDeskContext";
 import { LEVEL_CONFIG, STATIC_SELECT_OPTIONS, STATIC_WEAKNESS_OPTIONS, STATIC_BLOCKER_OPTIONS } from "../lib/constants";
 import { formatDate } from "../lib/utils";
 import { toast } from "../lib/toast";
+import { CloudSync } from "../components/CloudSync";
 import type { Level, PlanSettings } from "../lib/types";
 
 const WEAKNESS_ICONS: Record<string, string> = {
@@ -104,6 +105,7 @@ export function SetupPage() {
 
   return (
     <div className="setup-page stack">
+      <CloudSync />
       <section className="panel setup-document-panel">
         <div className="setup-title-row">
           <span className="setup-step-badge">1</span>

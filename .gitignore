@@ -8,3 +8,6 @@ PRD*.md
 .sisyphus/
 node_modules/
 .vercel
+.env
+.env.local
+.env.*.local

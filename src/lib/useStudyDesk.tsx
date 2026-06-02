@@ -32,6 +32,7 @@ import {
 } from "./planner";
 import { todayISO } from "./utils";
 import { toast } from "./toast";
+import { schedulePush } from "./cloudSync";
 
 import { StudyDeskContext, type StudyDeskContextValue } from "./studyDeskContext";
 
@@ -121,6 +122,8 @@ export function StudyDeskProvider({ children }: { children: ReactNode }) {
       saveRecords(next.records, next.activeProfileId);
     }
     saveProfiles(next.profiles);
+    // Mirror every local write up to the cloud (no-op when sync is disabled).
+    schedulePush();
   }, []);
 
   const todayRecord = useMemo(() => {
