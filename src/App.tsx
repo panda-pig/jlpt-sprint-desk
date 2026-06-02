@@ -4,6 +4,7 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 import { FadeTransition } from "./components/FadeTransition";
 import { KeyboardShortcuts } from "./components/KeyboardShortcuts";
 import { ReminderNotifier } from "./components/Reminder";
+import { LocaleProvider } from "./i18n/LocaleProvider";
 import { StudyDeskProvider } from "./lib/useStudyDesk";
 import { DashboardPage } from "./pages/DashboardPage";
 import { SetupPage } from "./pages/SetupPage";
@@ -31,6 +32,7 @@ function AnimatedRoutes() {
 
 export default function App() {
   return (
+    <LocaleProvider>
     <StudyDeskProvider>
       <HashRouter>
         <KeyboardShortcuts />
@@ -42,5 +44,6 @@ export default function App() {
         </AppLayout>
       </HashRouter>
     </StudyDeskProvider>
+    </LocaleProvider>
   );
 }

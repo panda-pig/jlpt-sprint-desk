@@ -1,20 +1,23 @@
+import { useLocale } from "../i18n/LocaleProvider";
+
 interface SideNavProps {
   activeRoute: string;
   onNavigate: () => void;
 }
 
 const NAV_ITEMS = [
-  { key: "dashboard", label: "总览", icon: "D" },
-  { key: "setup", label: "计划设置", icon: "S" },
-  { key: "plan", label: "学习计划", icon: "P" },
-  { key: "record", label: "每日记录", icon: "R" },
-  { key: "analysis", label: "复盘分析", icon: "A" },
-  { key: "export", label: "导出备份", icon: "E" },
+  { key: "dashboard", icon: "D" },
+  { key: "setup", icon: "S" },
+  { key: "plan", icon: "P" },
+  { key: "record", icon: "R" },
+  { key: "analysis", icon: "A" },
+  { key: "export", icon: "E" },
 ];
 
 export function SideNav({ activeRoute, onNavigate }: SideNavProps) {
+  const { t } = useLocale();
   return (
-    <nav className="side-nav" aria-label="主导航">
+    <nav className="side-nav" aria-label={t("nav.primaryNav")}>
       {NAV_ITEMS.map((item) => (
         <a
           key={item.key}
@@ -23,7 +26,7 @@ export function SideNav({ activeRoute, onNavigate }: SideNavProps) {
           onClick={onNavigate}
         >
           <span className="nav-icon">{item.icon}</span>
-          <span>{item.label}</span>
+          <span>{t(`nav.${item.key}`)}</span>
         </a>
       ))}
     </nav>

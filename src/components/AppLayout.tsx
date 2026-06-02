@@ -4,42 +4,74 @@ import { SideNav } from "./SideNav";
 import { TopBar } from "./TopBar";
 import { BottomNav } from "./BottomNav";
 import { useStudyDesk } from "../lib/studyDeskContext";
+import { useLocale } from "../i18n/LocaleProvider";
 import { toast } from "../lib/toast";
 import type { ReactNode } from "react";
 
+function renderBold(text: string): ReactNode {
+  // Render **bold** segments inside a translated string.
+  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+  return parts.map((p, i) =>
+    p.startsWith("**") && p.endsWith("**") ? <strong key={i}>{p.slice(2, -2)}</strong> : p,
+  );
+}
+
 function AboutModal({ onClose }: { onClose: () => void }) {
+  const { t } = useLocale();
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>关于 JLPT Sprint Desk</h2>
-          <button className="modal-close" onClick={onClose} aria-label="关闭">×</button>
+          <h2>{t("about.title")}</h2>
+          <button className="modal-close" onClick={onClose} aria-label={t("common.close")}>×</button>
         </div>
         <div className="modal-body">
-          <p><strong>JLPT Sprint Desk</strong> 是一个专为日语能力测试（JLPT）备考设计的学习计划工作台。</p>
-          
-          <h3>核心功能</h3>
+          <p>{renderBold(t("about.intro"))}</p>
+
+          <h3>{t("about.featuresTitle")}</h3>
           <ul>
-            <li>📅 <strong>智能计划生成</strong>：基于考试倒计时自动生成个性化学习计划</li>
-            <li>📝 <strong>每日学习记录</strong>：追踪各模块用时、数量、完成度与正确率</li>
-            <li>📊 <strong>复盘分析</strong>：7天趋势、模块投入、错因统计与计划健康评分</li>
-            <li>💾 <strong>数据备份</strong>：支持导出/导入完整备份，多档案隔离管理</li>
-            <li>📱 <strong>移动端适配</strong>：响应式设计，支持手机端使用</li>
+            <li>📅 {renderBold(t("about.feature1"))}</li>
+            <li>📝 {renderBold(t("about.feature2"))}</li>
+            <li>📊 {renderBold(t("about.feature3"))}</li>
+            <li>💾 {renderBold(t("about.feature4"))}</li>
+            <li>📱 {renderBold(t("about.feature5"))}</li>
           </ul>
 
-          <h3>技术栈</h3>
-          <p>React 18 + TypeScript + Vite + React Router + Lucide React</p>
+          <h3>{t("about.stackTitle")}</h3>
+          <p>{t("about.stackBody")}</p>
 
-          <h3>开源</h3>
+          <h3>{t("about.openSourceTitle")}</h3>
           <p>
-            源码：<a href="https://github.com/panda-pig/jlpt-sprint-desk" target="_blank" rel="noopener noreferrer">GitHub</a><br />
-            协议：MIT License
+            {t("about.sourceLabel")}：<a href="https://github.com/panda-pig/jlpt-sprint-desk" target="_blank" rel="noopener noreferrer">GitHub</a><br />
+            {t("about.licenseLabel")}：MIT License
           </p>
 
-          <h3>隐私</h3>
-          <p>所有数据仅存储在浏览器 localStorage 中，不上传任何服务器。</p>
+          <h3>{t("about.privacyTitle")}</h3>
+          <p>{t("about.privacyBody")}</p>
         </div>
       </div>
+    </div>
+  );
+}
+
+function LanguageSwitch() {
+  const { locale, setLocale, t } = useLocale();
+  return (
+    <div className="lang-switch" role="group" aria-label={t("layout.language")}>
+      <button
+        type="button"
+        className={locale === "zh" ? "is-active" : ""}
+        onClick={() => setLocale("zh")}
+      >
+        中文
+      </button>
+      <button
+        type="button"
+        className={locale === "en" ? "is-active" : ""}
+        onClick={() => setLocale("en")}
+      >
+        EN
+      </button>
     </div>
   );
 }
@@ -50,6 +82,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
   const location = useLocation();
   const navigate = useNavigate();
   const { generateNewPlan } = useStudyDesk();
+  const { t } = useLocale();
   const route = location.pathname.slice(1) || "dashboard";
 
   useEffect(() => {
@@ -71,34 +104,35 @@ export function AppLayout({ children }: { children: ReactNode }) {
             <span className="brand-mark">JL</span>
             <span>
               <strong>JLPT Sprint Desk</strong>
-              <small>多页面学习计划工作台</small>
+              <small>{t("common.appTagline")}</small>
             </span>
           </a>
         </div>
         <SideNav activeRoute={route} onNavigate={() => setSidebarOpen(false)} />
         <div className="side-footer">
+          <LanguageSwitch />
           <button
             className="secondary-button full"
             type="button"
             onClick={() => {
-              if (window.confirm("确定要重新生成计划吗？当前计划将被覆盖。")) {
+              if (window.confirm(t("layout.regenerateConfirm"))) {
                 generateNewPlan();
                 navigate("/plan");
                 setSidebarOpen(false);
-                toast("计划已重新生成");
+                toast(t("layout.regenerateDone"));
               }
             }}
           >
-            重新生成计划
+            {t("layout.regenerate")}
           </button>
           <button
             className="ghost-button full"
             type="button"
             onClick={() => setShowAbout(true)}
           >
-            关于
+            {t("layout.about")}
           </button>
-          <p>数据保存在当前浏览器 localStorage。</p>
+          <p>{t("layout.storageNote")}</p>
         </div>
       </aside>
 
@@ -108,7 +142,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
             className="icon-button menu-button"
             type="button"
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            aria-label="切换导航"
+            aria-label={t("layout.toggleNav")}
           >
             <span></span>
             <span></span>

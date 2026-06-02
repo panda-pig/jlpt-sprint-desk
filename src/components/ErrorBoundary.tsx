@@ -1,4 +1,5 @@
 import { Component, type ReactNode } from "react";
+import { t } from "../i18n";
 
 interface Props {
   children: ReactNode;
@@ -36,8 +37,8 @@ export class ErrorBoundary extends Component<Props, State> {
     if (this.state.hasError) {
       return (
         <div className="empty-state" style={{ padding: "40px 20px", textAlign: "center" }}>
-          <h3>页面出现了一些问题</h3>
-          <p>抱歉，系统遇到了意外错误。你可以选择刷新页面或返回首页。</p>
+          <h3>{t("error.title")}</h3>
+          <p>{t("error.body")}</p>
           {this.state.error && (
             <pre
               style={{
@@ -57,10 +58,10 @@ export class ErrorBoundary extends Component<Props, State> {
           )}
           <div className="button-row" style={{ justifyContent: "center" }}>
             <button className="primary-button" onClick={this.handleReload}>
-              刷新页面
+              {t("error.refresh")}
             </button>
             <button className="secondary-button" onClick={this.handleGoHome}>
-              返回首页
+              {t("error.home")}
             </button>
           </div>
         </div>

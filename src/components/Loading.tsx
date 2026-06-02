@@ -1,3 +1,5 @@
+import { t } from "../i18n";
+
 export function Loading() {
   return (
     <div className="empty-state" style={{ padding: "60px 20px", textAlign: "center" }}>
@@ -17,7 +19,7 @@ export function Loading() {
           to { transform: rotate(360deg); }
         }
       `}</style>
-      <p className="muted">加载中...</p>
+      <p className="muted">{t("loading.text")}</p>
     </div>
   );
 }

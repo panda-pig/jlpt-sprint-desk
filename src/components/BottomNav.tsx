@@ -7,18 +7,20 @@ import {
   BarChart3,
   Download,
 } from "lucide-react";
+import { useLocale } from "../i18n/LocaleProvider";
 
 const TABS = [
-  { key: "dashboard", label: "总览", Icon: Home },
-  { key: "plan", label: "计划", Icon: Calendar },
-  { key: "record", label: "记录", Icon: PenSquare },
-  { key: "analysis", label: "分析", Icon: BarChart3 },
-  { key: "export", label: "导出", Icon: Download },
+  { key: "dashboard", labelKey: "nav.dashboardShort", Icon: Home },
+  { key: "plan", labelKey: "nav.planShort", Icon: Calendar },
+  { key: "record", labelKey: "nav.recordShort", Icon: PenSquare },
+  { key: "analysis", labelKey: "nav.analysisShort", Icon: BarChart3 },
+  { key: "export", labelKey: "nav.exportShort", Icon: Download },
 ];
 
 export function BottomNav() {
   const [visible, setVisible] = useState(false);
   const location = useLocation();
+  const { t } = useLocale();
   const route = location.pathname.slice(1) || "dashboard";
 
   useEffect(() => {
@@ -31,15 +33,15 @@ export function BottomNav() {
   if (!visible) return null;
 
   return (
-    <nav className="bottom-nav" aria-label="移动端导航">
-      {TABS.map(({ key, label, Icon }) => (
+    <nav className="bottom-nav" aria-label={t("nav.mobileNav")}>
+      {TABS.map(({ key, labelKey, Icon }) => (
         <a
           key={key}
           href={`#/${key}`}
           className={route === key ? "active" : ""}
         >
           <Icon size={20} />
-          <span>{label}</span>
+          <span>{t(labelKey)}</span>
         </a>
       ))}
     </nav>

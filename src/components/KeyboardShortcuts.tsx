@@ -1,20 +1,22 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Keyboard, X } from "lucide-react";
+import { useLocale } from "../i18n/LocaleProvider";
 
 const SHORTCUTS = [
-  { key: "g d", label: "转到总览", action: "#/dashboard" },
-  { key: "g s", label: "转到设置", action: "#/setup" },
-  { key: "g p", label: "转到计划", action: "#/plan" },
-  { key: "g r", label: "转到记录", action: "#/record" },
-  { key: "g a", label: "转到分析", action: "#/analysis" },
-  { key: "g e", label: "转到导出", action: "#/export" },
-  { key: "?", label: "显示帮助", action: "help" },
-  { key: "Escape", label: "关闭弹窗/返回", action: "escape" },
+  { key: "g d", labelKey: "shortcuts.goDashboard" },
+  { key: "g s", labelKey: "shortcuts.goSetup" },
+  { key: "g p", labelKey: "shortcuts.goPlan" },
+  { key: "g r", labelKey: "shortcuts.goRecord" },
+  { key: "g a", labelKey: "shortcuts.goAnalysis" },
+  { key: "g e", labelKey: "shortcuts.goExport" },
+  { key: "?", labelKey: "shortcuts.showHelp" },
+  { key: "Escape", labelKey: "shortcuts.closeBack" },
 ];
 
 export function KeyboardShortcuts() {
   const navigate = useNavigate();
+  const { t } = useLocale();
   const [showHelp, setShowHelp] = useState(false);
   const [pressedKeys, setPressedKeys] = useState<string[]>([]);
 
@@ -108,7 +110,7 @@ export function KeyboardShortcuts() {
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <Keyboard size={20} style={{ color: "var(--primary, #315f4f)" }} />
-            <h3 style={{ margin: 0, fontSize: "16px", fontWeight: 600 }}>键盘快捷键</h3>
+            <h3 style={{ margin: 0, fontSize: "16px", fontWeight: 600 }}>{t("shortcuts.title")}</h3>
           </div>
           <button
             className="ghost-button"
@@ -119,7 +121,7 @@ export function KeyboardShortcuts() {
           </button>
         </div>
         <p style={{ color: "var(--muted, #70817a)", fontSize: "13px", marginBottom: "16px" }}>
-          在任意页面按 <kbd>?</kbd> 显示此面板。输入框内按 <kbd>Esc</kbd> 可取消聚焦。
+          {t("shortcuts.hint", { key: "?", esc: "Esc" })}
         </p>
         <div style={{ display: "grid", gap: "8px" }}>
           {SHORTCUTS.map((shortcut) => (
@@ -134,7 +136,7 @@ export function KeyboardShortcuts() {
                 borderRadius: "6px",
               }}
             >
-              <span style={{ fontSize: "14px" }}>{shortcut.label}</span>
+              <span style={{ fontSize: "14px" }}>{t(shortcut.labelKey)}</span>
               <kbd
                 style={{
                   fontFamily: "monospace",
