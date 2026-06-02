@@ -4,7 +4,6 @@ import {
   LEVEL_CONFIG,
   LEVEL_CONTENT_TARGETS,
   MODULE_LABELS,
-  MODULE_COUNT_UNITS,
   RECORD_MODULE_KEYS,
   STATIC_SELECT_OPTIONS,
 } from "./constants";
@@ -21,7 +20,7 @@ import {
   toISODate,
   weekDayLabel,
 } from "./utils";
-import { t } from "../i18n";
+import { t, tOption, moduleLabel } from "../i18n";
 
 export function generatePlan(settings: PlanSettings, profileId: string): GeneratedPlan {
   const normalized = normalizeSettings(settings);
@@ -807,19 +806,19 @@ export function getCauseCounts(records: StudyRecord[]): Record<string, number> {
 
 export function buildAnalysisSuggestions(stats: RecentStats, health: PlanHealth, moduleTotals: Record<string, number>, causes: Record<string, number>, settings: PlanSettings): string[] {
   const suggestions: string[] = [];
-  if (stats.recordedDays < 4) suggestions.push("最近 7 天记录偏少，先把记录表单控制在 2 分钟内完成。");
-  if (stats.avgCompletion < 70) suggestions.push("完成度低于 70%，建议把每日任务切成 2-3 个关键任务，而不是完整清单。");
-  if (stats.avgAccuracy && stats.avgAccuracy < 70) suggestions.push("正确率偏低，下一轮计划应增加错题复盘和同类题再练。");
+  if (stats.recordedDays < 4) suggestions.push(t("planner.sgFewRecords"));
+  if (stats.avgCompletion < 70) suggestions.push(t("planner.sgLowCompletion"));
+  if (stats.avgAccuracy && stats.avgAccuracy < 70) suggestions.push(t("planner.sgLowAccuracy"));
 
   const weakestModule = Object.entries(moduleTotals).sort((a, b) => a[1] - b[1])[0];
   if (weakestModule && weakestModule[1] < Math.max(30, stats.totalMinutes * 0.08)) {
-    suggestions.push(`${MODULE_LABELS[weakestModule[0]]}投入偏少，如果它不是强项，建议在计划页给近 3 天补一个短任务。`);
+    suggestions.push(t("planner.sgWeakModule", { module: moduleLabel(weakestModule[0]) }));
   }
 
   const topCause = Object.entries(causes).sort((a, b) => b[1] - a[1])[0];
-  if (topCause) suggestions.push(`错因里「${topCause[0]}」出现最多，明天先用 15 分钟做同因复盘。`);
-  if (health.score < 60) suggestions.push("计划健康较低，先降低单日总分钟数，再保留重点模块。");
-  if (!suggestions.length) suggestions.push(`节奏稳定，可以继续保持 ${settings.focusModules.map((key) => MODULE_LABELS[key]).join("、") || "当前"} 主线。`);
+  if (topCause) suggestions.push(t("planner.sgTopCause", { cause: tOption("errorCause", topCause[0]) }));
+  if (health.score < 60) suggestions.push(t("planner.sgLowHealth"));
+  if (!suggestions.length) suggestions.push(t("planner.sgStable", { modules: settings.focusModules.map((key) => moduleLabel(key)).join(t("common.listSep")) || t("planner.sgStableFallback") }));
   return suggestions;
 }
 
@@ -828,30 +827,30 @@ export function buildTomorrowSuggestion(record: StudyRecord) {
   const lowCompletion = getCompletionPercent(record.completion) < 70;
   const lowAccuracy = getRecordAccuracyPercent(record) > 0 && getRecordAccuracyPercent(record) < 70;
   return {
-    title: lowCompletion ? "缩小任务切片" : lowAccuracy ? "增加错题复盘" : "维持当前节奏",
+    title: lowCompletion ? t("planner.tmShrinkTitle") : lowAccuracy ? t("planner.tmReviewTitle") : t("planner.tmKeepTitle"),
     minutes,
     detail: lowCompletion
-      ? "明天把大任务拆成 2-3 个 15-20 分钟的小块，先完成最关键的一个。"
+      ? t("planner.tmShrinkDetail")
       : lowAccuracy
-      ? "明天先用 15 分钟复盘今日错因，再做新内容。"
-      : "今天表现不错，明天保持当前节奏即可。",
+      ? t("planner.tmReviewDetail")
+      : t("planner.tmKeepDetail"),
   };
 }
 
 export function summarizeModuleTimes(minutes: Record<string, number>): string {
   const items = RECORD_MODULE_KEYS
-    .map((key) => [MODULE_LABELS[key], Number(minutes[key] || 0)] as [string, number])
+    .map((key) => [moduleLabel(key), Number(minutes[key] || 0)] as [string, number])
     .filter(([, value]) => value > 0)
     .map(([label, value]) => `${label} ${Math.round(value)}min`);
-  return items.length ? items.join("、") : "未填写模块用时";
+  return items.length ? items.join(t("common.listSep")) : t("planner.noModuleTime");
 }
 
 export function summarizeModuleCounts(minutes: Record<string, number>): string {
   const items = RECORD_MODULE_KEYS
     .map((key) => [key, Number(minutes[key] || 0)] as [string, number])
     .filter(([, value]) => value > 0)
-    .map(([key, value]) => `${MODULE_LABELS[key]} ${Math.round(value)}${MODULE_COUNT_UNITS[key] || ""}`);
-  return items.length ? items.join("、") : "未填写完成数量";
+    .map(([key, value]) => `${moduleLabel(key)} ${Math.round(value)}${tOption("countUnit", key)}`);
+  return items.length ? items.join(t("common.listSep")) : t("planner.noModuleCount");
 }
 
 function findConsecutiveCause(records: StudyRecord[]): string | null {

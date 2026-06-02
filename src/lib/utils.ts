@@ -1,6 +1,7 @@
-import { COMPLETION_OPTIONS, MODULE_LABELS, RECORD_MODULE_KEYS } from "./constants";
+import { COMPLETION_OPTIONS, RECORD_MODULE_KEYS } from "./constants";
 import type { StudyRecord, GeneratedPlan } from "./types";
 import { getTodayPlanDay } from "./planner";
+import { t, tOption, moduleLabel } from "../i18n";
 
 export function readJSON<T>(key: string, fallback: T): T {
   try {
@@ -94,11 +95,12 @@ export function isoWeekday(date: Date): number {
 }
 
 export function weekDayLabel(day: number): string {
-  return ["周一", "周二", "周三", "周四", "周五", "周六", "周日"][day - 1] || "周一";
+  const labels = t("util.weekdays").split(",");
+  return labels[day - 1] || labels[0];
 }
 
 export function formatDate(value: string): string {
-  if (!value) return "未知";
+  if (!value) return t("util.unknown");
   const date = value.includes("T") ? new Date(value) : parseISODate(value);
   if (!date || Number.isNaN(date.getTime())) return String(value);
   return toISODate(date);
@@ -198,9 +200,9 @@ export function getRecordAccuracyPercent(record: { accuracy?: string }): number 
 
 export function completionLabel(value: string): string {
   const pair = COMPLETION_OPTIONS.find(([key]) => key === value);
-  if (pair) return pair[1];
-  if (Number.isFinite(Number(value))) return `完成 ${Math.round(Number(value))}%`;
-  return "未记录完成度";
+  if (pair) return tOption("completion", pair[0]);
+  if (Number.isFinite(Number(value))) return t("util.completionPercent", { n: Math.round(Number(value)) });
+  return t("util.completionUnrecorded");
 }
 
 export function normalizeWrongQuestionText(record: StudyRecord): string {
@@ -233,27 +235,27 @@ export function buildRecordRecommendation(record: StudyRecord): string[] {
   const causes = record.causes || record.errorCauses || [];
   const actions: string[] = [];
   const timeText = `${record.actualTime || ""} ${record.overtimeReason || ""} ${record.timeNote || ""}`;
-  if (record.tomorrowFocus) actions.push(`明天第一步：${record.tomorrowFocus}`);
+  if (record.tomorrowFocus) actions.push(t("util.recTomorrowFirst", { focus: record.tomorrowFocus }));
   const wrongQuestions = Array.isArray(record.wrongQuestions) ? record.wrongQuestions : [];
   const wrongText = normalizeWrongQuestionText(record);
   const wrongCount = wrongQuestions.length || (wrongText.trim() ? wrongText.trim().split(/\n+/).filter(Boolean).length : 0);
   if (wrongCount) {
-    actions.push(`错题二刷 ${Math.min(12, wrongCount)} 题：只做同题型，不开新资料。`);
+    actions.push(t("util.recWrongRedo", { n: Math.min(12, wrongCount) }));
   }
-  if (causes.includes("定位慢")) actions.push("阅读加 1 组限时定位训练：只找题干关键词、主题句、转折句。");
-  if (causes.includes("听漏关键词")) actions.push("听力重听今天错题：记录人物关系、任务目标、转折和结论。");
-  if (causes.includes("接续形式")) actions.push("文法整理接续表：把今天错的句型各造 1 句。");
-  if (causes.includes("时间不够")) actions.push("明天所有题组加计时，记录每题耗时，不追求题量。");
-  if (causes.includes("复盘不足")) actions.push("明天开头先复盘 15 分钟，再进入新内容；不要把复盘挤到最后。");
-  if (causes.includes("任务过量")) actions.push("明天新词或新文法下调 20%，保留订正和二刷时间。");
-  if (causes.includes("词义差别") || causes.includes("固定搭配")) actions.push("词汇按近义词和固定搭配重分组，不继续顺背。");
-  if (record.completion === "minimum") actions.push("今天只完成保底，明天从保底内容接上，不补偿式加量。");
-  if (record.completion === "missed") actions.push("今天断档，明天只恢复节奏：启动复习 + 一个最弱模块小任务。");
+  if (causes.includes("定位慢")) actions.push(t("util.recSlowLocate"));
+  if (causes.includes("听漏关键词")) actions.push(t("util.recMissedKeyword"));
+  if (causes.includes("接续形式")) actions.push(t("util.recConjugation"));
+  if (causes.includes("时间不够")) actions.push(t("util.recNotEnoughTime"));
+  if (causes.includes("复盘不足")) actions.push(t("util.recInsufficientReview"));
+  if (causes.includes("任务过量")) actions.push(t("util.recTaskOverload"));
+  if (causes.includes("词义差别") || causes.includes("固定搭配")) actions.push(t("util.recWordNuance"));
+  if (record.completion === "minimum") actions.push(t("util.recMinimum"));
+  if (record.completion === "missed") actions.push(t("util.recMissed"));
   if (/超时|超过|来不及|不够|太多|太慢|慢/.test(timeText)) {
-    actions.push("明天先校准时间：新词或新文法下调 20%-30%，把省出的时间留给例句、订正和二刷。");
+    actions.push(t("util.recOvertime"));
   }
-  if (record.actualTime) actions.push(`把今日实际用时作为校准样本：${record.actualTime}。连续 3 天记录后，再确定你的个人速率。`);
-  if (!actions.length) actions.push("明天保持原计划，但把今天的正确率和耗时补完整。");
+  if (record.actualTime) actions.push(t("util.recCalibrate", { time: record.actualTime }));
+  if (!actions.length) actions.push(t("util.recDefault"));
   return actions.slice(0, 4);
 }
 
@@ -276,24 +278,24 @@ export function buildTomorrowTimePlan(record: StudyRecord, plan: GeneratedPlan |
       if (module === "vocab" || module === "grammar") minutes = Math.max(minutes, base || minutes);
       return {
         module,
-        label: MODULE_LABELS[module] || module,
+        label: moduleLabel(module),
         minutes: clamp(roundToFive(minutes), 10, Math.max(target, 10)),
-        note: actual ? `参考今日实际 ${actual}min` : `参考计划建议 ${base}min`,
+        note: actual ? t("util.refToday", { n: actual }) : t("util.refPlan", { n: base }),
       };
     })
     .filter(Boolean) as { module: string; label: string; minutes: number; note: string }[];
   const review = Math.max(15, roundToFive(target * 0.18));
   rows.push({
     module: "review",
-    label: "复盘订正",
+    label: t("util.reviewLabel"),
     minutes: review,
-    note: hasOvertime ? "优先处理超时原因和错因" : "整理错词、错题和明日第一步",
+    note: hasOvertime ? t("util.reviewNoteOvertime") : t("util.reviewNoteNormal"),
   });
   const total = rows.reduce((sum, row) => sum + row.minutes, 0);
   return {
     total,
     target,
-    status: total > target ? "超过明日可用时间，建议下调新学量" : "明日时间可执行",
+    status: total > target ? t("util.statusOver") : t("util.statusOk"),
     rows,
   };
 }
