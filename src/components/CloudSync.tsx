@@ -3,8 +3,10 @@ import { Cloud, CloudCheck, LogOut, Mail } from "lucide-react";
 import { supabase, isCloudEnabled } from "../lib/supabase";
 import { sendMagicLink, signOut, reconcileOnSignIn, pushCloud } from "../lib/cloudSync";
 import { toast } from "../lib/toast";
+import { useLocale } from "../i18n/LocaleProvider";
 
 export function CloudSync() {
+  const { t } = useLocale();
   const [email, setEmail] = useState("");
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -13,12 +15,12 @@ export function CloudSync() {
   const runReconcile = useCallback(async () => {
     const outcome = await reconcileOnSignIn();
     if (outcome === "pulled") {
-      toast("已从云端恢复最新数据。");
+      toast(t("cloud.restored"));
       setTimeout(() => window.location.reload(), 600);
     } else if (outcome === "pushed") {
-      toast("本地数据已同步到云端。");
+      toast(t("cloud.pushed"));
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     if (!supabase) return;
@@ -42,17 +44,17 @@ export function CloudSync() {
 
   const handleSend = async () => {
     if (!email.trim()) {
-      toast("请先输入邮箱。");
+      toast(t("cloud.enterEmail"));
       return;
     }
     setBusy(true);
     const { error } = await sendMagicLink(email.trim());
     setBusy(false);
     if (error) {
-      toast(`发送失败：${error}`);
+      toast(t("cloud.sendFailed", { error }));
     } else {
       setSent(true);
-      toast("登录链接已发送，请查收邮箱。");
+      toast(t("cloud.linkSent"));
     }
   };
 
@@ -60,14 +62,14 @@ export function CloudSync() {
     await signOut();
     setUserEmail(null);
     setSent(false);
-    toast("已退出登录（本地数据保留）。");
+    toast(t("cloud.signedOut"));
   };
 
   const handleManualSync = async () => {
     setBusy(true);
     const { error } = await pushCloud();
     setBusy(false);
-    toast(error ? `同步失败：${error}` : "已同步到云端。");
+    toast(error ? t("cloud.syncFailed", { error }) : t("cloud.syncedOk"));
   };
 
   return (
@@ -78,8 +80,8 @@ export function CloudSync() {
             {userEmail ? <CloudCheck size={20} /> : <Cloud size={20} />}
           </span>
           <div>
-            <h2>云同步</h2>
-            <p>{userEmail ? "已登录，数据会自动跨设备同步。" : "登录后，学习计划和记录会自动备份并跨设备同步。"}</p>
+            <h2>{t("cloud.title")}</h2>
+            <p>{userEmail ? t("cloud.descLoggedIn") : t("cloud.descLoggedOut")}</p>
           </div>
         </div>
       </div>
@@ -92,30 +94,30 @@ export function CloudSync() {
           </div>
           <div className="button-row">
             <button className="secondary-button" type="button" onClick={handleManualSync} disabled={busy}>
-              立即同步
+              {t("cloud.syncNow")}
             </button>
             <button className="ghost-button" type="button" onClick={handleSignOut}>
-              <LogOut size={15} /> 退出
+              <LogOut size={15} /> {t("cloud.signOut")}
             </button>
           </div>
         </div>
       ) : sent ? (
         <div className="cloud-sync-sent">
-          <p>登录链接已发送到 <strong>{email}</strong>，点击邮件中的链接即可登录。</p>
-          <button className="text-button" type="button" onClick={() => setSent(false)}>换个邮箱</button>
+          <p>{t("cloud.sentNote", { email })}</p>
+          <button className="text-button" type="button" onClick={() => setSent(false)}>{t("cloud.changeEmail")}</button>
         </div>
       ) : (
         <div className="cloud-sync-form">
           <input
             type="email"
             inputMode="email"
-            placeholder="your@email.com"
+            placeholder={t("cloud.emailPlaceholder")}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter") handleSend(); }}
           />
           <button className="primary-button" type="button" onClick={handleSend} disabled={busy}>
-            {busy ? "发送中…" : "发送登录链接"}
+            {busy ? t("cloud.sending") : t("cloud.sendLink")}
           </button>
         </div>
       )}

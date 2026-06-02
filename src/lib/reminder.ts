@@ -6,6 +6,8 @@
 //   2. An optional browser notification fired while the app is open, once per
 //      day, after the user's chosen time, if today isn't recorded yet.
 
+import { t } from "../i18n";
+
 const SETTINGS_KEY = "jlptSprintDeskReminder";
 const LAST_NOTIFIED_KEY = "jlptSprintDeskReminderLast";
 
@@ -76,7 +78,7 @@ export function maybeNotify(todayRecorded: boolean): void {
 
   try {
     const n = new Notification("JLPT Sprint Desk", {
-      body: "今天还没有学习记录，花 2 分钟记录一下今天的进度吧。",
+      body: t("reminder.notifBody"),
       icon: "/icon-192x192.png",
       badge: "/icon-192x192.png",
       tag: "jlpt-daily-reminder",

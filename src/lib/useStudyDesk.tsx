@@ -33,6 +33,7 @@ import {
 import { todayISO } from "./utils";
 import { toast } from "./toast";
 import { schedulePush } from "./cloudSync";
+import { getLocale } from "../i18n";
 
 import { StudyDeskContext, type StudyDeskContextValue } from "./studyDeskContext";
 
@@ -63,7 +64,7 @@ function loadInitialState(): StudyDeskState {
   if (profiles.length === 0) {
     const defaultProfile: Profile = {
       id: "profile-default",
-      name: "默认档案",
+      name: getLocale() === "en" ? "Default profile" : "默认档案",
       createdAt: todayISO(),
       updatedAt: todayISO(),
     };

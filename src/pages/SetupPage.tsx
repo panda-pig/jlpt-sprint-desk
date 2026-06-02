@@ -6,6 +6,7 @@ import { formatDate } from "../lib/utils";
 import { toast } from "../lib/toast";
 import { CloudSync } from "../components/CloudSync";
 import { ReminderSettings } from "../components/Reminder";
+import { useLocale } from "../i18n/LocaleProvider";
 import type { Level, PlanSettings } from "../lib/types";
 
 const WEAKNESS_ICONS: Record<string, string> = {
@@ -32,6 +33,7 @@ export function SetupPage() {
     updateSettings,
     generateNewPlan,
   } = useStudyDesk();
+  const { t, tOption } = useLocale();
 
   const [newProfileName, setNewProfileName] = useState("");
 
@@ -74,12 +76,12 @@ export function SetupPage() {
   const handleCreateProfile = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     if (!newProfileName.trim()) {
-      toast("请先输入档案名称。");
+      toast(t("setup.enterProfileName"));
       return;
     }
     createProfile(newProfileName.trim());
     setNewProfileName("");
-  }, [newProfileName, createProfile]);
+  }, [newProfileName, createProfile, t]);
 
   const handleGeneratePlan = useCallback(() => {
     generateNewPlan();
@@ -112,14 +114,14 @@ export function SetupPage() {
         <div className="setup-title-row">
           <span className="setup-step-badge">1</span>
           <div>
-            <h2>本地档案</h2>
-            <p>先确定当前学习档案。计划设置、每日微调和学习记录都会按档案分别保存。</p>
+            <h2>{t("setup.step1Title")}</h2>
+            <p>{t("setup.step1Desc")}</p>
           </div>
           {activeProfile && <span className="setup-profile-pill">{activeProfile.name}</span>}
         </div>
         <div className="setup-document-grid">
           <div className="field">
-            <label htmlFor="profileSelect">当前档案</label>
+            <label htmlFor="profileSelect">{t("setup.currentProfile")}</label>
             <select
               id="profileSelect"
               value={state.activeProfileId || ""}
@@ -148,10 +150,10 @@ export function SetupPage() {
                 a.download = "jlpt-backup.json";
                 a.click();
               }}>
-                导出备份
+                {t("setup.exportBackup")}
               </button>
               <label className="secondary-button file-button">
-                导入备份
+                {t("setup.importBackup")}
                 <input
                   id="setupBackupInput"
                   type="file"
@@ -178,10 +180,10 @@ export function SetupPage() {
                           if (data.records) localStorage.setItem(`jlptSprintDesk:${profileId}:records`, JSON.stringify(data.records));
                           window.location.reload();
                         } else {
-                          toast("备份文件格式错误");
+                          toast(t("setup.backupFormatError"));
                         }
                       } catch {
-                        toast("备份文件格式错误");
+                        toast(t("setup.backupFormatError"));
                       }
                     };
                     reader.readAsText(file);
@@ -192,31 +194,31 @@ export function SetupPage() {
                 className="ghost-button"
                 type="button"
                 onClick={() => {
-                  if (activeProfile && confirm(`确定要删除档案「${activeProfile.name}」吗？`)) {
+                  if (activeProfile && confirm(t("setup.deleteProfileConfirm", { name: activeProfile.name }))) {
                     deleteProfile(activeProfile.id);
                   }
                 }}
               >
-                删除当前档案
+                {t("setup.deleteProfile")}
               </button>
             </div>
           </div>
           <form onSubmit={handleCreateProfile} className="field">
-            <label htmlFor="profileName">新建档案</label>
+            <label htmlFor="profileName">{t("setup.newProfile")}</label>
             <input
               id="profileName"
               name="profileName"
-              aria-label="新档案名称"
-              placeholder="例：Panda 的 N1 冲刺档案"
+              aria-label={t("setup.newProfileName")}
+              placeholder={t("setup.newProfilePlaceholder")}
               value={newProfileName}
               onChange={(e) => setNewProfileName(e.target.value)}
             />
-            <button className="primary-button fit" type="submit">新建档案</button>
+            <button className="primary-button fit" type="submit">{t("setup.create")}</button>
           </form>
         </div>
         {activeProfile && (
           <p className="setup-status">
-            {activeProfile.name} 已载入。当前档案更新时间：<span className="nowrap-text">{formatDate(activeProfile.updatedAt || activeProfile.createdAt)}</span>。
+            {t("setup.profileLoaded", { name: activeProfile.name })}<span className="nowrap-text">{formatDate(activeProfile.updatedAt || activeProfile.createdAt)}</span>
           </p>
         )}
       </section>
@@ -226,13 +228,13 @@ export function SetupPage() {
           <div className="setup-title-row compact">
             <span className="setup-step-badge">2</span>
             <div>
-              <h2>目标与节奏</h2>
-              <p>决定倒计时、每日分钟数和阶段切换。</p>
+              <h2>{t("setup.step2Title")}</h2>
+              <p>{t("setup.step2Desc")}</p>
             </div>
           </div>
           <div className="form-grid three setup-grid">
             <div className="field">
-              <label htmlFor="level">目标等级</label>
+              <label htmlFor="level">{t("setup.targetLevel")}</label>
               <select id="level" value={state.settings.level} onChange={(e) => setField("level", e.target.value as Level)}>
                 {Object.keys(LEVEL_CONFIG).map((key) => (
                   <option key={key} value={key}>{key}</option>
@@ -240,19 +242,19 @@ export function SetupPage() {
               </select>
             </div>
             <div className="field">
-              <label htmlFor="currentLevel">当前水平</label>
+              <label htmlFor="currentLevel">{t("setup.currentLevel")}</label>
               <select id="currentLevel" value={state.settings.currentLevel} onChange={(e) => setField("currentLevel", e.target.value)}>
-                {STATIC_SELECT_OPTIONS.currentLevel.map(([value, label]) => (
-                  <option key={value} value={value}>{label}</option>
+                {STATIC_SELECT_OPTIONS.currentLevel.map(([value]) => (
+                  <option key={value} value={value}>{tOption("currentLevel", value)}</option>
                 ))}
               </select>
             </div>
             <div className="field">
-              <label htmlFor="examDate">考试日期</label>
+              <label htmlFor="examDate">{t("setup.examDate")}</label>
               <input id="examDate" type="date" value={state.settings.examDate} onChange={(e) => setField("examDate", e.target.value)} />
             </div>
             <div className="field">
-              <label htmlFor="weekdayMinutes">工作日时间</label>
+              <label htmlFor="weekdayMinutes">{t("setup.weekdayMinutes")}</label>
               <input
                 ref={weekdayMinutesRef}
                 id="weekdayMinutes"
@@ -269,7 +271,7 @@ export function SetupPage() {
               />
             </div>
             <div className="field">
-              <label htmlFor="weekendMinutes">周末时间</label>
+              <label htmlFor="weekendMinutes">{t("setup.weekendMinutes")}</label>
               <input
                 ref={weekendMinutesRef}
                 id="weekendMinutes"
@@ -286,23 +288,23 @@ export function SetupPage() {
               />
             </div>
             <div className="field">
-              <label htmlFor="state">当前状态</label>
+              <label htmlFor="state">{t("setup.currentState")}</label>
               <select id="state" value={state.settings.state} onChange={(e) => setField("state", e.target.value as PlanSettings["state"])}>
-                {STATIC_SELECT_OPTIONS.state.map(([value, label]) => (
-                  <option key={value} value={value}>{label}</option>
+                {STATIC_SELECT_OPTIONS.state.map(([value]) => (
+                  <option key={value} value={value}>{tOption("state", value)}</option>
                 ))}
               </select>
             </div>
             <div className="field">
-              <label htmlFor="studyDay">备考进度</label>
+              <label htmlFor="studyDay">{t("setup.studyProgress")}</label>
               <select id="studyDay" value={state.settings.studyDay} onChange={(e) => setField("studyDay", e.target.value)}>
-                {STATIC_SELECT_OPTIONS.studyDay.map(([value, label]) => (
-                  <option key={value} value={value}>{label}</option>
+                {STATIC_SELECT_OPTIONS.studyDay.map(([value]) => (
+                  <option key={value} value={value}>{tOption("studyDay", value)}</option>
                 ))}
               </select>
             </div>
             <div className="field">
-              <label htmlFor="targetScore">目标分数</label>
+              <label htmlFor="targetScore">{t("setup.targetScore")}</label>
               <input
                 ref={targetScoreRef}
                 id="targetScore"
@@ -330,13 +332,13 @@ export function SetupPage() {
           <div className="setup-title-row compact">
             <span className="setup-step-badge">3</span>
             <div>
-              <h2>教材与学习量预算</h2>
-              <p>用于估算新词、新文法完成天数和复习预留窗口。</p>
+              <h2>{t("setup.step3Title")}</h2>
+              <p>{t("setup.step3Desc")}</p>
             </div>
           </div>
           <div className="form-grid three setup-grid">
             <div className="field">
-              <label htmlFor="vocabBook">词汇书偏好</label>
+              <label htmlFor="vocabBook">{t("setup.vocabBook")}</label>
               <select id="vocabBook" value={state.settings.vocabBook} onChange={(e) => setField("vocabBook", e.target.value)}>
                 {STATIC_SELECT_OPTIONS.vocabBook.map(([value, label]) => (
                   <option key={value} value={value}>{label}</option>
@@ -344,7 +346,7 @@ export function SetupPage() {
               </select>
             </div>
             <div className="field">
-              <label htmlFor="grammarBook">文法书偏好</label>
+              <label htmlFor="grammarBook">{t("setup.grammarBook")}</label>
               <select id="grammarBook" value={state.settings.grammarBook} onChange={(e) => setField("grammarBook", e.target.value)}>
                 {STATIC_SELECT_OPTIONS.grammarBook.map(([value, label]) => (
                   <option key={value} value={value}>{label}</option>
@@ -352,7 +354,7 @@ export function SetupPage() {
               </select>
             </div>
             <div className="field">
-              <label htmlFor="kanjiBook">汉字书偏好</label>
+              <label htmlFor="kanjiBook">{t("setup.kanjiBook")}</label>
               <select id="kanjiBook" value={state.settings.kanjiBook} onChange={(e) => setField("kanjiBook", e.target.value)}>
                 {STATIC_SELECT_OPTIONS.kanjiBook.map(([value, label]) => (
                   <option key={value} value={value}>{label}</option>
@@ -360,14 +362,14 @@ export function SetupPage() {
               </select>
             </div>
             <div className="field">
-              <label htmlFor="learnedVocab">已学词汇</label>
+              <label htmlFor="learnedVocab">{t("setup.learnedVocab")}</label>
               <input id="learnedVocab" type="number" min={0} value={state.settings.learnedVocab || ''} onChange={(e) => {
   const val = e.target.value;
   setField("learnedVocab", val === '' ? 0 : Number(val));
 }} />
             </div>
             <div className="field">
-              <label htmlFor="dailyVocabGoal">每天新词</label>
+              <label htmlFor="dailyVocabGoal">{t("setup.dailyVocabGoal")}</label>
               <input
                 id="dailyVocabGoal"
                 type="text"
@@ -382,14 +384,14 @@ export function SetupPage() {
               />
             </div>
             <div className="field">
-              <label htmlFor="learnedGrammar">已学文法</label>
+              <label htmlFor="learnedGrammar">{t("setup.learnedGrammar")}</label>
               <input id="learnedGrammar" type="number" min={0} value={state.settings.learnedGrammar || ''} onChange={(e) => {
   const val = e.target.value;
   setField("learnedGrammar", val === '' ? 0 : Number(val));
 }} />
             </div>
             <div className="field">
-              <label htmlFor="dailyGrammarGoal">每天新文法</label>
+              <label htmlFor="dailyGrammarGoal">{t("setup.dailyGrammarGoal")}</label>
               <input
                 id="dailyGrammarGoal"
                 type="text"
@@ -404,10 +406,10 @@ export function SetupPage() {
               />
             </div>
             <div className="field">
-              <label htmlFor="reviewReserve">复习预留</label>
+              <label htmlFor="reviewReserve">{t("setup.reviewReserve")}</label>
               <select id="reviewReserve" value={String(state.settings.reviewReserve)} onChange={(e) => setField("reviewReserve", Number(e.target.value))}>
-                {STATIC_SELECT_OPTIONS.reviewReserve.map(([value, label]) => (
-                  <option key={value} value={value}>{label}</option>
+                {STATIC_SELECT_OPTIONS.reviewReserve.map(([value]) => (
+                  <option key={value} value={value}>{tOption("reviewReserve", value)}</option>
                 ))}
               </select>
             </div>
@@ -418,15 +420,15 @@ export function SetupPage() {
           <div className="setup-title-row compact">
             <span className="setup-step-badge">4</span>
             <div>
-              <h2>弱项与阻碍</h2>
-              <p>选择你的薄弱模块和学习阻碍，计划生成会针对性调整。</p>
+              <h2>{t("setup.step4Title")}</h2>
+              <p>{t("setup.step4Desc")}</p>
             </div>
           </div>
           <div className="setup-choice-grid">
             <div className="field">
-              <span className="choice-label">最薄弱模块</span>
+              <span className="choice-label">{t("setup.weakestModule")}</span>
               <div className="choice-grid weakness-grid">
-                {STATIC_WEAKNESS_OPTIONS.map(([value, label]) => {
+                {STATIC_WEAKNESS_OPTIONS.map(([value]) => {
                   const checked = (state.settings.weaknesses || []).includes(value);
                   return (
                     <label
@@ -434,7 +436,7 @@ export function SetupPage() {
                       className={`choice-card ${checked ? "selected" : ""}`}
                     >
                       <span className="choice-icon">{WEAKNESS_ICONS[value]}</span>
-                      <span className="choice-text">{label}</span>
+                      <span className="choice-text">{tOption("weakness", value)}</span>
                       <input
                         type="checkbox"
                         checked={checked}
@@ -446,9 +448,9 @@ export function SetupPage() {
               </div>
             </div>
             <div className="field">
-              <span className="choice-label">学习阻碍</span>
+              <span className="choice-label">{t("setup.blockers")}</span>
               <div className="choice-grid blocker-grid">
-                {STATIC_BLOCKER_OPTIONS.map(([value, label]) => {
+                {STATIC_BLOCKER_OPTIONS.map(([value]) => {
                   const checked = (state.settings.blockers || []).includes(value);
                   return (
                     <label
@@ -456,7 +458,7 @@ export function SetupPage() {
                       className={`choice-card ${checked ? "selected" : ""}`}
                     >
                       <span className="choice-icon">{BLOCKER_ICONS[value]}</span>
-                      <span className="choice-text">{label}</span>
+                      <span className="choice-text">{tOption("blocker", value)}</span>
                       <input
                         type="checkbox"
                         checked={checked}
@@ -474,13 +476,13 @@ export function SetupPage() {
           <div className="setup-title-row compact">
             <span className="setup-step-badge">5</span>
             <div>
-              <h2>自定义计划想法</h2>
-              <p>有什么特别想纳入计划的想法？</p>
+              <h2>{t("setup.step5Title")}</h2>
+              <p>{t("setup.step5Desc")}</p>
             </div>
           </div>
           <div className="field">
             <textarea
-              placeholder="例如：每天先复习昨天错题 10 分钟；周末增加一套真题..."
+              placeholder={t("setup.customPlaceholder")}
               value={state.settings.customPlanInput || ""}
               onChange={(e) => setField("customPlanInput", e.target.value)}
             />
@@ -490,7 +492,7 @@ export function SetupPage() {
 
       <div className="sticky-generate">
         <button className="primary-button full" onClick={handleGeneratePlan}>
-          生成学习计划
+          {t("setup.generatePlan")}
         </button>
       </div>
     </div>

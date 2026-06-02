@@ -67,3 +67,23 @@ export function t(key: string, params?: Record<string, string | number>): string
   }
   return str;
 }
+
+/**
+ * Translate an option label by (group, value) without splitting the value on
+ * dots — needed for values like "0.3" that would otherwise break dotted-key
+ * resolution.
+ */
+export function tOption(group: string, value: string): string {
+  const lookup = (d: Dict): string | undefined => {
+    const opts = d.options;
+    if (opts && typeof opts === "object") {
+      const g = (opts as Dict)[group];
+      if (g && typeof g === "object") {
+        const v = (g as Dict)[value];
+        if (typeof v === "string") return v;
+      }
+    }
+    return undefined;
+  };
+  return lookup(DICTS[currentLocale]) ?? lookup(DICTS.zh) ?? value;
+}
