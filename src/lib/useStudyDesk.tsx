@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import type { GeneratedPlan, PlanEdits, PlanSettings, Profile, StudyRecord } from "./types";
 import {
   createProfile as createProfileStorage,
@@ -33,7 +33,7 @@ import {
 import { todayISO } from "./utils";
 import { toast } from "./toast";
 import { schedulePush } from "./cloudSync";
-import { getLocale, t } from "../i18n";
+import { getLocale, subscribeLocale, t } from "../i18n";
 
 import { StudyDeskContext, type StudyDeskContextValue } from "./studyDeskContext";
 
@@ -113,6 +113,10 @@ function loadInitialState(): StudyDeskState {
 
 export function StudyDeskProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<StudyDeskState>(loadInitialState);
+  // Recompute locale-dependent derived values (plan health, next action,
+  // suggestions — all built from planner phrase tables) when language switches.
+  const [locale, setLocaleTick] = useState(getLocale());
+  useEffect(() => subscribeLocale(() => setLocaleTick(getLocale())), []);
 
   const commit = useCallback((next: StudyDeskState) => {
     setState(next);
@@ -133,16 +137,22 @@ export function StudyDeskProvider({ children }: { children: ReactNode }) {
 
   const todayPlan = useMemo(() => getTodayPlanDay(state.generatedPlan), [state.generatedPlan]);
   const upcomingDays = useMemo(() => getUpcomingDays(state.generatedPlan, 14), [state.generatedPlan]);
-  const health = useMemo(() => getPlanHealth(state.generatedPlan, state.records), [state.generatedPlan, state.records]);
+  // `locale` is intentionally in deps: these values are built from planner phrase
+  // tables (via module-level t()), so they must recompute when language switches.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const health = useMemo(() => getPlanHealth(state.generatedPlan, state.records), [state.generatedPlan, state.records, locale]);
   const stats = useMemo(() => getRecentStats(state.records, 7), [state.records]);
-  const nextAction = useMemo(() => getNextAction(state.generatedPlan, todayRecord, health), [state.generatedPlan, todayRecord, health]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const nextAction = useMemo(() => getNextAction(state.generatedPlan, todayRecord, health), [state.generatedPlan, todayRecord, health, locale]);
   const moduleTotals = useMemo(() => getModuleTotals(state.records), [state.records]);
   const causeCounts = useMemo(() => getCauseCounts(state.records), [state.records]);
-  const suggestions = useMemo(() => buildAnalysisSuggestions(stats, health, moduleTotals, causeCounts, state.settings), [stats, health, moduleTotals, causeCounts, state.settings]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const suggestions = useMemo(() => buildAnalysisSuggestions(stats, health, moduleTotals, causeCounts, state.settings), [stats, health, moduleTotals, causeCounts, state.settings, locale]);
   const tomorrowSuggestion = useMemo(() => {
     if (!todayRecord) return null;
     return buildTomorrowSuggestion(todayRecord);
-  }, [todayRecord]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [todayRecord, locale]);
 
   const createProfile = useCallback((name: string) => {
     const profile = createProfileStorage(name);

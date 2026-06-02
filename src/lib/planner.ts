@@ -21,6 +21,7 @@ import {
   toISODate,
   weekDayLabel,
 } from "./utils";
+import { t } from "../i18n";
 
 export function generatePlan(settings: PlanSettings, profileId: string): GeneratedPlan {
   const normalized = normalizeSettings(settings);
@@ -650,8 +651,8 @@ export function getPlanHealth(plan: GeneratedPlan | null, records: StudyRecord[]
     return {
       score: 42,
       level: "danger",
-      label: "待生成",
-      message: "还没有 generatedPlan，下一步是完成计划设置并生成计划。",
+      label: t("planner.healthPendingLabel"),
+      message: t("planner.healthPendingMsg"),
     };
   }
 
@@ -665,55 +666,55 @@ export function getPlanHealth(plan: GeneratedPlan | null, records: StudyRecord[]
     return {
       score,
       level: "ok",
-      label: "健康",
-      message: "计划健康度良好，当前节奏和完成度都在合理区间。",
+      label: t("planner.healthOkLabel"),
+      message: t("planner.healthOkMsg"),
     };
   }
   if (score >= 52) {
     return {
       score,
       level: "warn",
-      label: "需关注",
-      message: "计划可执行，但记录频率、完成度或正确率有波动，建议降低任务切片并补一轮错题复盘。",
+      label: t("planner.healthWarnLabel"),
+      message: t("planner.healthWarnMsg"),
     };
   }
   return {
     score,
     level: "danger",
-    label: "高风险",
-    message: "真实执行明显落后于计划，需要减少单日任务，优先保留薄弱项和错题复盘。",
+    label: t("planner.healthDangerLabel"),
+    message: t("planner.healthDangerMsg"),
   };
 }
 
 export function getNextAction(plan: GeneratedPlan | null, todayRecord: StudyRecord | null, health: PlanHealth) {
   if (!plan) {
     return {
-      title: "先生成一份可执行学习计划",
-      body: "多页面工作台的核心数据从 generatedPlan 开始。完成计划设置后，计划页、记录页和导出页都会自动串起来。",
-      cta: "去设置计划",
+      title: t("planner.nextNoPlanTitle"),
+      body: t("planner.nextNoPlanBody"),
+      cta: t("planner.nextNoPlanCta"),
       href: "#/setup",
     };
   }
   if (!todayRecord) {
     return {
-      title: "今天先完成计划任务，再记录真实表现",
-      body: "记录会写入 records，并影响复盘分析和明日建议。不要追求完美，只要把真实时间和错因记下来。",
-      cta: "填写今日记录",
+      title: t("planner.nextNoRecordTitle"),
+      body: t("planner.nextNoRecordBody"),
+      cta: t("planner.nextNoRecordCta"),
       href: "#/record",
     };
   }
   if (health.score < 60) {
     return {
-      title: "计划健康偏低，优先调整明日任务",
-      body: "从复盘页查看最近 7 天缺口和错误原因，再回计划页微调最近几天的安排。",
-      cta: "查看复盘",
+      title: t("planner.nextLowHealthTitle"),
+      body: t("planner.nextLowHealthBody"),
+      cta: t("planner.nextLowHealthCta"),
       href: "#/analysis",
     };
   }
   return {
-    title: "今日闭环完成，查看下一轮重点",
-    body: "你的记录已经进入分析。下一步可以看 7 天趋势，确认是否需要提高听力或语法权重。",
-    cta: "查看分析",
+    title: t("planner.nextDoneTitle"),
+    body: t("planner.nextDoneBody"),
+    cta: t("planner.nextDoneCta"),
     href: "#/analysis",
   };
 }

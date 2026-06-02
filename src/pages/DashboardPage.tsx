@@ -5,7 +5,7 @@ import { getTodayTargetMinutes } from "../lib/planner";
 import { LEVEL_CONFIG } from "../lib/constants";
 import { ReminderBanner } from "../components/Reminder";
 import { useLocale } from "../i18n/LocaleProvider";
-import { moduleLabel, moduleShort } from "../i18n";
+import { moduleLabel, moduleShort, levelLabel as i18nLevelLabel, phaseLabel } from "../i18n";
 import type { StudyTask } from "../lib/types";
 
 function splitTaskPoints(text: string): string[] {
@@ -50,7 +50,7 @@ export function DashboardPage() {
     : 0;
 
   const profile = state.profiles.find((p) => p.id === state.activeProfileId);
-  const levelLabel = LEVEL_CONFIG[state.settings.level]?.label || state.settings.level;
+  const levelLabel = i18nLevelLabel(LEVEL_CONFIG[state.settings.level]?.label || state.settings.level);
   const targetScore = Number(state.settings.targetScore || LEVEL_CONFIG[state.settings.level]?.targetScore || 100);
 
   return (
@@ -180,7 +180,7 @@ export function DashboardPage() {
             </div>
             <div className="list-item">
               <span>{t("dashboard.currentPhase")}</span>
-              <strong>{todayPlan ? todayPlan.phase : t("dashboard.pendingGen")}</strong>
+              <strong>{todayPlan ? phaseLabel(todayPlan.phase) : t("dashboard.pendingGen")}</strong>
             </div>
             <div className="list-item">
               <span>{t("dashboard.todayRecord")}</span>

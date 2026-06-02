@@ -6,7 +6,7 @@ import { COMPLETION_OPTIONS, MODULE_COUNT_PLACEHOLDERS, RECORD_CHOICE_OPTIONS, R
 import { todayISO, getCompletionPercent, getRecordMinutes, getRecordTotalCount, getRecordAccuracyPercent, normalizeWrongQuestionText, buildRecordRecommendation, buildTomorrowTimePlan } from "../lib/utils";
 import { summarizeModuleCounts } from "../lib/planner";
 import { useLocale } from "../i18n/LocaleProvider";
-import { moduleLabel, moduleShort } from "../i18n";
+import { moduleLabel, moduleShort, phaseLabel } from "../i18n";
 import type { StudyRecord } from "../lib/types";
 
 export function RecordPage() {
@@ -95,7 +95,7 @@ export function RecordPage() {
             </div>
             <span className="metric-chip">
               <strong>{todayPlan ? t("record.dayBadge", { n: todayPlan.dayIndex }) : t("record.todayBadge")}</strong>
-              {todayPlan ? todayPlan.phase : t("record.offPlan")}
+              {todayPlan ? phaseLabel(todayPlan.phase) : t("record.offPlan")}
             </span>
           </div>
 
@@ -391,7 +391,7 @@ export function RecordPage() {
           <div className="section-head">
             <div>
               <h3>{t("record.todayPlanTitle")}</h3>
-              <p>{todayPlan ? t("record.planMinPhase", { n: todayPlan.totalMinutes, phase: todayPlan.phase }) : t("record.noPlanToday")}</p>
+              <p>{todayPlan ? t("record.planMinPhase", { n: todayPlan.totalMinutes, phase: phaseLabel(todayPlan.phase) }) : t("record.noPlanToday")}</p>
             </div>
           </div>
           {todayPlan ? (

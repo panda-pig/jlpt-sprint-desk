@@ -96,3 +96,13 @@ export function moduleLabel(key: string): string {
 export function moduleShort(key: string): string {
   return t(`moduleShort.${key}`);
 }
+
+/** Translate a level label (e.g. "N1 冲刺") — falls back to the input. */
+export function levelLabel(chineseLabel: string): string {
+  return t(`level.${chineseLabel}`);
+}
+
+/** Display a stored plan phase (Chinese in data) in the active language. */
+export function phaseLabel(stored: string): string {
+  return tOption("dayPhase", stored);
+}
