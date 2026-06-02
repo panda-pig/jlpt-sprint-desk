@@ -73,51 +73,9 @@ function loadInitialState(): StudyDeskState {
     const defaultSettings = normalizeSettings({});
     savePlanSettings(defaultSettings, defaultProfile.id);
 
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayStr = yesterday.toISOString().split("T")[0];
-
-    const sampleRecords: StudyRecord[] = [
-      {
-        id: `record-${yesterdayStr}`,
-        date: yesterdayStr,
-        profileId: defaultProfile.id,
-        createdAt: yesterdayStr,
-        updatedAt: yesterdayStr,
-        minutes: { kanji: 20, vocab: 30, grammar: 25, reading: 15, listening: 20 },
-        moduleCounts: { kanji: 15, vocab: 50, grammar: 8, reading: 2, listening: 10 },
-        completion: "done",
-        completionNote: "",
-        accuracy: "词汇 18/30，文法 12/20，听力 15/30",
-        accuracyNote: "",
-        wrongQuestionText: "",
-        overtimeReason: "",
-        timeNote: "听力部分耗时较长",
-        tomorrowFocus: "加强听力练习",
-        causes: [],
-        notes: "今天状态不错，完成了所有计划任务。",
-      },
-      {
-        id: `record-${todayISO()}`,
-        date: todayISO(),
-        profileId: defaultProfile.id,
-        createdAt: todayISO(),
-        updatedAt: todayISO(),
-        minutes: { kanji: 15, vocab: 25, grammar: 20, reading: 10, listening: 15 },
-        moduleCounts: { kanji: 10, vocab: 40, grammar: 6, reading: 1, listening: 8 },
-        completion: "partial",
-        completionNote: "阅读部分未完成",
-        accuracy: "语言知识 30/45，阅读 18/30，听力 20/35",
-        accuracyNote: "",
-        wrongQuestionText: "",
-        overtimeReason: "内容难度超预期",
-        timeNote: "",
-        tomorrowFocus: "补做阅读练习",
-        causes: ["procrastination", "confused"],
-        notes: "今天有些拖延，需要调整状态。",
-      },
-    ];
-    saveRecords(sampleRecords, defaultProfile.id);
+    // New users start with a clean slate — no fabricated records.
+    // They'll see proper empty-state guidance on Dashboard / Record pages.
+    saveRecords([], defaultProfile.id);
 
     return {
       profiles,
@@ -125,7 +83,7 @@ function loadInitialState(): StudyDeskState {
       settings: defaultSettings,
       generatedPlan: null,
       planEdits: {},
-      records: sampleRecords,
+      records: [],
     };
   }
 
