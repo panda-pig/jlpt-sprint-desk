@@ -4,20 +4,22 @@ import { useStudyDesk } from "../lib/studyDeskContext";
 import { buildMarkdown, buildCsv, buildReport, buildBackupJSON, buildPrintView } from "../lib/exporter";
 import { downloadText, copyText } from "../lib/utils";
 import { toast } from "../lib/toast";
+import { useLocale } from "../i18n/LocaleProvider";
 
 export function ExportPage() {
   const { state } = useStudyDesk();
+  const { t } = useLocale();
   const generatedPlan = state.generatedPlan;
   const records = state.records;
   const [activeTab, setActiveTab] = useState("markdown");
   const [output, setOutput] = useState("");
   const [copied, setCopied] = useState(false);
 
-  const profileName = state.profiles.find((p) => p.id === state.activeProfileId)?.name || "未命名";
+  const profileName = state.profiles.find((p) => p.id === state.activeProfileId)?.name || t("export.unnamed");
 
   const generateOutput = (type: string) => {
     if (!generatedPlan) {
-      setOutput("还没有生成计划，请先去设置页面生成学习计划。");
+      setOutput(t("export.noPlan"));
       return;
     }
 
@@ -44,18 +46,18 @@ export function ExportPage() {
 
   const handleCopy = async () => {
     if (!output) {
-      toast("请先生成导出内容。");
+      toast(t("export.genFirst"));
       return;
     }
     await copyText(output);
     setCopied(true);
-    toast("内容已复制到剪贴板。");
+    toast(t("export.copied2"));
     setTimeout(() => setCopied(false), 2000);
   };
 
   const handleDownload = () => {
     if (!output) {
-      toast("请先生成导出内容。");
+      toast(t("export.genFirst"));
       return;
     }
 
@@ -76,7 +78,7 @@ export function ExportPage() {
     };
 
     downloadText(filenames[activeTab] || "export.txt", output, types[activeTab] || "text/plain");
-    toast(`已下载: ${filenames[activeTab]}`);
+    toast(t("export.downloaded", { name: filenames[activeTab] }));
   };
 
   const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -101,53 +103,18 @@ export function ExportPage() {
         }
         window.location.reload();
       } catch {
-        toast("备份文件格式错误，无法导入。");
+        toast(t("export.importError"));
       }
     };
     reader.readAsText(file);
   };
 
   const tabs = [
-    {
-      key: "markdown",
-      label: "Markdown",
-      desc: "Notion 友好格式",
-      icon: FileText,
-      color: "#315f4f",
-      ext: ".md",
-    },
-    {
-      key: "csv",
-      label: "CSV 表格",
-      desc: "Excel 可直接打开",
-      icon: Table,
-      color: "#35647c",
-      ext: ".csv",
-    },
-    {
-      key: "report",
-      label: "学习报告",
-      desc: "带统计的完整报告",
-      icon: BarChart3,
-      color: "#b77a20",
-      ext: ".html",
-    },
-    {
-      key: "backup",
-      label: "完整备份",
-      desc: "JSON 格式全量数据",
-      icon: Download,
-      color: "#3d7757",
-      ext: ".json",
-    },
-    {
-      key: "print",
-      label: "打印视图",
-      desc: "A4 纸友好排版",
-      icon: Printer,
-      color: "#6d5486",
-      ext: ".html",
-    },
+    { key: "markdown", label: "Markdown", desc: t("export.mdDesc"), icon: FileText, color: "#315f4f", ext: ".md" },
+    { key: "csv", label: t("export.csvLabel"), desc: t("export.csvDesc"), icon: Table, color: "#35647c", ext: ".csv" },
+    { key: "report", label: t("export.reportLabel"), desc: t("export.reportDesc"), icon: BarChart3, color: "#b77a20", ext: ".html" },
+    { key: "backup", label: t("export.backupLabel"), desc: t("export.backupDesc"), icon: Download, color: "#3d7757", ext: ".json" },
+    { key: "print", label: t("export.printLabel"), desc: t("export.printDesc"), icon: Printer, color: "#6d5486", ext: ".html" },
   ];
 
   const activeTabInfo = tabs.find((t) => t.key === activeTab);
@@ -159,8 +126,8 @@ export function ExportPage() {
       <section className="panel export-type-panel">
         <div className="section-head compact">
           <div>
-            <h2>选择导出格式</h2>
-            <p>点击卡片生成对应格式的导出内容。</p>
+            <h2>{t("export.chooseFormat")}</h2>
+            <p>{t("export.chooseFormatDesc")}</p>
           </div>
         </div>
         <div className="export-cards">
@@ -197,20 +164,20 @@ export function ExportPage() {
               <FileOutput size={18} />
             </span>
             <div>
-              <strong>{activeTabInfo?.label || "导出内容"}</strong>
+              <strong>{activeTabInfo?.label || t("export.exportContent")}</strong>
               <span className="export-preview-meta">
-                {outputLength > 0 ? `${outputLength.toLocaleString()} 字符 · ${outputLines} 行` : "点击上方卡片生成内容"}
+                {outputLength > 0 ? t("export.charsLines", { chars: outputLength.toLocaleString(), lines: outputLines }) : t("export.clickToGen")}
               </span>
             </div>
           </div>
           <div className="export-preview-actions">
             <button className="secondary-button" onClick={handleCopy} disabled={!output}>
               <Copy size={15} />
-              {copied ? "已复制" : "复制"}
+              {copied ? t("export.copyDone") : t("export.copy")}
             </button>
             <button className="primary-button" onClick={handleDownload} disabled={!output}>
               <Download size={15} />
-              下载
+              {t("export.download")}
             </button>
           </div>
         </div>
@@ -218,7 +185,7 @@ export function ExportPage() {
           className="export-preview-textarea"
           value={output}
           onChange={(e) => setOutput(e.target.value)}
-          placeholder="点击上方导出格式卡片生成内容..."
+          placeholder={t("export.outputPlaceholder")}
           readOnly={!generatedPlan}
         />
       </section>
@@ -229,22 +196,22 @@ export function ExportPage() {
             <AlertTriangle size={22} />
           </span>
           <div>
-            <h2>导入备份</h2>
-            <p>从备份文件恢复数据，会覆盖当前档案的所有设置、计划和记录。</p>
+            <h2>{t("export.importBackup")}</h2>
+            <p>{t("export.importDesc")}</p>
           </div>
         </div>
         <div className="import-body">
           <div className="import-upload-zone">
             <Upload size={32} />
-            <span>拖放备份文件到此处，或点击选择</span>
+            <span>{t("export.dropHint")}</span>
             <label className="secondary-button file-button">
-              选择备份文件 (.json)
+              {t("export.chooseFile")}
               <input type="file" accept=".json" onChange={handleImport} />
             </label>
           </div>
           <div className="import-warning">
             <AlertTriangle size={14} />
-            <span>导入操作不可撤销，建议在导入前先导出一份当前备份。</span>
+            <span>{t("export.irreversible")}</span>
           </div>
         </div>
       </section>

@@ -2,11 +2,11 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Save, RotateCcw, BookOpen, ClipboardList, ArrowRight, Settings } from "lucide-react";
 import { useStudyDesk } from "../lib/studyDeskContext";
-import { MODULE_COLORS, MODULE_SHORTS, RECORD_MODULE_KEYS, MODULE_LABELS, REFERENCE_PLAN } from "../lib/constants";
-import { mergeDayWithEdit, buildStudyBudget } from "../lib/planner";
+import { MODULE_COLORS, RECORD_MODULE_KEYS } from "../lib/constants";
+import { mergeDayWithEdit, buildStudyBudget, getReferencePlan } from "../lib/planner";
 import { todayISO } from "../lib/utils";
 import { useLocale } from "../i18n/LocaleProvider";
-import { levelLabel as i18nLevelLabel, phaseLabel, moduleLabel } from "../i18n";
+import { levelLabel as i18nLevelLabel, phaseLabel, moduleLabel, moduleShort } from "../i18n";
 
 function splitTaskPoints(text: string): string[] {
   return String(text || "")
@@ -92,6 +92,7 @@ export function PlanPage() {
 
   const todayDay = upcomingDays[0];
   const budget = buildStudyBudget(state.settings);
+  const REFERENCE_PLAN = getReferencePlan();
   const recordDates = new Set(records.map((record) => record.date));
 
   // 模块饼图数据
@@ -205,7 +206,7 @@ export function PlanPage() {
                   </div>
                   <div className="calendar-modules" aria-label={t("plan.dayModules")}>
                     {modules.map((module) => (
-                      <i key={module} style={{ ["--dot" as string]: MODULE_COLORS[module as keyof typeof MODULE_COLORS] || MODULE_COLORS.review }} title={MODULE_LABELS[module as keyof typeof MODULE_LABELS] || module} />
+                      <i key={module} style={{ ["--dot" as string]: MODULE_COLORS[module as keyof typeof MODULE_COLORS] || MODULE_COLORS.review }} title={moduleLabel(module)} />
                     ))}
                   </div>
                 </article>
@@ -231,12 +232,12 @@ export function PlanPage() {
                     <div className="task-block-index">{String(index + 1).padStart(2, "0")}</div>
                     <div>
                       <div className="task-block-head">
-                        <span className={`module-dot ${task.module}`}>{MODULE_SHORTS[task.module as keyof typeof MODULE_SHORTS] || "·"}</span>
+                        <span className={`module-dot ${task.module}`}>{moduleShort(task.module)}</span>
                         <span className="time-pill">{Number(task.minutes || 0)} min</span>
                       </div>
                       <strong>{task.title}</strong>
                       <TaskPoints text={task.text} />
-                      <small>{task.priority || t("plan.taskFallback")}</small>
+                      <small>{task.priority ? tOption("priority", task.priority) : t("plan.taskFallback")}</small>
                     </div>
                   </article>
                 ))}
@@ -280,12 +281,12 @@ export function PlanPage() {
                         <div className="task-block-index">{String(index + 1).padStart(2, "0")}</div>
                         <div>
                           <div className="task-block-head">
-                            <span className={`module-dot ${task.module}`}>{MODULE_SHORTS[task.module as keyof typeof MODULE_SHORTS] || "·"}</span>
+                            <span className={`module-dot ${task.module}`}>{moduleShort(task.module)}</span>
                             <span className="time-pill">{Number(task.minutes || 0)} min</span>
                           </div>
                           <strong>{task.title}</strong>
                           <TaskPoints text={task.text} />
-                          <small>{task.priority || t("plan.taskFallback")}</small>
+                          <small>{task.priority ? tOption("priority", task.priority) : t("plan.taskFallback")}</small>
                         </div>
                       </article>
                     ))}
@@ -381,7 +382,7 @@ export function PlanPage() {
             {(generatedPlan.roadmap || []).map((item, index) => (
               <li key={index} className="timeline-item">
                 <div>
-                  <strong>{item.title}</strong>
+                  <strong>{phaseLabel(item.title)}</strong>
                   <p className="muted">{item.dayRange} · {item.focus}</p>
                 </div>
               </li>
@@ -435,7 +436,7 @@ export function PlanPage() {
           <ul className="task-list">
             {REFERENCE_PLAN.tasks.map((task, i) => (
               <li key={i} className="task-item">
-                <span className={`module-dot ${task.module}`}>{MODULE_SHORTS[task.module] || "·"}</span>
+                <span className={`module-dot ${task.module}`}>{moduleShort(task.module)}</span>
                 <div className="task-main">
                   <strong>{task.title}</strong>
                   <TaskPoints text={task.method} />

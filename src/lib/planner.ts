@@ -5,7 +5,6 @@ import {
   LEVEL_CONTENT_TARGETS,
   MODULE_LABELS,
   RECORD_MODULE_KEYS,
-  STATIC_SELECT_OPTIONS,
 } from "./constants";
 import {
   addDays,
@@ -20,7 +19,7 @@ import {
   toISODate,
   weekDayLabel,
 } from "./utils";
-import { t, tOption, moduleLabel } from "../i18n";
+import { t, tOption, moduleLabel, levelLabel as i18nLevelLabel } from "../i18n";
 
 export function generatePlan(settings: PlanSettings, profileId: string): GeneratedPlan {
   const normalized = normalizeSettings(settings);
@@ -41,7 +40,7 @@ export function generatePlan(settings: PlanSettings, profileId: string): Generat
       date: toISODate(date),
       weekday: weekDayLabel(isoWeekday(date)),
       phase,
-      title: buildDayTitle(tasks, phase, index),
+      title: buildDayTitle(tasks, phase),
       totalMinutes: tasks.reduce((total, task) => total + task.minutes, 0),
       targetMinutes: dayBudget.totalMinutes,
       isLightDay: dayBudget.isLightDay,
@@ -74,11 +73,10 @@ export function generatePlan(settings: PlanSettings, profileId: string): Generat
   };
 }
 
-function buildDayTitle(tasks: StudyTask[], phase: string, dayIndex: number): string {
-  if (dayIndex === 1 && tasks.some((task) => task.title?.includes("摸底"))) return "摸底建档 + 每日底盘";
-  if (tasks.some((task) => task.module === "mock")) return phase.includes("冲刺") ? "模考/真题计时" : "每日底盘 + 周测复盘";
+function buildDayTitle(tasks: StudyTask[], phase: string): string {
+  if (tasks.some((task) => task.module === "mock")) return phase.includes("冲刺") ? t("gen.dtMockSprint") : t("gen.dtMockReview");
   const main = tasks.find((task) => !["review", "vocab", "grammar"].includes(task.module));
-  return main ? `每日底盘 + ${MODULE_LABELS[main.module]}主攻` : "每日底盘 + 错题回收";
+  return main ? t("gen.dtMain", { module: moduleLabel(main.module) }) : t("gen.dtFallback");
 }
 
 export function buildStudyBudget(settings: PlanSettings): StudyBudget {
@@ -291,8 +289,8 @@ function getDefaultSettings(): PlanSettings {
     readingBase: "mid",
     listeningBase: "mid",
     focusModules: ["vocab", "grammar"],
-    currentProgress: "学过一些，但三天打鱼两天晒网；需要先建立每日底盘。",
-    resources: "无敌绿宝书、蓝宝书/国内文法书、小动物/日本語総まとめ 汉字、真题、NHK News Web Easy",
+    currentProgress: "",
+    resources: "",
     reviewStyle: "balanced",
     customRules: "",
     customPlanInput: "",
@@ -322,11 +320,9 @@ function buildNormalTasksForDay(settings: PlanSettings, _phase: string, dayIndex
     tasks.push({
       id: `d${dayIndex}-startup`,
       module: "review",
-      label: "启动复习",
-      title: dayOne ? "建立错题本和词卡本" : "回看昨日标红项",
-      text: dayOne
-        ? "准备一本空白本子或电子文档，命名为“JLPT 错题本”。"
-        : "只看昨天标记为“不会”或“犹豫”的内容，不打开新单元。",
+      label: t("gen.stLabel"),
+      title: dayOne ? t("gen.stTitleDay1") : t("gen.stTitleOther"),
+      text: dayOne ? t("gen.stTextDay1") : t("gen.stTextOther"),
       minutes: warmupMinutes,
       priority: "启动",
     });
@@ -342,11 +338,9 @@ function buildNormalTasksForDay(settings: PlanSettings, _phase: string, dayIndex
     tasks.push({
       id: `d${dayIndex}-wrap`,
       module: "review",
-      label: "收尾复盘",
-      title: blockers.includes("review") ? "错题归因：每题只选一个主因" : "收尾复盘：记录正确率、实际用时和明天第一步",
-      text: blockers.includes("review")
-        ? "每道错题只写一句话说明错因，不抄题。"
-        : "用 3 句话总结今天：1) 完成度如何；2) 最卡的一个点；3) 明天第一步做什么。",
+      label: t("gen.wrLabel"),
+      title: blockers.includes("review") ? t("gen.wrTitleReview") : t("gen.wrTitleOther"),
+      text: blockers.includes("review") ? t("gen.wrTextReview") : t("gen.wrTextOther"),
       minutes: wrapMinutes,
       priority: "复盘",
     });
@@ -366,20 +360,18 @@ function buildCramTasksForDay(settings: PlanSettings, _phase: string, dayIndex: 
     {
       id: `d${dayIndex}-startup`,
       module: "review",
-      label: "临考启动",
-      title: "临考启动：只看高频错因",
-      text: "不再开新坑，只看最近反复错、最容易抢分的内容。",
+      label: t("gen.crLabel"),
+      title: t("gen.crTitle"),
+      text: t("gen.crText"),
       minutes: warmupMinutes,
       priority: "启动",
     },
     {
       id: `d${dayIndex}-cram-${primaryModule}`,
       module: primaryModule as StudyTask["module"],
-      label: MODULE_LABELS[primaryModule],
-      title: `临考回收：${MODULE_LABELS[primaryModule]}高频点`,
-      text: blockers.includes("time")
-        ? "按考试节奏限时完成一小组，只记录来不及和不会的区别。"
-        : "只复盘错题、标红词句和高频接续，不再扩充新内容。",
+      label: moduleLabel(primaryModule),
+      title: t("gen.crMainTitle", { module: moduleLabel(primaryModule) }),
+      text: blockers.includes("time") ? t("gen.crTextMock") : t("gen.crTextOther"),
       minutes: mainMinutes,
       priority: "重点",
     },
@@ -389,9 +381,9 @@ function buildCramTasksForDay(settings: PlanSettings, _phase: string, dayIndex: 
     tasks.push({
       id: `d${dayIndex}-wrap`,
       module: "review",
-      label: "收尾复盘",
-      title: blockers.includes("review") ? "错题归因：只留一个主因" : "收尾复盘：确认考试前最后动作",
-      text: "写下最后一个需要看的点，然后停止加量。",
+      label: t("gen.wrLabel"),
+      title: blockers.includes("review") ? t("gen.crWrapTitleReview") : t("gen.crWrapTitleOther"),
+      text: t("gen.crWrapText"),
       minutes: wrapMinutes,
       priority: "复盘",
     });
@@ -432,28 +424,28 @@ function makeTask(module: string, minutes: number, phase: string, dayIndex: numb
   const bookNote = buildBookNote(module, settings);
   const taskBank: Record<string, { title: string; text: string }> = {
     kanji: {
-      title: phase.includes("冲刺") ? "高频汉字快速回收" : "汉字词形与音读训练",
-      text: `${bookNote}先回忆，再核对，再把易混词放入复习队列。`,
+      title: phase.includes("冲刺") ? t("gen.tbKanjiSprint") : t("gen.tbKanjiBase"),
+      text: t("gen.tbKanjiText", { book: bookNote }),
     },
     vocab: {
-      title: phase.includes("基础") ? "核心词汇扩展" : "语境词汇与近义词辨析",
-      text: `${bookNote}今日新词目标 ${settings.dailyVocabGoal} 个，先回忆再核对。`,
+      title: phase.includes("基础") ? t("gen.tbVocabBase") : t("gen.tbVocabOther"),
+      text: t("gen.tbVocabText", { book: bookNote, n: settings.dailyVocabGoal }),
     },
     grammar: {
-      title: phase.includes("冲刺") ? "高频语法与接续确认" : "语法体系与接续练习",
-      text: `${bookNote}今日新语法目标 ${settings.dailyGrammarGoal} 条，重点确认接续和例句。`,
+      title: phase.includes("冲刺") ? t("gen.tbGrammarSprint") : t("gen.tbGrammarBase"),
+      text: t("gen.tbGrammarText", { book: bookNote, n: settings.dailyGrammarGoal }),
     },
     reading: {
-      title: phase.includes("冲刺") ? "限时读解与定位训练" : "读解结构与定位训练",
-      text: `${bookNote}先读题干再定位，记录犹豫选项和误选原因。`,
+      title: phase.includes("冲刺") ? t("gen.tbReadingSprint") : t("gen.tbReadingBase"),
+      text: t("gen.tbReadingText", { book: bookNote }),
     },
     listening: {
-      title: phase.includes("冲刺") ? "听力关键词抓取" : "听力场景与关键词训练",
-      text: `${bookNote}先抓关键词，再重听关键句，记录误听原因。`,
+      title: phase.includes("冲刺") ? t("gen.tbListeningSprint") : t("gen.tbListeningBase"),
+      text: t("gen.tbListeningText", { book: bookNote }),
     },
   };
 
-  const bank = taskBank[module] || { title: "综合训练", text: "按教材推进，记录卡点。" };
+  const bank = taskBank[module] || { title: t("gen.tbFallbackTitle"), text: t("gen.tbFallbackText") };
   return {
     id: `d${dayIndex}-${module}`,
     module: module as StudyTask["module"],
@@ -466,15 +458,17 @@ function makeTask(module: string, minutes: number, phase: string, dayIndex: numb
 }
 
 function buildBookNote(module: string, settings: PlanSettings): string {
-  const books: Record<string, Record<string, string>> = {
-    kanji: { animal: "小动物/日本語総まとめ 汉字", shinkanzen: "新完全マスター 汉字", kanzen: "小动物/日本語総まとめ 汉字", green: "绿宝书/红宝书配套汉字题", owned: "自有汉字书" },
-    vocab: { green: "无敌绿宝书", animal: "小动物系列", red: "红宝书", custom: "自定义词汇书" },
-    grammar: { blue: "蓝宝书/国内文法书", shinkanzen: "新完全マスター 文法", soumatome: "小动物/日本語総まとめ 文法", try: "TRY 文法", owned: "自有文法书" },
-    reading: {},
-    listening: {},
+  const knownBooks: Record<string, string[]> = {
+    kanji: ["animal", "shinkanzen", "kanzen", "green", "owned"],
+    vocab: ["green", "animal", "red", "custom"],
+    grammar: ["blue", "shinkanzen", "soumatome", "try", "owned"],
+    reading: [],
+    listening: [],
   };
-  const book = books[module]?.[settings[`${module}Book` as keyof PlanSettings] as string];
-  return book ? `使用 ${book}，` : "";
+  const bookKey = settings[`${module}Book` as keyof PlanSettings] as string;
+  if (!bookKey || !knownBooks[module]?.includes(bookKey)) return "";
+  const book = tOption("book", `${module}_${bookKey}`);
+  return book ? t("gen.bookNote", { book }) : "";
 }
 
 function fitTasksIntoBudget(tasks: StudyTask[], budget: number): StudyTask[] {
@@ -503,23 +497,24 @@ function getTaskMinimum(task: StudyTask): number {
 }
 
 function buildStrategy(settings: PlanSettings, daysLeft: number | null, budget: StudyBudget) {
-  const weakModules = settings.weaknesses.map((key) => MODULE_LABELS[key]);
-  const focus = weakModules.join("、") || "均衡推进";
-  const countdown = daysLeft === null ? "考试日期未确认" : `距离考试 ${daysLeft} 天`;
+  const weakModules = settings.weaknesses.map((key) => moduleLabel(key));
+  const focus = weakModules.join(t("common.listSep")) || t("gen.stratFocusBalanced");
+  const countdown = daysLeft === null ? t("gen.stratCountdownUnknown") : t("gen.stratCountdown", { n: daysLeft });
   return {
-    summary: `${countdown}，当前策略是以 ${focus} 为主轴，每周投入约 ${budget.weeklyMinutes} 分钟。新内容判断：${budget.status}，复习预留约 ${budget.desiredReviewDays} 天。`,
+    summary: t("gen.stratSummary", { countdown, focus, weekly: budget.weeklyMinutes, status: tOption("budgetStatus", budget.status as string), review: budget.desiredReviewDays }),
     weakModules,
     focus,
   };
 }
 
 function buildPrinciples(settings: PlanSettings): string[] {
+  const stateLabel = settings.state ? tOption("state", settings.state) : t("gen.prinUnset");
   return [
-    `当前水平：${settings.currentLevel}；备考状态：${STATIC_SELECT_OPTIONS.state.find(([value]) => value === settings.state)?.[1] || "未设置"}。`,
-    "每天保留词汇和文法底盘，再把最弱模块排成当天主攻。",
-    "薄弱项优先获得时间，但稳定项每周至少复盘两次，避免遗忘。",
-    "错题只记录可复用原因，不堆积无法行动的题号列表。",
-    settings.customPlanInput || "按真实记录滚动调整，不把生成计划当成静态清单。",
+    t("gen.prinLevel", { level: tOption("currentLevel", settings.currentLevel as string), state: stateLabel }),
+    t("gen.prinBase"),
+    t("gen.prinWeak"),
+    t("gen.prinError"),
+    settings.customPlanInput || t("gen.prinRolling"),
   ];
 }
 
@@ -536,24 +531,24 @@ function buildMinimumPlan(settings: PlanSettings): string[] {
   const secondary = settings.weaknesses[1] || "grammar";
   if (settings.studyDay === "1") {
     return [
-      "15 分钟：完成第一次摸底，词汇/文法各 10 题，读解或听解 1 小题组。",
-      `10 分钟：${MODULE_LABELS[secondary]} 小练，只做一组基础题并标出不会的题。`,
-      `5 分钟：建立错题本，写下今天 ${MODULE_LABELS[focus]} 的 3 个卡点。`,
+      t("gen.minDay1a"),
+      t("gen.minDay1b", { module: moduleLabel(secondary) }),
+      t("gen.minDay1c", { module: moduleLabel(focus) }),
     ];
   }
   return [
-    `15 分钟：复习错词和错句，优先看错过 2 次以上的内容。`,
-    `10 分钟：${MODULE_LABELS[secondary]} 小练，文法 5 题、阅读 1 小题组或听力即时应答 5 题。`,
-    `5 分钟：写一句复盘，说明今天 ${MODULE_LABELS[focus]} 卡在哪里。`,
+    t("gen.minOtherA"),
+    t("gen.minOtherB", { module: moduleLabel(secondary) }),
+    t("gen.minOtherC", { module: moduleLabel(focus) }),
   ];
 }
 
 function buildRoadmap(horizon: number): RoadmapItem[] {
   const phases = [
-    { ratio: 0.32, title: "基础补强期", focus: "汉字 + 核心词汇 + 基础语法" },
-    { ratio: 0.66, title: "系统强化期", focus: "语法体系 + 读解定位 + 听力场景" },
-    { ratio: 0.88, title: "套题整合期", focus: "限时练习 + 错题归因 + 弱项专攻" },
-    { ratio: 1, title: "冲刺微调期", focus: "高频回收 + 模考节奏 + 心理调整" },
+    { ratio: 0.32, title: "基础补强期", focus: t("gen.rmFocus1") },
+    { ratio: 0.66, title: "系统强化期", focus: t("gen.rmFocus2") },
+    { ratio: 0.88, title: "套题整合期", focus: t("gen.rmFocus3") },
+    { ratio: 1, title: "冲刺微调期", focus: t("gen.rmFocus4") },
   ];
 
   return phases.map((phase, index) => {
@@ -563,23 +558,23 @@ function buildRoadmap(horizon: number): RoadmapItem[] {
       title: phase.title,
       dayRange: `Day ${start}-${end}`,
       focus: phase.focus,
-      method: `每天 ${Math.round(horizon * 0.15)} 分钟主攻 + 复盘`,
+      method: t("gen.rmMethod", { n: Math.round(horizon * 0.15) }),
     };
   });
 }
 
 function buildMethodBasis(settings: PlanSettings, budget: StudyBudget): string {
   const days = daysUntil(settings.examDate);
-  const daysText = days === null ? "考试日期待确认" : `剩余 ${days} 天`;
-  const levelLabel = LEVEL_CONFIG[settings.level]?.label || settings.level;
-  return `${levelLabel} · ${daysText} · 每日 ${budget.dailyMinutes} 分钟 · ${budget.status}`;
+  const daysText = days === null ? t("gen.mbDaysUnknown") : t("gen.mbDaysLeft", { n: days });
+  const level = i18nLevelLabel(LEVEL_CONFIG[settings.level]?.label || settings.level);
+  return t("gen.mbSummary", { level, days: daysText, min: budget.dailyMinutes, status: tOption("budgetStatus", budget.status as string) });
 }
 
 function buildCheckpoints(dayIndex: number, horizon: number, phase: string): string[] {
-  if (dayIndex === 1) return ["确认材料", "完成首日记录"];
-  if (dayIndex % 14 === 0) return ["两周复盘", "调整薄弱项权重"];
-  if (dayIndex === horizon) return ["最终回顾", "整理考试清单"];
-  return [phase.includes("冲刺") ? "记录错因" : "完成反馈"];
+  if (dayIndex === 1) return [t("gen.cpConfirmMaterial"), t("gen.cpFirstRecord")];
+  if (dayIndex % 14 === 0) return [t("gen.cpBiweekly"), t("gen.cpAdjustWeak")];
+  if (dayIndex === horizon) return [t("gen.cpFinalReview"), t("gen.cpExamChecklist")];
+  return [phase.includes("冲刺") ? t("gen.cpRecordCause") : t("gen.cpFeedback")];
 }
 
 function phaseForDay(dayIndex: number, horizon: number): string {
@@ -608,6 +603,28 @@ export function getBudgetForDate(settings: PlanSettings, date: Date) {
 
 export function getTodayTargetMinutes(settings: PlanSettings): number {
   return getBudgetForDate(settings, todayStart()).totalMinutes;
+}
+
+export function getReferencePlan(): import("./constants").ReferencePlan {
+  return {
+    title: t("ref.title"),
+    subtitle: t("ref.subtitle"),
+    meta: ["N2", t("ref.meta2"), "120 min / day", t("ref.meta4"), t("ref.meta5")],
+    strategy: t("ref.strategy"),
+    tasks: [
+      { module: "kanji", title: t("ref.t1Title"), method: t("ref.t1Method"), minutes: 25 },
+      { module: "grammar", title: t("ref.t2Title"), method: t("ref.t2Method"), minutes: 35 },
+      { module: "listening", title: t("ref.t3Title"), method: t("ref.t3Method"), minutes: 30 },
+      { module: "review", title: t("ref.t4Title"), method: t("ref.t4Method"), minutes: 15 },
+    ],
+    minimum: [t("ref.min1"), t("ref.min2"), t("ref.min3")],
+    days: [
+      { label: "Day 1-3", title: t("ref.d1Title"), body: t("ref.d1Body") },
+      { label: "Day 4-7", title: t("ref.d2Title"), body: t("ref.d2Body") },
+      { label: "Day 8-10", title: t("ref.d3Title"), body: t("ref.d3Body") },
+      { label: "Day 11-14", title: t("ref.d4Title"), body: t("ref.d4Body") },
+    ],
+  };
 }
 
 export function getTodayPlanDay(plan: GeneratedPlan | null): DailyPlanItem | null {

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { GeneratedPlan, PlanEdits, PlanSettings, Profile, StudyRecord } from "./types";
 import {
   createProfile as createProfileStorage,
@@ -117,6 +117,22 @@ export function StudyDeskProvider({ children }: { children: ReactNode }) {
   // suggestions — all built from planner phrase tables) when language switches.
   const [locale, setLocaleTick] = useState(getLocale());
   useEffect(() => subscribeLocale(() => setLocaleTick(getLocale())), []);
+
+  // The plan is generated once and stored, with task prose baked in the active
+  // language. When the user switches language, regenerate so the stored plan's
+  // task titles/strategy/roadmap follow the new language too. Manual day-edits
+  // (planEdits) are preserved.
+  const prevLocaleRef = useRef(locale);
+  useEffect(() => {
+    if (prevLocaleRef.current === locale) return;
+    prevLocaleRef.current = locale;
+    setState((prev) => {
+      if (!prev.generatedPlan || !prev.activeProfileId) return prev;
+      const plan = generatePlan(prev.settings, prev.activeProfileId);
+      saveGeneratedPlan(plan, prev.activeProfileId);
+      return { ...prev, generatedPlan: plan };
+    });
+  }, [locale]);
 
   const commit = useCallback((next: StudyDeskState) => {
     setState(next);
