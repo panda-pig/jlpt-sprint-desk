@@ -79,7 +79,7 @@ export function RecordPage() {
   const recentRecords = [...state.records].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 5);
 
   return (
-    <div className="page-grid">
+    <div className="page-grid record-page-root">
       <section className="stack">
         {!state.generatedPlan && (
           <div className="notice" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -115,9 +115,10 @@ export function RecordPage() {
                         <input
                           id={`${key}Minutes`}
                           type="number"
+                          inputMode="numeric"
                           min={0}
                           placeholder={t("record.minPlaceholder")}
-                          value={form.minutes?.[key] || 0}
+                          value={form.minutes?.[key] || ""}
                           onChange={(e) => setModuleMinutes(key, Number(e.target.value))}
                         />
                       </div>
@@ -126,9 +127,10 @@ export function RecordPage() {
                         <input
                           id={`${key}Count`}
                           type="number"
+                          inputMode="numeric"
                           min={0}
                           placeholder={MODULE_COUNT_PLACEHOLDERS[key] || "10"}
-                          value={form.moduleCounts?.[key] || 0}
+                          value={form.moduleCounts?.[key] || ""}
                           onChange={(e) => setModuleCount(key, Number(e.target.value))}
                         />
                       </div>
@@ -455,6 +457,12 @@ export function RecordPage() {
           )}
         </section>
       </aside>
+
+      <div className="record-mobile-save">
+        <button className="primary-button full" type="button" onClick={handleSubmit}>
+          {todayRecord ? t("record.submitUpdate") : t("record.submitSave")}
+        </button>
+      </div>
     </div>
   );
 }

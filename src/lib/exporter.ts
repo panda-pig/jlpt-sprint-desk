@@ -347,6 +347,82 @@ p { line-height: 1.68; }
 </html>`;
 }
 
+// Escape text for an iCalendar property value (RFC 5545).
+function icsEscape(text: string): string {
+  return String(text || "")
+    .replace(/\\/g, "\\\\")
+    .replace(/;/g, "\\;")
+    .replace(/,/g, "\\,")
+    .replace(/\r?\n/g, "\\n");
+}
+
+// Fold lines longer than 75 octets per RFC 5545 (continuation lines start with a space).
+function icsFold(line: string): string {
+  if (line.length <= 75) return line;
+  const parts: string[] = [];
+  let rest = line;
+  parts.push(rest.slice(0, 75));
+  rest = rest.slice(75);
+  while (rest.length > 74) {
+    parts.push(" " + rest.slice(0, 74));
+    rest = rest.slice(74);
+  }
+  if (rest.length) parts.push(" " + rest);
+  return parts.join("\r\n");
+}
+
+function icsDate(isoDate: string): string {
+  return isoDate.replace(/-/g, "");
+}
+
+function icsDatePlusOne(isoDate: string): string {
+  // Use UTC math so the +1 day isn't cancelled by the local timezone offset
+  // when formatting back (all-day DTEND is exclusive → must be start + 1 day).
+  const [y, m, d] = isoDate.split("-").map(Number);
+  const next = new Date(Date.UTC(y, m - 1, d + 1));
+  return next.toISOString().slice(0, 10).replace(/-/g, "");
+}
+
+/**
+ * Build an iCalendar (.ics) file: one all-day event per plan day, with the
+ * day's tasks in the description. Importable into Google/Apple/Outlook calendars.
+ */
+export function buildICS(plan: GeneratedPlan, profileName: string): string {
+  const stamp = new Date().toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+  const lines: string[] = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//JLPT Sprint Desk//EN",
+    "CALSCALE:GREGORIAN",
+    "METHOD:PUBLISH",
+    icsFold(`X-WR-CALNAME:${icsEscape(`JLPT ${plan.level} · ${profileName}`)}`),
+  ];
+
+  (plan.dailyPlan || []).forEach((day) => {
+    if (!day.date) return;
+    const title = day.title || day.phase || `Day ${day.dayIndex}`;
+    const total = Number(day.totalMinutes || 0);
+    const summary = `JLPT Day ${day.dayIndex}: ${title}${total ? ` (${total}min)` : ""}`;
+    const desc = (day.tasks || [])
+      .map((task) => `• ${task.title || task.label} — ${Number(task.minutes || 0)}min`)
+      .join("\\n");
+    lines.push(
+      "BEGIN:VEVENT",
+      `UID:jlpt-${day.dayIndex}-${icsDate(day.date)}@jlpt-sprint-desk`,
+      `DTSTAMP:${stamp}`,
+      `DTSTART;VALUE=DATE:${icsDate(day.date)}`,
+      `DTEND;VALUE=DATE:${icsDatePlusOne(day.date)}`,
+      icsFold(`SUMMARY:${icsEscape(summary)}`),
+      icsFold(`DESCRIPTION:${desc}`),
+      "TRANSP:TRANSPARENT",
+      "END:VEVENT",
+    );
+  });
+
+  lines.push("END:VCALENDAR");
+  return lines.join("\r\n");
+}
+
 export function buildBackupJSON(profileName: string, plan: GeneratedPlan | null, settings: PlanSettings, edits: Record<string, string>, records: StudyRecord[]): string {
   return JSON.stringify({
     exportedAt: todayISO(),

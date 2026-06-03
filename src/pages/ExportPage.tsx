@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { FileText, Table, BarChart3, Download, Copy, Printer, Upload, AlertTriangle, Check, FileOutput } from "lucide-react";
+import { FileText, Table, BarChart3, Download, Copy, Printer, Upload, AlertTriangle, Check, FileOutput, CalendarDays } from "lucide-react";
 import { useStudyDesk } from "../lib/studyDeskContext";
-import { buildMarkdown, buildCsv, buildReport, buildBackupJSON, buildPrintView } from "../lib/exporter";
+import { buildMarkdown, buildCsv, buildReport, buildBackupJSON, buildPrintView, buildICS } from "../lib/exporter";
 import { downloadText, copyText } from "../lib/utils";
 import { toast } from "../lib/toast";
 import { useLocale } from "../i18n/LocaleProvider";
@@ -39,6 +39,9 @@ export function ExportPage() {
       case "print":
         setOutput(buildPrintView(generatedPlan));
         break;
+      case "ics":
+        setOutput(buildICS(generatedPlan, profileName));
+        break;
       default:
         setOutput("");
     }
@@ -67,6 +70,7 @@ export function ExportPage() {
       report: `jlpt-report-${profileName}-${new Date().toISOString().slice(0, 10)}.html`,
       backup: `jlpt-backup-${profileName}-${new Date().toISOString().slice(0, 10)}.json`,
       print: `jlpt-plan-${profileName}-${new Date().toISOString().slice(0, 10)}.html`,
+      ics: `jlpt-plan-${profileName}-${new Date().toISOString().slice(0, 10)}.ics`,
     };
 
     const types: Record<string, string> = {
@@ -75,6 +79,7 @@ export function ExportPage() {
       report: "text/html",
       backup: "application/json",
       print: "text/html",
+      ics: "text/calendar",
     };
 
     downloadText(filenames[activeTab] || "export.txt", output, types[activeTab] || "text/plain");
@@ -115,6 +120,7 @@ export function ExportPage() {
     { key: "report", label: t("export.reportLabel"), desc: t("export.reportDesc"), icon: BarChart3, color: "#b77a20", ext: ".html" },
     { key: "backup", label: t("export.backupLabel"), desc: t("export.backupDesc"), icon: Download, color: "#3d7757", ext: ".json" },
     { key: "print", label: t("export.printLabel"), desc: t("export.printDesc"), icon: Printer, color: "#6d5486", ext: ".html" },
+    { key: "ics", label: t("export.icsLabel"), desc: t("export.icsDesc"), icon: CalendarDays, color: "#35647c", ext: ".ics" },
   ];
 
   const activeTabInfo = tabs.find((t) => t.key === activeTab);

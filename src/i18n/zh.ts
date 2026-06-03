@@ -630,6 +630,8 @@ export const zh = {
     backupDesc: "JSON 格式全量数据",
     printLabel: "打印视图",
     printDesc: "A4 纸友好排版",
+    icsLabel: "日历订阅",
+    icsDesc: "导入 Google/Apple 日历",
     chooseFormat: "选择导出格式",
     chooseFormatDesc: "点击卡片生成对应格式的导出内容。",
     exportContent: "导出内容",

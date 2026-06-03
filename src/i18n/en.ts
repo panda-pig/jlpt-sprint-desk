@@ -701,6 +701,8 @@ export const en = {
     backupDesc: "Complete data in JSON",
     printLabel: "Print view",
     printDesc: "A4-friendly layout",
+    icsLabel: "Calendar",
+    icsDesc: "Import to Google/Apple Calendar",
     chooseFormat: "Choose export format",
     chooseFormatDesc: "Click a card to generate that format.",
     exportContent: "Export content",

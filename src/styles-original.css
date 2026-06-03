@@ -3111,6 +3111,40 @@ tr:last-child td {
   }
 }
 
+/* Sticky mobile save bar on the record page — hidden on desktop, shown above
+   the bottom nav on phones so users don't scroll a long form to save. */
+.record-mobile-save {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .record-mobile-save {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 60px;
+    z-index: 90;
+    display: block;
+    padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0));
+    background: rgba(246, 247, 244, 0.94);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid var(--line);
+  }
+  .record-mobile-save .primary-button {
+    min-height: 46px;
+    font-size: 15px;
+  }
+  /* The inline submit button row is redundant on mobile; the sticky bar covers it. */
+  .record-form > .button-row {
+    display: none;
+  }
+  /* Reserve bottom room so the sticky save bar + bottom nav don't cover the
+     last content (recent records live in the aside, which stacks last). */
+  .record-page-root > aside:last-child {
+    padding-bottom: 132px;
+  }
+}
+
 .bottom-nav {
   position: fixed;
   bottom: 0;
