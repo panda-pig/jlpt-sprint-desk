@@ -200,6 +200,7 @@ export function StudyDeskProvider({ children }: { children: ReactNode }) {
       records: nextActiveId ? getRecords(nextActiveId) : [],
     };
     setState(next);
+    schedulePush(); // profile data changed → mirror to cloud
     toast(t("toast.profileDeleted"));
   }, [state]);
 
@@ -215,6 +216,7 @@ export function StudyDeskProvider({ children }: { children: ReactNode }) {
     };
     toast(t("toast.profileSwitched"));
     setState(next);
+    schedulePush(); // active profile pointer changed → mirror to cloud
   }, [state]);
 
   const updateProfileName = useCallback((id: string, name: string) => {
@@ -223,6 +225,7 @@ export function StudyDeskProvider({ children }: { children: ReactNode }) {
       ...prev,
       profiles: prev.profiles.map((p) => (p.id === id ? { ...p, name } : p)),
     }));
+    schedulePush(); // profile name changed → mirror to cloud
   }, []);
 
   const updateSettings = useCallback((patch: Partial<PlanSettings>) => {

@@ -78,6 +78,11 @@ export function RecordPage() {
 
   const recentRecords = [...state.records].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 5);
 
+  // The summary/recommendations must reflect the record currently being edited
+  // (which may be a past date), not always today's record.
+  const editingDate = form.date || todayISO();
+  const summaryRecord = state.records.find((r) => r.date === editingDate) || null;
+
   return (
     <div className="page-grid record-page-root">
       <section className="stack">
@@ -326,32 +331,32 @@ export function RecordPage() {
           </div>
 
           <div className="record-summary">
-            {todayRecord ? (
+            {summaryRecord ? (
               <>
                 <div className="record-result">
                   <div className="record-summary-head">
                     <div>
                       <span className="eyebrow">Saved Record</span>
-                      <strong>{t("record.recordedOn", { date: todayRecord.date })}</strong>
+                      <strong>{t("record.recordedOn", { date: summaryRecord.date })}</strong>
                     </div>
                     <span className="metric-chip">
-                      <strong>{tOption("completion", todayRecord.completion)}</strong>
-                      {getCompletionPercent(todayRecord.completion)}%
+                      <strong>{tOption("completion", summaryRecord.completion)}</strong>
+                      {getCompletionPercent(summaryRecord.completion)}%
                     </span>
                   </div>
                   <div className="record-facts">
-                    <span>{t("record.actualTime", { n: getRecordMinutes(todayRecord) })}</span>
-                    <span>{t("record.countDone")}{getRecordTotalCount(todayRecord) > 0 ? t("record.itemsUnit", { n: getRecordTotalCount(todayRecord) }) : summarizeModuleCounts(todayRecord.moduleCounts || {})}</span>
-                    <span>{t("record.accuracyRate")}{getRecordAccuracyPercent(todayRecord) > 0 ? getRecordAccuracyPercent(todayRecord) + "%" : (todayRecord.accuracy || t("record.notFilled"))}</span>
-                    <span>{t("record.wrongCount", { n: normalizeWrongQuestionText(todayRecord).split(/\n/).filter(Boolean).length })}</span>
-                    <span>{t("record.causes")}{(todayRecord.causes || []).length ? (todayRecord.causes || []).map((c) => tOption("errorCause", c)).join(t("common.listSep")) : t("record.noneSelected")}</span>
+                    <span>{t("record.actualTime", { n: getRecordMinutes(summaryRecord) })}</span>
+                    <span>{t("record.countDone")}{getRecordTotalCount(summaryRecord) > 0 ? t("record.itemsUnit", { n: getRecordTotalCount(summaryRecord) }) : summarizeModuleCounts(summaryRecord.moduleCounts || {})}</span>
+                    <span>{t("record.accuracyRate")}{getRecordAccuracyPercent(summaryRecord) > 0 ? getRecordAccuracyPercent(summaryRecord) + "%" : (summaryRecord.accuracy || t("record.notFilled"))}</span>
+                    <span>{t("record.wrongCount", { n: normalizeWrongQuestionText(summaryRecord).split(/\n/).filter(Boolean).length })}</span>
+                    <span>{t("record.causes")}{(summaryRecord.causes || []).length ? (summaryRecord.causes || []).map((c) => tOption("errorCause", c)).join(t("common.listSep")) : t("record.noneSelected")}</span>
                   </div>
                 </div>
 
                 <div className="record-result">
                   <strong>{t("record.tomorrowTime")}</strong>
                   {(() => {
-                    const timePlan = buildTomorrowTimePlan(todayRecord, state.generatedPlan);
+                    const timePlan = buildTomorrowTimePlan(summaryRecord, state.generatedPlan);
                     return (
                       <>
                         <div className="mini-plan">
@@ -372,7 +377,7 @@ export function RecordPage() {
                 <div className="record-result">
                   <strong>{t("record.tomorrowGoals")}</strong>
                   <ul>
-                    {buildRecordRecommendation(todayRecord).map((action, i) => (
+                    {buildRecordRecommendation(summaryRecord).map((action, i) => (
                       <li key={i}>{action}</li>
                     ))}
                   </ul>

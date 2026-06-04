@@ -33,8 +33,9 @@ export function KeyboardShortcuts() {
       const key = e.key.toLowerCase();
       setPressedKeys((prev) => [...prev.slice(-2), key]);
 
-      // 帮助面板
-      if (key === "?" && !e.shiftKey && !e.ctrlKey && !e.metaKey) {
+      // Help panel. "?" usually requires Shift (Shift + /), so don't exclude
+      // Shift here — only block Ctrl/Cmd combinations.
+      if (key === "?" && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
         setShowHelp(true);
         return;

@@ -1,7 +1,12 @@
 import { supabase, isCloudEnabled } from "./supabase";
 
-// Local marker for the last successful cloud sync timestamp (cloud updated_at).
-const LAST_SYNC_KEY = "jlptSprintDeskLastSync";
+// Local data "clock": a monotonically-meaningful timestamp of the local app
+// data. It is bumped on every local write (markLocalModified), and aligned to
+// the synced version after a successful push/pull. It is intentionally NOT
+// cleared on sign-out, so that edits made while signed out still count as
+// "newer than cloud" on the next sign-in (prevents the cloud from silently
+// overwriting local changes). Compared against cloud.updated_at in reconcile.
+const LOCAL_CLOCK_KEY = "jlptSprintDeskLastSync";
 const PREFIX = "jlptSprintDesk";
 
 export type CloudData = Record<string, string>;
@@ -11,7 +16,7 @@ export function collectLocalData(): CloudData {
   const out: CloudData = {};
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);
-    if (key && key.startsWith(PREFIX) && key !== LAST_SYNC_KEY) {
+    if (key && key.startsWith(PREFIX) && key !== LOCAL_CLOCK_KEY) {
       out[key] = localStorage.getItem(key) || "";
     }
   }
@@ -24,18 +29,23 @@ export function applyCloudData(data: CloudData): void {
   const stale: string[] = [];
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);
-    if (key && key.startsWith(PREFIX) && key !== LAST_SYNC_KEY) stale.push(key);
+    if (key && key.startsWith(PREFIX) && key !== LOCAL_CLOCK_KEY) stale.push(key);
   }
   stale.forEach((k) => localStorage.removeItem(k));
   Object.entries(data).forEach(([k, v]) => localStorage.setItem(k, v));
 }
 
-export function getLastSync(): number {
-  return Number(localStorage.getItem(LAST_SYNC_KEY) || 0);
+function getLocalClock(): number {
+  return Number(localStorage.getItem(LOCAL_CLOCK_KEY) || 0);
 }
 
-function setLastSync(ts: number): void {
-  localStorage.setItem(LAST_SYNC_KEY, String(ts));
+function setLocalClock(ts: number): void {
+  localStorage.setItem(LOCAL_CLOCK_KEY, String(ts));
+}
+
+/** Bump the local clock on every local write (called from the store's commit). */
+export function markLocalModified(): void {
+  setLocalClock(Date.now());
 }
 
 // ── Auth ────────────────────────────────────────────────────────────────
@@ -44,7 +54,9 @@ export async function sendMagicLink(email: string): Promise<{ error: string | nu
   if (!supabase) return { error: "云同步未启用" };
   const { error } = await supabase.auth.signInWithOtp({
     email,
-    options: { emailRedirectTo: window.location.origin },
+    // origin + pathname preserves a non-root deploy base (e.g. GitHub Pages
+    // subpath); the hash route is irrelevant to the magic-link redirect target.
+    options: { emailRedirectTo: window.location.origin + window.location.pathname },
   });
   return { error: error?.message || null };
 }
@@ -52,7 +64,8 @@ export async function sendMagicLink(email: string): Promise<{ error: string | nu
 export async function signOut(): Promise<void> {
   if (!supabase) return;
   await supabase.auth.signOut();
-  localStorage.removeItem(LAST_SYNC_KEY);
+  // Intentionally keep LOCAL_CLOCK_KEY: edits made while signed out must still
+  // count as newer than cloud on the next sign-in, so we don't overwrite them.
 }
 
 export async function getCurrentEmail(): Promise<string | null> {
@@ -92,32 +105,37 @@ export async function pushCloud(): Promise<{ error: string | null }> {
     updated_at: new Date(now).toISOString(),
   });
   if (error) return { error: error.message };
-  setLastSync(now);
+  // Local is now in sync with cloud at `now`.
+  setLocalClock(now);
   return { error: null };
 }
 
 export type SyncOutcome = "pulled" | "pushed" | "in-sync" | "disabled" | "error";
 
 /**
- * Reconcile local and cloud on sign-in.
- * - Cloud empty       → push local up (first device).
- * - Cloud newer       → pull down, caller should reload to apply.
- * - Local newer/equal → push local up.
+ * Reconcile local and cloud on sign-in, comparing the cloud's updated_at to the
+ * LOCAL CLOCK (bumped on every local write, persisted across sign-out):
+ * - Cloud empty                 → push local up (first device).
+ * - Cloud newer than local edits → pull down, caller should reload to apply.
+ * - Local newer/equal            → push local up (local edits win).
+ *
+ * Because the local clock survives sign-out, edits made while signed out are
+ * "newer than cloud" and won't be silently overwritten on re-login.
  */
 export async function reconcileOnSignIn(): Promise<SyncOutcome> {
   if (!isCloudEnabled()) return "disabled";
   try {
     const { data: cloud, updatedAt } = await pullCloud();
-    const lastSync = getLastSync();
+    const localClock = getLocalClock();
 
     if (!cloud) {
       const { error } = await pushCloud();
       return error ? "error" : "pushed";
     }
-    // Cloud has data newer than what we last synced → adopt it.
-    if (updatedAt > lastSync) {
+    // Cloud is newer than our local data → adopt it.
+    if (updatedAt > localClock) {
       applyCloudData(cloud);
-      setLastSync(updatedAt);
+      setLocalClock(updatedAt);
       return "pulled";
     }
     // Local is up to date or ahead → push.
@@ -132,10 +150,15 @@ export async function reconcileOnSignIn(): Promise<SyncOutcome> {
 let pushTimer: ReturnType<typeof setTimeout> | null = null;
 
 export function schedulePush(): void {
+  // Always record that local data changed — even when cloud sync is disabled —
+  // so the local clock is meaningful if the user enables sync later.
+  markLocalModified();
   if (!isCloudEnabled()) return;
   if (pushTimer) clearTimeout(pushTimer);
   pushTimer = setTimeout(() => {
     pushTimer = null;
+    // Re-stamp the clock to the push time inside pushCloud so it aligns with the
+    // cloud's updated_at (avoids an unnecessary pull on the next sign-in).
     pushCloud().catch(() => {});
   }, 1500);
 }
