@@ -1,6 +1,6 @@
 import { createContext, useContext } from "react";
 import type { GeneratedPlan, PlanEdits, PlanSettings, Profile, StudyRecord } from "./types";
-import type { getNextAction, getPlanHealth, getRecentStats, getTodayPlanDay, getUpcomingDays } from "./planner";
+import type { getNextAction, getPlanHealth, getRecentStats, getTodayPlanDay, getUpcomingDays, suggestPlanAdjustment } from "./planner";
 
 interface StudyDeskState {
   profiles: Profile[];
@@ -21,6 +21,7 @@ export interface StudyDeskContextValue {
   nextAction: ReturnType<typeof getNextAction>;
   suggestions: string[];
   tomorrowSuggestion: { title: string; minutes: number; detail: string } | null;
+  planAdjustment: ReturnType<typeof suggestPlanAdjustment>;
   moduleTotals: Record<string, number>;
   causeCounts: Record<string, number>;
   createProfile: (name: string) => void;
@@ -29,6 +30,7 @@ export interface StudyDeskContextValue {
   updateProfileName: (id: string, name: string) => void;
   updateSettings: (patch: Partial<PlanSettings>) => void;
   generateNewPlan: () => void;
+  applyAutoAdjust: () => void;
   savePlanEdit: (dayIndex: number, text: string) => void;
   deletePlanEdit: (dayIndex: number) => void;
   saveRecord: (record: Partial<StudyRecord>) => void;

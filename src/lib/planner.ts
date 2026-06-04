@@ -1022,8 +1022,8 @@ export function suggestPlanAdjustment(records: StudyRecord[], settings: PlanSett
   if (!records || records.length === 0) {
     return {
       type: "maintain",
-      reason: "暂无足够记录数据",
-      details: ["需要至少3天学习记录才能给出调整建议"],
+      reason: t("adjust.noData"),
+      details: [t("adjust.needThreeDays")],
     };
   }
 
@@ -1033,39 +1033,38 @@ export function suggestPlanAdjustment(records: StudyRecord[], settings: PlanSett
   let reason: string;
 
   if (stats.recordedDays < 3) {
-    reason = `近7天仅有${stats.recordedDays}天记录，继续当前计划积累数据`;
-    details.push(`每日目标 ${settings.dailyMinutes} 分钟`);
-    details.push("建议先完成连续3天记录，再根据反馈调整计划");
+    reason = t("adjust.fewRecords", { n: stats.recordedDays });
+    details.push(t("adjust.dailyGoalMin", { n: settings.dailyMinutes }));
+    details.push(t("adjust.finishThreeFirst"));
     return { type, reason, details };
   }
 
   if (stats.avgCompletion < 50) {
     type = "decrease";
-    reason = `近7天平均完成度仅${stats.avgCompletion}%，建议降低任务量`;
-    details.push(`当前每日目标 ${settings.dailyMinutes} 分钟，建议降至 ${Math.round(settings.dailyMinutes * 0.8)} 分钟`);
-    details.push("把大任务拆成 2-3 个 15-20 分钟的小块");
+    reason = t("adjust.decreaseReason", { n: stats.avgCompletion });
+    details.push(t("adjust.decreaseDetail", { a: settings.dailyMinutes, b: Math.round(settings.dailyMinutes * 0.8) }));
+    details.push(t("adjust.decreaseTip"));
   } else if (stats.avgCompletion > 90 && stats.avgAccuracy > 80) {
     type = "increase";
-    reason = `近7天完成度${stats.avgCompletion}%、正确率${stats.avgAccuracy}%，可适当加量`;
-    details.push(`当前每日目标 ${settings.dailyMinutes} 分钟，可提升至 ${Math.round(settings.dailyMinutes * 1.1)} 分钟`);
-    details.push("建议增加薄弱模块的精练或模拟套题");
+    reason = t("adjust.increaseReason", { c: stats.avgCompletion, acc: stats.avgAccuracy });
+    details.push(t("adjust.increaseDetail", { a: settings.dailyMinutes, b: Math.round(settings.dailyMinutes * 1.1) }));
+    details.push(t("adjust.increaseTip"));
   } else {
-    reason = "当前节奏稳定，建议保持";
-    details.push(`近7天完成度 ${stats.avgCompletion}%，正确率 ${stats.avgAccuracy}%`);
-    details.push("继续当前计划，关注错题归因");
+    reason = t("adjust.maintainReason");
+    details.push(t("adjust.maintainDetail", { c: stats.avgCompletion, acc: stats.avgAccuracy }));
+    details.push(t("adjust.maintainTip"));
   }
 
   const moduleTotals = getModuleTotals(records);
   const weakest = Object.entries(moduleTotals).sort(([, a], [, b]) => a - b)[0];
   if (weakest && weakest[1] < Math.max(30, stats.totalMinutes * 0.08)) {
-    const label = MODULE_LABELS[weakest[0]] || weakest[0];
-    details.push(`${label}投入过少（${Math.round(weakest[1])}min），建议增加专项练习`);
+    details.push(t("adjust.weakModule", { label: moduleLabel(weakest[0]), n: Math.round(weakest[1]) }));
   }
 
   const causes = getCauseCounts(records);
   const topCause = Object.entries(causes).sort(([, a], [, b]) => b - a)[0];
   if (topCause && topCause[1] >= 3) {
-    details.push(`高频错因「${topCause[0]}」出现 ${topCause[1]} 次，建议专项复盘`);
+    details.push(t("adjust.topCause", { cause: tOption("errorCause", topCause[0]), n: topCause[1] }));
   }
 
   return { type, reason, details };

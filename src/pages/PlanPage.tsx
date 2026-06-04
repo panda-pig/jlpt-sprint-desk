@@ -34,6 +34,8 @@ export function PlanPage() {
     state,
     upcomingDays,
     health,
+    planAdjustment,
+    applyAutoAdjust,
     savePlanEdit,
     deletePlanEdit,
     generateNewPlan,
@@ -176,6 +178,36 @@ export function PlanPage() {
               <span className="diagnostic-value">{generatedPlan.strategy.focus}</span>
             </div>
           </div>
+        </section>
+
+        {/* Smart adjustment (data-driven, from the last 7 days) */}
+        <section className="panel adjust-panel">
+          <div className="section-head">
+            <div>
+              <h2>{t("adjust.cardTitle")}</h2>
+              <p>{t("adjust.cardDesc")}</p>
+            </div>
+            <span className={`adjust-badge adjust-${planAdjustment.type}`}>
+              {planAdjustment.type === "increase"
+                ? t("adjust.badgeIncrease")
+                : planAdjustment.type === "decrease"
+                ? t("adjust.badgeDecrease")
+                : t("adjust.badgeMaintain")}
+            </span>
+          </div>
+          <p className="adjust-reason">{planAdjustment.reason}</p>
+          <ul className="list">
+            {planAdjustment.details.map((d, i) => (
+              <li key={i} className="list-item"><span>{d}</span></li>
+            ))}
+          </ul>
+          {planAdjustment.type !== "maintain" && (
+            <div className="button-row" style={{ marginTop: 14 }}>
+              <button className="primary-button" type="button" onClick={applyAutoAdjust}>
+                {t("adjust.apply")}
+              </button>
+            </div>
+          )}
         </section>
 
         {/* 14-day calendar */}

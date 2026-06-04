@@ -18,9 +18,11 @@ import {
   updateProfileName as updateProfileNameStorage,
 } from "./storage";
 import {
+  autoAdjustPlan,
   buildAnalysisSuggestions,
   buildTomorrowSuggestion,
   generatePlan,
+  suggestPlanAdjustment,
   getCauseCounts,
   getModuleTotals,
   getNextAction,
@@ -169,6 +171,10 @@ export function StudyDeskProvider({ children }: { children: ReactNode }) {
     return buildTomorrowSuggestion(todayRecord);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [todayRecord, locale]);
+  // Data-driven plan-adjustment advice (increase/decrease/maintain) from the
+  // last 7 days; locale-reactive because the strings come from the dict.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const planAdjustment = useMemo(() => suggestPlanAdjustment(state.records, state.settings), [state.records, state.settings, locale]);
 
   const createProfile = useCallback((name: string) => {
     const profile = createProfileStorage(name);
@@ -240,6 +246,17 @@ export function StudyDeskProvider({ children }: { children: ReactNode }) {
     const next: StudyDeskState = { ...state, generatedPlan: plan, planEdits: {} };
     commit(next);
     toast(t("toast.planGenerated"));
+  }, [state, commit]);
+
+  // Apply the data-driven adjustment (rescale task minutes from recent records).
+  const applyAutoAdjust = useCallback(() => {
+    if (!state.generatedPlan) {
+      toast(t("adjust.noPlan"));
+      return;
+    }
+    const adjusted = autoAdjustPlan(state.generatedPlan, state.records);
+    commit({ ...state, generatedPlan: adjusted });
+    toast(t("adjust.applied"));
   }, [state, commit]);
 
   const savePlanEdit = useCallback((dayIndex: number, text: string) => {
@@ -320,6 +337,7 @@ export function StudyDeskProvider({ children }: { children: ReactNode }) {
     nextAction,
     suggestions,
     tomorrowSuggestion,
+    planAdjustment,
     moduleTotals,
     causeCounts,
     createProfile,
@@ -328,6 +346,7 @@ export function StudyDeskProvider({ children }: { children: ReactNode }) {
     updateProfileName,
     updateSettings,
     generateNewPlan,
+    applyAutoAdjust,
     savePlanEdit,
     deletePlanEdit,
     saveRecord,

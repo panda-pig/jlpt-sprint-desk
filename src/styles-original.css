@@ -3123,6 +3123,42 @@ tr:last-child td {
   }
 }
 
+/* ── Smart plan-adjustment card ── */
+.adjust-panel .adjust-reason {
+  margin: 0 0 12px;
+  color: var(--ink-soft);
+  font-weight: 700;
+}
+
+.adjust-badge {
+  flex-shrink: 0;
+  align-self: start;
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.adjust-badge.adjust-increase {
+  color: #1f5135;
+  background: rgba(61, 119, 87, 0.16);
+}
+
+.adjust-badge.adjust-decrease {
+  color: #8a4a13;
+  background: rgba(183, 122, 32, 0.16);
+}
+
+.adjust-badge.adjust-maintain {
+  color: var(--ink-soft);
+  background: var(--surface-muted);
+  border: 1px solid var(--line);
+}
+
 /* Sticky mobile save bar on the record page — hidden on desktop, shown above
    the bottom nav on phones so users don't scroll a long form to save. */
 .record-mobile-save {
