@@ -547,6 +547,8 @@ export const zh = {
     badgeMaintain: "建议保持",
     apply: "一键应用到计划",
     applied: "已按建议调整计划。",
+    alreadyApplied: "已按当前记录调整过，记录更新后会重新给建议。",
+    appliedNote: "已按当前记录应用调整。",
     noPlan: "请先生成学习计划。",
     noData: "暂无足够记录数据",
     needThreeDays: "需要至少 3 天学习记录才能给出调整建议",

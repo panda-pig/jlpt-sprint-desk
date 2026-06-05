@@ -618,6 +618,8 @@ export const en = {
     badgeMaintain: "Hold steady",
     apply: "Apply to plan",
     applied: "Plan adjusted as suggested.",
+    alreadyApplied: "Already applied for the current records — a new suggestion appears after you log more.",
+    appliedNote: "Applied for the current records.",
     noPlan: "Generate a study plan first.",
     noData: "Not enough record data yet",
     needThreeDays: "At least 3 days of records are needed to suggest an adjustment",

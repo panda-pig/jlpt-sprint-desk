@@ -18,7 +18,8 @@ import {
   updateProfileName as updateProfileNameStorage,
 } from "./storage";
 import {
-  autoAdjustPlan,
+  adjustSettingsFromRecords,
+  recordsSignature,
   buildAnalysisSuggestions,
   buildTomorrowSuggestion,
   generatePlan,
@@ -132,6 +133,8 @@ export function StudyDeskProvider({ children }: { children: ReactNode }) {
       if (!prev.generatedPlan || !prev.activeProfileId) return prev;
       const plan = generatePlan(prev.settings, prev.activeProfileId);
       saveGeneratedPlan(plan, prev.activeProfileId);
+      // The stored plan's prose just changed → mark local + mirror to cloud.
+      schedulePush();
       return { ...prev, generatedPlan: plan };
     });
   }, [locale]);
@@ -248,14 +251,27 @@ export function StudyDeskProvider({ children }: { children: ReactNode }) {
     toast(t("toast.planGenerated"));
   }, [state, commit]);
 
-  // Apply the data-driven adjustment (rescale task minutes from recent records).
+  // Apply the data-driven adjustment by changing the time settings and
+  // regenerating the plan, so the budget/pie/daily-target/tasks all stay
+  // consistent. A records signature blocks re-applying for unchanged data.
   const applyAutoAdjust = useCallback(() => {
-    if (!state.generatedPlan) {
+    if (!state.generatedPlan || !state.activeProfileId) {
       toast(t("adjust.noPlan"));
       return;
     }
-    const adjusted = autoAdjustPlan(state.generatedPlan, state.records);
-    commit({ ...state, generatedPlan: adjusted });
+    const sig = recordsSignature(state.records);
+    if (state.generatedPlan.adjustmentSignature === sig) {
+      toast(t("adjust.alreadyApplied"));
+      return;
+    }
+    const nextSettings = adjustSettingsFromRecords(state.settings, state.records);
+    if (!nextSettings) {
+      toast(t("adjust.alreadyApplied"));
+      return;
+    }
+    const plan = generatePlan(nextSettings, state.activeProfileId);
+    plan.adjustmentSignature = sig;
+    commit({ ...state, settings: nextSettings, generatedPlan: plan });
     toast(t("adjust.applied"));
   }, [state, commit]);
 

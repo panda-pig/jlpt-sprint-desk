@@ -135,6 +135,9 @@ export interface GeneratedPlan {
   dailyPlan: DailyPlanItem[];
   methodBasis: string;
   settingsSnapshot: PlanSettings;
+  /** Signature of the records that the smart adjustment was last applied for —
+   *  prevents re-applying (compounding) the same adjustment for unchanged data. */
+  adjustmentSignature?: string;
 }
 
 export interface StudyRecord {

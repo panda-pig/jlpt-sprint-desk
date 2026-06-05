@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Save, RotateCcw, BookOpen, ClipboardList, ArrowRight, Settings } from "lucide-react";
 import { useStudyDesk } from "../lib/studyDeskContext";
 import { MODULE_COLORS, RECORD_MODULE_KEYS } from "../lib/constants";
-import { mergeDayWithEdit, buildStudyBudget, getReferencePlan } from "../lib/planner";
+import { mergeDayWithEdit, buildStudyBudget, getReferencePlan, recordsSignature } from "../lib/planner";
 import { todayISO } from "../lib/utils";
 import { useLocale } from "../i18n/LocaleProvider";
 import { levelLabel as i18nLevelLabel, phaseLabel, moduleLabel, moduleShort } from "../i18n";
@@ -202,11 +202,15 @@ export function PlanPage() {
             ))}
           </ul>
           {planAdjustment.type !== "maintain" && (
-            <div className="button-row" style={{ marginTop: 14 }}>
-              <button className="primary-button" type="button" onClick={applyAutoAdjust}>
-                {t("adjust.apply")}
-              </button>
-            </div>
+            generatedPlan.adjustmentSignature === recordsSignature(records) ? (
+              <p className="muted" style={{ marginTop: 12, fontSize: 13 }}>{t("adjust.appliedNote")}</p>
+            ) : (
+              <div className="button-row" style={{ marginTop: 14 }}>
+                <button className="primary-button" type="button" onClick={applyAutoAdjust}>
+                  {t("adjust.apply")}
+                </button>
+              </div>
+            )
           )}
         </section>
 

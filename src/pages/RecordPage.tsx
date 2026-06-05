@@ -322,7 +322,7 @@ export function RecordPage() {
 
             <div className="button-row">
               <button className="primary-button" type="button" onClick={handleSubmit}>
-                {todayRecord ? t("record.submitUpdate") : t("record.submitSave")}
+                {summaryRecord ? t("record.submitUpdate") : t("record.submitSave")}
               </button>
               <a className="secondary-button" href="#/analysis" onClick={(e) => { e.preventDefault(); navigate("/analysis"); }}>
                 {t("record.viewReview")}
@@ -465,7 +465,7 @@ export function RecordPage() {
 
       <div className="record-mobile-save">
         <button className="primary-button full" type="button" onClick={handleSubmit}>
-          {todayRecord ? t("record.submitUpdate") : t("record.submitSave")}
+          {summaryRecord ? t("record.submitUpdate") : t("record.submitSave")}
         </button>
       </div>
     </div>

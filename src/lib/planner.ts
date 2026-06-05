@@ -902,6 +902,55 @@ function mapCauseToModule(cause: string): string {
   return causeModuleMap[cause] || "review";
 }
 
+/** Stable signature of the last 7 days of records — changes only when the data
+ *  that drives the smart adjustment changes. Used to gate re-applying it. */
+export function recordsSignature(records: StudyRecord[]): string {
+  const dates = Array.from({ length: 7 }, (_, i) => toISODate(addDays(todayStart(), i - 6)));
+  const byDate = new Map(records.map((r) => [r.date, r]));
+  return dates
+    .map((d) => {
+      const r = byDate.get(d);
+      if (!r) return `${d}:_`;
+      const mins = RECORD_MODULE_KEYS.reduce((t, k) => t + Number(r.minutes?.[k] || 0), 0);
+      return `${d}:${r.completion}:${r.accuracy || ""}:${mins}:${(r.causes || []).join("|")}`;
+    })
+    .join(";");
+}
+
+/**
+ * Apply the data-driven adjustment by changing the underlying time settings
+ * (so budget, pie chart, daily target and tasks all stay consistent after a
+ * regeneration) plus nudging weak-module focus. Returns null when there is
+ * nothing to apply (maintain / not enough data).
+ */
+export function adjustSettingsFromRecords(settings: PlanSettings, records: StudyRecord[]): PlanSettings | null {
+  const advice = suggestPlanAdjustment(records, settings);
+  if (advice.type === "maintain") return null;
+
+  const factor = advice.type === "decrease" ? 0.8 : 1.1;
+  const dates = Array.from({ length: 7 }, (_, i) => toISODate(addDays(todayStart(), i - 6)));
+  const byDate = new Map(records.map((r) => [r.date, r]));
+  const recent = dates.map((d) => byDate.get(d)).filter(Boolean) as StudyRecord[];
+
+  const next: Partial<PlanSettings> = {
+    weekdayMinutes: Math.round(settings.weekdayMinutes * factor),
+    weekendMinutes: Math.round(settings.weekendMinutes * factor),
+    dailyMinutes: Math.round((settings.dailyMinutes || settings.weekdayMinutes) * factor),
+  };
+
+  // If one error cause recurs across recent days, give its module more weight.
+  const cause = findConsecutiveCause(recent);
+  if (cause) {
+    const mod = mapCauseToModule(cause);
+    if (mod && mod !== "review") {
+      const weaknesses = settings.weaknesses || [];
+      if (!weaknesses.includes(mod)) next.weaknesses = [...weaknesses, mod];
+    }
+  }
+
+  return normalizeSettings({ ...settings, ...next });
+}
+
 export function autoAdjustPlan(plan: GeneratedPlan, records: StudyRecord[]): GeneratedPlan {
   if (!plan) return plan;
 
