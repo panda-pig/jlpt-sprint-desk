@@ -281,11 +281,11 @@ export const zh = {
   dashboard: {
     countdown: "考试倒计时",
     daysToSet: "去设置考试日期",
-    daysLeftSmall: "Days left",
+    daysLeftSmall: "天",
     pendingSetup: "待设置",
     todayGoal: "今日目标",
     totalInvested: "累计投入",
-    hours: "hours",
+    hours: "小时",
     todayLoop: "今日学习循环",
     todayLoopDesc: "从计划到记录再到复盘，保持一个轻量闭环。",
     todayRecordedHint: "今日已记录，可按真实表现更新。",

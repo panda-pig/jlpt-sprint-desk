@@ -97,9 +97,12 @@ export function moduleShort(key: string): string {
   return t(`moduleShort.${key}`);
 }
 
-/** Translate a level label (e.g. "N1 冲刺") — falls back to the input. */
+/** Translate a level label (e.g. "N1 冲刺") — falls back to the input when the
+ *  value is a bare level code like "N1" that has no dictionary entry. */
 export function levelLabel(chineseLabel: string): string {
-  return t(`level.${chineseLabel}`);
+  const key = `level.${chineseLabel}`;
+  const out = t(key);
+  return out === key ? chineseLabel : out;
 }
 
 /** Display a stored plan phase (Chinese in data) in the active language. */
