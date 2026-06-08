@@ -21,9 +21,25 @@
   --coral: #b0563f;
   --green: #4f7c5f;
   --red: #b4423a;
-  --shadow: 0 1px 3px rgba(40, 40, 35, 0.05), 0 10px 28px rgba(40, 40, 35, 0.05);
-  --shadow-soft: 0 1px 2px rgba(40, 40, 35, 0.04);
+  /* Elevation — tinted to the warm-paper hue, layered for real depth. */
+  --shadow-soft: 0 1px 2px rgba(44, 43, 39, 0.04), 0 1px 1px rgba(44, 43, 39, 0.03);
+  --shadow: 0 1px 2px rgba(44, 43, 39, 0.05), 0 8px 20px -8px rgba(44, 43, 39, 0.12);
+  --shadow-lift: 0 2px 4px rgba(44, 43, 39, 0.06), 0 16px 34px -12px rgba(44, 43, 39, 0.16);
+  /* Shape scale — one consistent system (controls / cards / pills). */
+  --radius-sm: 9px;
   --radius: 12px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+  /* Spacing scale (4px base). */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --space-8: 40px;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --sidebar-width: 248px;
   --topbar-height: 72px;
   font-family:
@@ -31,8 +47,11 @@
     system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color: var(--ink);
   background: var(--bg);
+  /* Inter optical refinements: better lowercase 'a'/'g', tabular figures off by default. */
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 * {
@@ -50,7 +69,16 @@ body {
   color: var(--ink);
   background: var(--bg);
   font-size: 15px;
-  line-height: 1.55;
+  line-height: 1.6;
+  letter-spacing: -0.003em;
+}
+
+/* Headings balance onto even lines; body paragraphs avoid orphans. */
+h1, h2, h3, h4 {
+  text-wrap: balance;
+}
+p {
+  text-wrap: pretty;
 }
 
 button,
@@ -348,7 +376,7 @@ img {
 .page-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 352px;
-  gap: 24px;
+  gap: 26px;
   align-items: start;
 }
 
@@ -361,7 +389,7 @@ img {
 
 .stack {
   display: grid;
-  gap: 20px;
+  gap: 22px;
 }
 
 .two-col {
@@ -387,14 +415,15 @@ img {
 .hero-panel {
   min-width: 0;
   border: 1px solid var(--line);
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
   background: var(--surface);
   box-shadow: var(--shadow-soft);
+  transition: box-shadow 0.25s var(--ease), border-color 0.25s var(--ease), transform 0.25s var(--ease);
 }
 
 .card,
 .panel {
-  padding: 22px;
+  padding: 24px;
 }
 
 /* Flat, light hero — no photo, dark text on surface (Redesign B). */
@@ -440,7 +469,7 @@ img {
   justify-content: space-between;
   align-items: flex-start;
   gap: 16px;
-  margin-bottom: 18px;
+  margin-bottom: 20px;
 }
 
 .section-head h2,
@@ -524,7 +553,7 @@ img {
   border-radius: var(--radius);
   background: var(--primary);
   color: #fff;
-  font-weight: 850;
+  font-weight: 740;
 }
 
 .flow-steps strong,
@@ -608,7 +637,7 @@ img {
   color: #fff;
   background: var(--primary);
   font-size: 22px;
-  font-weight: 850;
+  font-weight: 740;
 }
 
 .setup-title-row.compact .setup-step-badge {
@@ -656,7 +685,7 @@ img {
   background: var(--surface);
   color: var(--primary-strong);
   font-size: 18px;
-  font-weight: 850;
+  font-weight: 740;
   white-space: nowrap;
 }
 
@@ -962,7 +991,7 @@ img {
 .calendar-day-top span {
   color: var(--muted);
   font-size: 11px;
-  font-weight: 850;
+  font-weight: 740;
 }
 
 .calendar-day-top strong {
@@ -997,7 +1026,7 @@ img {
   border: 1px solid var(--line);
   color: var(--primary-strong);
   font-size: 10px;
-  font-weight: 850;
+  font-weight: 740;
 }
 
 .calendar-modules {
@@ -1089,7 +1118,7 @@ img {
   gap: 8px;
   color: var(--muted);
   font-size: 12px;
-  font-weight: 850;
+  font-weight: 740;
   text-transform: uppercase;
 }
 
@@ -1151,7 +1180,7 @@ img {
   align-items: center;
   color: var(--muted);
   font-size: 12px;
-  font-weight: 850;
+  font-weight: 740;
   text-transform: uppercase;
 }
 
@@ -1159,7 +1188,7 @@ img {
   display: block;
   color: var(--primary-strong);
   font-size: clamp(24px, 3vw, 32px);
-  font-weight: 850;
+  font-weight: 740;
   line-height: 1.05;
 }
 
@@ -1350,7 +1379,7 @@ img {
 .quality-card span {
   color: var(--muted);
   font-size: 12px;
-  font-weight: 850;
+  font-weight: 740;
   text-transform: uppercase;
 }
 
@@ -1358,7 +1387,7 @@ img {
   display: block;
   color: var(--primary-strong);
   font-size: clamp(22px, 3vw, 30px);
-  font-weight: 850;
+  font-weight: 740;
   line-height: 1.1;
   margin-top: 4px;
 }
@@ -1395,26 +1424,50 @@ img {
   justify-content: center;
   gap: 7px;
   padding: 9px 16px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   border: 1px solid transparent;
   font-size: 14px;
   font-weight: 650;
   letter-spacing: -0.005em;
   cursor: pointer;
-  transition: transform 0.12s ease, background 0.14s ease, border-color 0.14s ease;
+  transition: transform 0.16s var(--ease), background 0.16s var(--ease),
+    border-color 0.16s var(--ease), box-shadow 0.16s var(--ease);
+}
+
+.primary-button,
+.secondary-button,
+.ghost-button,
+.danger-button,
+.text-button,
+.icon-button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.primary-button:focus-visible,
+.secondary-button:focus-visible,
+.ghost-button:focus-visible,
+.danger-button:focus-visible,
+.icon-button:focus-visible,
+.lang-switch button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
 
 .primary-button {
   color: #fff;
   background: var(--primary);
+  box-shadow: 0 1px 2px rgba(44, 43, 39, 0.12);
 }
 
 .primary-button:hover {
   background: var(--primary-strong);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px -6px rgba(63, 106, 80, 0.5);
 }
 
 .primary-button:active {
-  transform: scale(0.99);
+  transform: translateY(0) scale(0.99);
+  box-shadow: 0 1px 2px rgba(44, 43, 39, 0.12);
 }
 
 .secondary-button {
@@ -1557,7 +1610,7 @@ img {
   background: var(--primary-soft);
   color: var(--primary-strong);
   font-size: 11px;
-  font-weight: 850;
+  font-weight: 740;
 }
 
 .module-dot.vocab {
@@ -1862,7 +1915,7 @@ input[type="number"] {
   padding: 0 8px;
   color: var(--ink-soft);
   font-size: 13px;
-  font-weight: 850;
+  font-weight: 740;
 }
 
 .module-record-grid {
@@ -1887,7 +1940,7 @@ input[type="number"] {
   align-items: center;
   gap: 9px;
   color: var(--primary-strong);
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .module-record-inputs {
@@ -1918,7 +1971,7 @@ input[type="number"] {
   padding: 0 7px;
   color: var(--ink-soft);
   font-size: 13px;
-  font-weight: 850;
+  font-weight: 740;
 }
 
 .record-option-grid {
@@ -2188,7 +2241,7 @@ tr:last-child td {
   margin-top: 4px;
   color: var(--muted);
   font-size: 11px;
-  font-weight: 850;
+  font-weight: 740;
   text-transform: uppercase;
 }
 
@@ -2223,13 +2276,13 @@ tr:last-child td {
 
 .module-pie-legend strong {
   color: var(--primary-strong);
-  font-weight: 850;
+  font-weight: 740;
   white-space: nowrap;
 }
 
 .module-pie-legend small {
   color: var(--muted);
-  font-weight: 850;
+  font-weight: 740;
   text-align: right;
 }
 
@@ -2270,7 +2323,7 @@ tr:last-child td {
   align-items: center;
   color: var(--muted);
   font-size: 12px;
-  font-weight: 850;
+  font-weight: 740;
   text-transform: uppercase;
 }
 
@@ -2408,7 +2461,7 @@ tr:last-child td {
   gap: 8px;
   color: var(--ink-soft);
   font-size: 13px;
-  font-weight: 850;
+  font-weight: 740;
 }
 
 .module-insight-card i {
@@ -2457,7 +2510,7 @@ tr:last-child td {
   border-radius: var(--radius);
   background: var(--primary-soft);
   color: var(--primary-strong);
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .cause-priority-card strong {
@@ -2476,7 +2529,7 @@ tr:last-child td {
 .cause-priority-card em {
   color: var(--primary-strong);
   font-style: normal;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .cause-meter {
@@ -2522,7 +2575,7 @@ tr:last-child td {
   color: #fff;
   background: var(--primary);
   font-size: 13px;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .action-card p {
@@ -2574,7 +2627,7 @@ tr:last-child td {
 .health-ring small {
   color: var(--muted);
   font-size: 11px;
-  font-weight: 850;
+  font-weight: 740;
   text-transform: uppercase;
 }
 
@@ -2923,7 +2976,7 @@ tr:last-child td {
   margin-bottom: 5px;
   color: var(--teal);
   font-size: 12px;
-  font-weight: 850;
+  font-weight: 740;
 }
 
 .reference-day strong {
@@ -3111,6 +3164,20 @@ tr:last-child td {
 
   .topbar h1 {
     font-size: 22px;
+  }
+
+  /* Tighten the bumped desktop card padding + rhythm for small screens. */
+  .card,
+  .panel {
+    padding: 18px;
+  }
+
+  .stack {
+    gap: 16px;
+  }
+
+  .section-head {
+    margin-bottom: 16px;
   }
 
   .section-head,
@@ -3753,5 +3820,17 @@ tr:last-child td {
 
   .export-card-desc {
     font-size: 10px;
+  }
+}
+
+/* Accessibility: honor reduced-motion — collapse all transitions/animations. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
   }
 }
