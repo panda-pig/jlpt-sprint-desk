@@ -340,24 +340,24 @@ export function SetupPage() {
             <div className="field">
               <label htmlFor="vocabBook">{t("setup.vocabBook")}</label>
               <select id="vocabBook" value={state.settings.vocabBook} onChange={(e) => setField("vocabBook", e.target.value)}>
-                {STATIC_SELECT_OPTIONS.vocabBook.map(([value, label]) => (
-                  <option key={value} value={value}>{label}</option>
+                {STATIC_SELECT_OPTIONS.vocabBook.map(([value]) => (
+                  <option key={value} value={value}>{tOption("vocabBook", value)}</option>
                 ))}
               </select>
             </div>
             <div className="field">
               <label htmlFor="grammarBook">{t("setup.grammarBook")}</label>
               <select id="grammarBook" value={state.settings.grammarBook} onChange={(e) => setField("grammarBook", e.target.value)}>
-                {STATIC_SELECT_OPTIONS.grammarBook.map(([value, label]) => (
-                  <option key={value} value={value}>{label}</option>
+                {STATIC_SELECT_OPTIONS.grammarBook.map(([value]) => (
+                  <option key={value} value={value}>{tOption("grammarBook", value)}</option>
                 ))}
               </select>
             </div>
             <div className="field">
               <label htmlFor="kanjiBook">{t("setup.kanjiBook")}</label>
               <select id="kanjiBook" value={state.settings.kanjiBook} onChange={(e) => setField("kanjiBook", e.target.value)}>
-                {STATIC_SELECT_OPTIONS.kanjiBook.map(([value, label]) => (
-                  <option key={value} value={value}>{label}</option>
+                {STATIC_SELECT_OPTIONS.kanjiBook.map(([value]) => (
+                  <option key={value} value={value}>{tOption("kanjiBook", value)}</option>
                 ))}
               </select>
             </div>
