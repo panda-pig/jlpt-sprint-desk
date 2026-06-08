@@ -338,6 +338,7 @@ export const zh = {
     timeMin: "用时 min",
     countLabel: "数量 {unit}",
     minPlaceholder: "例：30",
+    countPlaceholder: "例：{n}",
     overtimeReason: "超时原因",
     customInput: "自定义输入",
     overtimePlaceholder: "也可以写自己的超时原因",

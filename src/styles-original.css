@@ -1866,13 +1866,14 @@ input[type="number"] {
 }
 
 .module-record-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 12px;
 }
 
 .module-record-card {
   min-width: 0;
+  flex: 1 1 180px;
   display: grid;
   gap: 8px;
   padding: 12px;
@@ -1903,8 +1904,8 @@ input[type="number"] {
 
 .record-choice-field {
   min-width: 0;
-  display: grid;
-  align-content: start;
+  display: flex;
+  flex-direction: column;
   gap: 10px;
   margin: 0;
   padding: 12px;
@@ -1962,6 +1963,7 @@ input[type="number"] {
 }
 
 .record-custom-field {
+  margin-top: auto;
   padding-top: 2px;
 }
 
@@ -3070,6 +3072,10 @@ tr:last-child td {
   .rhythm-grid,
   .quality-grid {
     grid-template-columns: 1fr;
+  }
+  /* .module-record-grid is flex, not grid — force single column on mobile. */
+  .module-record-grid {
+    flex-direction: column;
   }
 
   /* KPI strip: 2 columns on small phones (3 rows of 2). */

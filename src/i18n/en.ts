@@ -295,6 +295,7 @@ export const en = {
     timeMin: "Time (min)",
     countLabel: "Count ({unit})",
     minPlaceholder: "e.g. 30",
+    countPlaceholder: "e.g. {n}",
     overtimeReason: "Overtime reason",
     customInput: "Custom input",
     overtimePlaceholder: "Or write your own overtime reason",

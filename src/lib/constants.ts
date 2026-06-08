@@ -52,12 +52,13 @@ export const MODULE_COUNT_UNITS: Record<string, string> = {
   listening: "段",
 };
 
+// Example counts per module — the "e.g." prefix is localized at render time.
 export const MODULE_COUNT_PLACEHOLDERS: Record<string, string> = {
-  kanji: "例：20",
-  vocab: "例：80",
-  grammar: "例：10",
-  reading: "例：2",
-  listening: "例：3",
+  kanji: "20",
+  vocab: "80",
+  grammar: "10",
+  reading: "2",
+  listening: "3",
 };
 
 export const LEVEL_CONFIG: Record<Level, { label: string; targetScore: number; baseWeeks: number; weights: Record<string, number> }> = {

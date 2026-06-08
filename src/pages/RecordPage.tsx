@@ -134,7 +134,7 @@ export function RecordPage() {
                           type="number"
                           inputMode="numeric"
                           min={0}
-                          placeholder={MODULE_COUNT_PLACEHOLDERS[key] || "10"}
+                          placeholder={t("record.countPlaceholder", { n: MODULE_COUNT_PLACEHOLDERS[key] || "10" })}
                           value={form.moduleCounts?.[key] || ""}
                           onChange={(e) => setModuleCount(key, Number(e.target.value))}
                         />
