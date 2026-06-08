@@ -848,6 +848,76 @@ img {
   gap: 14px;
 }
 
+/* Weekly grouping (collapsible) for the detailed plan */
+.plan-week-list {
+  display: grid;
+  gap: 12px;
+}
+.plan-week {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  overflow: hidden;
+}
+.plan-week.is-open {
+  border-color: var(--line-strong);
+}
+.plan-week-head {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  color: var(--ink);
+}
+.plan-week-head:hover {
+  background: var(--primary-soft);
+}
+.plan-week-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 650;
+  font-size: 15px;
+}
+.plan-week-badge {
+  font-size: 11px;
+  font-weight: 650;
+  color: var(--primary-strong);
+  background: var(--primary-soft);
+  border: 1px solid var(--primary);
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+.plan-week-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.plan-week-chevron {
+  transition: transform 0.18s ease;
+  flex-shrink: 0;
+}
+.plan-week.is-open .plan-week-chevron {
+  transform: rotate(180deg);
+}
+.plan-week .daily-plan-list {
+  padding: 2px 12px 14px;
+}
+.plan-day.is-today {
+  border-color: var(--primary);
+  box-shadow: inset 0 0 0 1px var(--primary);
+}
+
 .plan-calendar {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));

@@ -132,6 +132,7 @@ export function StudyDeskProvider({ children }: { children: ReactNode }) {
     setState((prev) => {
       if (!prev.generatedPlan || !prev.activeProfileId) return prev;
       const plan = generatePlan(prev.settings, prev.activeProfileId);
+      plan.adjustmentSignature = prev.generatedPlan.adjustmentSignature;
       saveGeneratedPlan(plan, prev.activeProfileId);
       // The stored plan's prose just changed → mark local + mirror to cloud.
       schedulePush();
@@ -375,4 +376,3 @@ export function StudyDeskProvider({ children }: { children: ReactNode }) {
     </StudyDeskContext.Provider>
   );
 }
-

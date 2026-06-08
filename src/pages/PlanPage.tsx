@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Save, RotateCcw, BookOpen, ClipboardList, ArrowRight, Settings } from "lucide-react";
+import { Save, RotateCcw, BookOpen, ClipboardList, ArrowRight, Settings, CalendarClock, ChevronDown } from "lucide-react";
 import { useStudyDesk } from "../lib/studyDeskContext";
 import { MODULE_COLORS, RECORD_MODULE_KEYS } from "../lib/constants";
 import { mergeDayWithEdit, buildStudyBudget, getReferencePlan, recordsSignature } from "../lib/planner";
@@ -46,6 +46,9 @@ export function PlanPage() {
 
   const [editingDay, setEditingDay] = useState<number | null>(null);
   const [editText, setEditText] = useState("");
+  // null = "not touched yet" → default to opening only the week that contains today.
+  const [openWeeks, setOpenWeeks] = useState<Set<number> | null>(null);
+  const todayCardRef = useRef<HTMLElement | null>(null);
 
   const handleEdit = (dayIndex: number, currentText: string) => {
     setEditingDay(dayIndex);
@@ -96,6 +99,27 @@ export function PlanPage() {
   const budget = buildStudyBudget(state.settings);
   const REFERENCE_PLAN = getReferencePlan();
   const recordDates = new Set(records.map((record) => record.date));
+
+  // Group the detailed 14-day plan into weeks so the long list can collapse.
+  const todayStr = todayISO();
+  const detailDays = upcomingDays.slice(0, 14);
+  const detailWeeks: typeof detailDays[] = [];
+  for (let i = 0; i < detailDays.length; i += 7) detailWeeks.push(detailDays.slice(i, i + 7));
+  const todayWeekIdx = detailWeeks.findIndex((week) => week.some((d) => d.date === todayStr));
+  const isWeekOpen = (idx: number) => (openWeeks ? openWeeks.has(idx) : idx === todayWeekIdx);
+  const baseOpenSet = () => new Set<number>(openWeeks ?? (todayWeekIdx >= 0 ? [todayWeekIdx] : []));
+  const toggleWeek = (idx: number) => {
+    const next = baseOpenSet();
+    if (next.has(idx)) next.delete(idx); else next.add(idx);
+    setOpenWeeks(next);
+  };
+  const jumpToToday = () => {
+    if (todayWeekIdx < 0) return;
+    const next = baseOpenSet();
+    next.add(todayWeekIdx);
+    setOpenWeeks(next);
+    requestAnimationFrame(() => todayCardRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }));
+  };
 
   // 模块饼图数据
   const pieEntries = RECORD_MODULE_KEYS.map((key) => ({
@@ -295,15 +319,47 @@ export function PlanPage() {
               <h2>{t("plan.detail14")}</h2>
               <p>{t("plan.detail14Desc")}</p>
             </div>
+            {todayWeekIdx >= 0 && (
+              <button className="ghost-button small" type="button" onClick={jumpToToday}>
+                <CalendarClock size={14} /> {t("plan.jumpToday")}
+              </button>
+            )}
           </div>
-          <div className="daily-plan-list">
-            {upcomingDays.slice(0, 14).map((day) => {
-              const merged = mergeDayWithEdit(day, state.planEdits);
-              const isEditing = editingDay === day.dayIndex;
-              const sourceText = merged.hasEdit ? merged.editText : day.tasks.map((t) => `${t.title}：${t.minutes} 分钟。${t.text}`).join("\n");
-
+          <div className="plan-week-list">
+            {detailWeeks.map((week, weekIdx) => {
+              const open = isWeekOpen(weekIdx);
+              const hasToday = weekIdx === todayWeekIdx;
+              const weekMinutes = week.reduce((sum, d) => sum + Number(d.totalMinutes || 0), 0);
               return (
-                <article key={day.dayIndex} className="card plan-day">
+                <section key={weekIdx} className={`plan-week ${open ? "is-open" : ""}`}>
+                  <button
+                    type="button"
+                    className="plan-week-head"
+                    aria-expanded={open}
+                    onClick={() => toggleWeek(weekIdx)}
+                  >
+                    <span className="plan-week-title">
+                      {t("plan.weekLabel", { n: weekIdx + 1 })}
+                      {hasToday && <span className="plan-week-badge">{t("plan.thisWeek")}</span>}
+                    </span>
+                    <span className="plan-week-meta">
+                      {t("plan.weekSummary", { d: week.length, m: weekMinutes })}
+                      <ChevronDown size={16} className="plan-week-chevron" />
+                    </span>
+                  </button>
+                  {open && (
+                    <div className="daily-plan-list">
+                      {week.map((day) => {
+                        const merged = mergeDayWithEdit(day, state.planEdits);
+                        const isEditing = editingDay === day.dayIndex;
+                        const sourceText = merged.hasEdit ? merged.editText : day.tasks.map((t) => `${t.title}：${t.minutes} 分钟。${t.text}`).join("\n");
+
+                        return (
+                          <article
+                            key={day.dayIndex}
+                            ref={day.date === todayStr ? todayCardRef : undefined}
+                            className={`card plan-day ${day.date === todayStr ? "is-today" : ""}`}
+                          >
                   <div className="plan-day-header">
                     <div>
                       <h3>{day.label} · {day.title || phaseLabel(day.phase)}</h3>
@@ -352,7 +408,12 @@ export function PlanPage() {
                       <BookOpen size={14} /> {merged.hasEdit ? t("plan.editAdjust") : t("plan.fineTune")}
                     </button>
                   )}
-                </article>
+                          </article>
+                        );
+                      })}
+                    </div>
+                  )}
+                </section>
               );
             })}
           </div>
