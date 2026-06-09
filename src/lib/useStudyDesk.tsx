@@ -199,16 +199,24 @@ export function StudyDeskProvider({ children }: { children: ReactNode }) {
   const deleteProfile = useCallback((id: string) => {
     deleteProfileStorage(id);
     const nextProfiles = state.profiles.filter((p) => p.id !== id);
-    const nextActiveId = nextProfiles[0]?.id || null;
-    const next: StudyDeskState = {
-      ...state,
-      profiles: nextProfiles,
-      activeProfileId: nextActiveId,
-      settings: nextActiveId ? normalizeSettings(getPlanSettings(nextActiveId)) : normalizeSettings({}),
-      generatedPlan: nextActiveId ? getGeneratedPlan(nextActiveId) : null,
-      planEdits: nextActiveId ? getPlanEdits(nextActiveId) : {},
-      records: nextActiveId ? getRecords(nextActiveId) : [],
-    };
+    // Only re-point the active profile when we deleted the one that was active.
+    // (deleteProfileStorage already keeps localStorage's active id in sync the
+    //  same way — deleting a NON-active profile must not switch the UI/storage.)
+    const wasActive = state.activeProfileId === id;
+    const next: StudyDeskState = wasActive
+      ? (() => {
+          const nextActiveId = nextProfiles[0]?.id || null;
+          return {
+            ...state,
+            profiles: nextProfiles,
+            activeProfileId: nextActiveId,
+            settings: nextActiveId ? normalizeSettings(getPlanSettings(nextActiveId)) : normalizeSettings({}),
+            generatedPlan: nextActiveId ? getGeneratedPlan(nextActiveId) : null,
+            planEdits: nextActiveId ? getPlanEdits(nextActiveId) : {},
+            records: nextActiveId ? getRecords(nextActiveId) : [],
+          };
+        })()
+      : { ...state, profiles: nextProfiles };
     setState(next);
     schedulePush(); // profile data changed → mirror to cloud
     toast(t("toast.profileDeleted"));

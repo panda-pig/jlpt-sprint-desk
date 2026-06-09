@@ -87,17 +87,19 @@ export function buildStudyBudget(settings: PlanSettings): StudyBudget {
   const dailyMinutes = Math.round(weeklyMinutes / Math.max(1, sessionDays.length));
   const moduleWeights = buildModuleWeights(settings);
   const moduleMinutes = allocateMinutes(dailyMinutes, moduleWeights, 10);
+  const totalMinutes = Object.values(moduleMinutes).reduce((sum, m) => sum + m, 0);
   const contentBudget = buildContentBudget(settings, weeklyMinutes);
   return {
     weekdayMinutes: settings.weekdayMinutes,
     weekendMinutes: settings.weekendMinutes,
     dailyMinutes,
     weeklyMinutes,
+    totalMinutes,
     sessionDays,
     moduleWeights,
     moduleMinutes,
     ...contentBudget,
-  } as unknown as StudyBudget;
+  };
 }
 
 function buildContentBudget(settings: PlanSettings, weeklyMinutes: number) {
@@ -190,11 +192,38 @@ function buildModuleWeights(settings: PlanSettings): Record<string, number> {
 }
 
 function allocateMinutes(total: number, weights: Record<string, number>, minBlock: number): Record<string, number> {
-  const totalWeight = Object.values(weights).reduce((sum, w) => sum + w, 0);
+  const entries = Object.entries(weights).filter(([, weight]) => weight > 0);
+  const totalWeight = entries.reduce((sum, [, weight]) => sum + weight, 0) || 1;
   const minutes: Record<string, number> = {};
-  Object.entries(weights).forEach(([key, weight]) => {
+
+  // When the daily budget is too small to give every module the minimum block,
+  // distribute strictly proportionally (no floor) so the sum can't exceed `total`.
+  if (total < entries.length * minBlock) {
+    entries.forEach(([key, weight]) => {
+      minutes[key] = Math.max(0, Math.round((total * weight) / totalWeight));
+    });
+    return minutes;
+  }
+
+  entries.forEach(([key, weight]) => {
     minutes[key] = Math.max(minBlock, roundToFive((total * weight) / totalWeight));
   });
+
+  // The min-floor + round-to-five can overshoot the budget. Trim the largest
+  // allocation by 5 at a time (never below minBlock) until the sum fits `total`.
+  let sum = entries.reduce((acc, [key]) => acc + minutes[key], 0);
+  while (sum > total) {
+    let target: string | null = null;
+    for (const [key] of entries) {
+      if (minutes[key] - 5 >= minBlock && (target === null || minutes[key] > minutes[target])) {
+        target = key;
+      }
+    }
+    if (target === null) break; // every module already at the floor
+    minutes[target] -= 5;
+    sum -= 5;
+  }
+
   return minutes;
 }
 

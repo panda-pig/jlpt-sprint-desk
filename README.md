@@ -17,8 +17,8 @@
 
 ## 技术栈
 
-- **前端**：React 18 + TypeScript + Vite
-- **路由**：React Router (Hash Router)
+- **前端**：React 19 + TypeScript + Vite
+- **路由**：React Router 7 (Hash Router)
 - **样式**：纯 CSS (无 UI 框架，基于自定义 CSS 变量系统)
 - **图表**：基于 SVG 的自定义图表组件
 - **图标**：Lucide React
