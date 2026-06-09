@@ -682,10 +682,11 @@ export function mergeDayWithEdit(day: DailyPlanItem, edits: Record<string, strin
       {
         id: `edit-${day.dayIndex}`,
         module: "review",
-        label: "手动调整",
-        title: "手动调整计划",
+        label: t("gen.manualEditLabel"),
+        title: t("gen.manualEditTitle"),
         text: editText,
         minutes: day.totalMinutes,
+        // Stable key resolved via tOption("priority", …) at display time.
         priority: "已调整",
       },
     ],

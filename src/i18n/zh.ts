@@ -270,6 +270,7 @@ export const zh = {
       "主线": "主线",
       "重点": "重点",
       "任务": "任务",
+      "已调整": "已调整",
     },
     book: {
       kanji_animal: "小动物/日本語総まとめ 汉字",
@@ -657,6 +658,8 @@ export const zh = {
     tbListeningText: "{book}先抓关键词，再重听关键句，记录误听原因。",
     tbFallbackTitle: "综合训练",
     tbFallbackText: "按教材推进，记录卡点。",
+    manualEditLabel: "手动调整",
+    manualEditTitle: "手动调整计划",
     bookNote: "使用 {book}，",
     stratFocusBalanced: "均衡推进",
     stratCountdownUnknown: "考试日期未确认",

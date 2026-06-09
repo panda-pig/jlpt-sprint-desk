@@ -475,6 +475,7 @@ export const en = {
       "主线": "Main",
       "重点": "Key",
       "任务": "Task",
+      "已调整": "Adjusted",
     },
     book: {
       kanji_animal: "Soumatome Kanji",
@@ -728,6 +729,8 @@ export const en = {
     tbListeningText: "{book}catch keywords first, re-listen to key sentences, note mis-hearing causes.",
     tbFallbackTitle: "Comprehensive training",
     tbFallbackText: "Progress through your material and note sticking points.",
+    manualEditLabel: "Manual edit",
+    manualEditTitle: "Manually adjusted plan",
     bookNote: "Using {book}, ",
     stratFocusBalanced: "balanced progress",
     stratCountdownUnknown: "Exam date not confirmed",
