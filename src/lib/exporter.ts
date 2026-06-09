@@ -29,7 +29,7 @@ export function buildMarkdown(plan: GeneratedPlan, records: StudyRecord[], profi
   ];
 
   plan.todayTasks.forEach((task, index) => {
-    lines.push(`${index + 1}. **${task.label}** · ${t("export.docMinutes", { n: task.minutes })}`);
+    lines.push(`${index + 1}. **${moduleLabel(task.module)}** · ${t("export.docMinutes", { n: task.minutes })}`);
     lines.push(`   - ${task.text}`);
     lines.push("");
   });
@@ -56,7 +56,7 @@ export function buildMarkdown(plan: GeneratedPlan, records: StudyRecord[], profi
     lines.push(`> ${day.title} · ${phaseLabel(day.phase)} · ${t("export.docMinutes", { n: day.totalMinutes })}`);
     lines.push("");
     day.tasks.forEach((task) => {
-      lines.push(`- **${task.label}** (${task.minutes}min)：${task.text}`);
+      lines.push(`- **${moduleLabel(task.module)}** (${task.minutes}min)：${task.text}`);
     });
     lines.push("");
     if (todayRecord && day.date === todayISO()) {
@@ -93,7 +93,7 @@ export function buildCsv(plan: GeneratedPlan): string {
         day.weekday,
         day.phase,
         task.module,
-        `"${(task.title || task.label).replace(/"/g, '""')}"`,
+        `"${(task.title || moduleLabel(task.module)).replace(/"/g, '""')}"`,
         task.minutes,
         "",
       ].join(","));
@@ -163,7 +163,7 @@ export function buildReport(plan: GeneratedPlan, records: StudyRecord[], profile
     .map((task, i) => `
       <article class="task-item">
         <div><small>${String(i + 1).padStart(2, "0")}</small><strong>${task.minutes} min</strong></div>
-        <p>${escapeHtml(task.label)}：${escapeHtml(task.text)}</p>
+        <p>${escapeHtml(moduleLabel(task.module))}：${escapeHtml(task.text)}</p>
       </article>
     `)
     .join("");
@@ -413,7 +413,7 @@ export function buildICS(plan: GeneratedPlan, profileName: string): string {
     const total = Number(day.totalMinutes || 0);
     const summary = `JLPT Day ${day.dayIndex}: ${title}${total ? ` (${total}min)` : ""}`;
     const desc = (day.tasks || [])
-      .map((task) => `• ${task.title || task.label} — ${Number(task.minutes || 0)}min`)
+      .map((task) => `• ${task.title || moduleLabel(task.module)} — ${Number(task.minutes || 0)}min`)
       .join("\\n");
     lines.push(
       "BEGIN:VEVENT",
@@ -473,7 +473,7 @@ export function buildPrintView(plan: GeneratedPlan): string {
   ];
 
   plan.todayTasks.forEach((task) => {
-    lines.push(`<li><strong>${escapeHtml(task.label)}</strong> (${task.minutes}min)：${escapeHtml(task.text)}</li>`);
+    lines.push(`<li><strong>${escapeHtml(moduleLabel(task.module))}</strong> (${task.minutes}min)：${escapeHtml(task.text)}</li>`);
   });
 
   lines.push("</ul>");
@@ -489,7 +489,7 @@ export function buildPrintView(plan: GeneratedPlan): string {
     lines.push(`<h3>${escapeHtml(day.label)} · ${escapeHtml(day.date)} · ${escapeHtml(day.weekday)} · ${escapeHtml(phaseLabel(day.phase))}</h3>`);
     lines.push("<ul>");
     day.tasks.forEach((task) => {
-      lines.push(`<li><strong>${escapeHtml(task.label)}</strong> (${task.minutes}min)：${escapeHtml(task.text)}</li>`);
+      lines.push(`<li><strong>${escapeHtml(moduleLabel(task.module))}</strong> (${task.minutes}min)：${escapeHtml(task.text)}</li>`);
     });
     lines.push("</ul>");
   });
