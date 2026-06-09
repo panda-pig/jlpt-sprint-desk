@@ -45,6 +45,11 @@
   font-family:
     "Inter", "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
     system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  /* Display face for instrument-style numerals + large headings. Latin-only:
+     CJK characters fall through to Noto Sans SC automatically. */
+  --display:
+    "Space Grotesk", "Noto Sans SC", "PingFang SC", "Hiragino Sans GB",
+    "Microsoft YaHei", system-ui, sans-serif;
   color: var(--ink);
   background: var(--bg);
   /* Inter optical refinements: better lowercase 'a'/'g', tabular figures off by default. */
@@ -61,6 +66,7 @@
 html {
   min-width: 320px;
   background: var(--bg);
+  scroll-behavior: smooth;
 }
 
 body {
@@ -71,6 +77,23 @@ body {
   font-size: 15px;
   line-height: 1.6;
   letter-spacing: -0.003em;
+}
+
+/* Subtle paper grain — breaks the flat fill, sits above the background and
+   below all content. Fixed + non-interactive so it never affects layout. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+}
+
+.app-shell {
+  position: relative;
+  z-index: 1;
 }
 
 /* Headings balance onto even lines; body paragraphs avoid orphans. */
@@ -288,8 +311,9 @@ img {
 
 .topbar h1 {
   margin: 0;
+  font-family: var(--display);
   font-size: clamp(22px, 2vw, 28px);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--ink);
   letter-spacing: -0.02em;
 }
@@ -443,8 +467,9 @@ img {
 .hero-panel h2 {
   max-width: 640px;
   margin: 0 0 6px;
+  font-family: var(--display);
   font-size: clamp(20px, 2.4vw, 28px);
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1.22;
   letter-spacing: -0.02em;
   color: var(--ink);
@@ -488,7 +513,10 @@ img {
 }
 
 .panel > .section-head h2 {
+  font-family: var(--display);
+  font-weight: 600;
   font-size: clamp(20px, 1.9vw, 26px);
+  letter-spacing: -0.015em;
 }
 
 .panel > .section-head p {
@@ -514,8 +542,10 @@ img {
 .setup-intro h2 {
   margin: 0;
   color: var(--primary-strong);
+  font-family: var(--display);
+  font-weight: 600;
   font-size: clamp(24px, 3vw, 34px);
-  letter-spacing: 0;
+  letter-spacing: -0.01em;
 }
 
 .setup-intro p {
@@ -661,7 +691,10 @@ img {
 }
 
 .setup-title-row h2 {
+  font-family: var(--display);
+  font-weight: 600;
   font-size: clamp(28px, 3.2vw, 38px);
+  letter-spacing: -0.015em;
   line-height: 1.12;
 }
 
@@ -1062,11 +1095,12 @@ img {
 .metric-value {
   margin: 0;
   color: var(--ink);
+  font-family: var(--display);
   font-size: clamp(26px, 3.4vw, 38px);
-  font-weight: 700;
-  letter-spacing: -0.03em;
+  font-weight: 600;
+  letter-spacing: -0.02em;
   line-height: 1.05;
-  font-feature-settings: "tnum";
+  font-variant-numeric: tabular-nums;
 }
 
 .metric-value small {
@@ -1129,11 +1163,12 @@ img {
 .kpi-value {
   margin: 0;
   color: var(--ink);
+  font-family: var(--display);
   font-size: clamp(22px, 3vw, 32px);
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: -0.02em;
   line-height: 1.05;
-  font-feature-settings: "tnum";
+  font-variant-numeric: tabular-nums;
 }
 
 .kpi-value small {
@@ -1187,9 +1222,12 @@ img {
 .rhythm-card strong {
   display: block;
   color: var(--primary-strong);
+  font-family: var(--display);
   font-size: clamp(24px, 3vw, 32px);
-  font-weight: 740;
+  font-weight: 600;
+  letter-spacing: -0.01em;
   line-height: 1.05;
+  font-variant-numeric: tabular-nums;
 }
 
 .rhythm-card p {
@@ -2233,8 +2271,12 @@ tr:last-child td {
 }
 
 .module-donut strong {
+  font-family: var(--display);
   font-size: 34px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
   line-height: 1;
+  font-variant-numeric: tabular-nums;
 }
 
 .module-donut small {
