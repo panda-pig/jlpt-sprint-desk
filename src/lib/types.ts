@@ -176,6 +176,8 @@ export interface PlanHealth {
   level: "ok" | "warn" | "danger";
   label: string;
   message: string;
+  /** Human-readable factors explaining how the score was reached ("why"). */
+  factors: string[];
 }
 
 export interface RecentStats {

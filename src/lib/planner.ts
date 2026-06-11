@@ -700,37 +700,39 @@ export function getPlanHealth(plan: GeneratedPlan | null, records: StudyRecord[]
       level: "danger",
       label: t("planner.healthPendingLabel"),
       message: t("planner.healthPendingMsg"),
+      factors: [t("planner.healthFactorNoPlan")],
     };
   }
 
-  let score = 86;
+  const base = 86;
+  let score = base;
   const stats = getRecentStats(records, 7);
-  if (stats.recordedDays < 3 && records.length >= 3) score -= 14;
-  if (records.length > 0 && stats.avgCompletion < 60) score -= 16;
-  if (records.length > 0 && stats.avgAccuracy < 65) score -= 10;
+  // Track each deduction so the UI can explain "why this score".
+  const factors: string[] = [t("planner.healthFactorBase", { n: base })];
+  if (stats.recordedDays < 3 && records.length >= 3) {
+    score -= 14;
+    factors.push(t("planner.healthFactorGap", { n: 14 }));
+  }
+  if (records.length > 0 && stats.avgCompletion < 60) {
+    score -= 16;
+    factors.push(t("planner.healthFactorCompletion", { n: 16, c: stats.avgCompletion }));
+  }
+  if (records.length > 0 && stats.avgAccuracy < 65) {
+    score -= 10;
+    factors.push(t("planner.healthFactorAccuracy", { n: 10, a: stats.avgAccuracy }));
+  }
+  if (factors.length === 1) {
+    // No deductions applied — say why it's healthy.
+    factors.push(records.length === 0 ? t("planner.healthFactorNoData") : t("planner.healthFactorGood"));
+  }
 
   if (score >= 75) {
-    return {
-      score,
-      level: "ok",
-      label: t("planner.healthOkLabel"),
-      message: t("planner.healthOkMsg"),
-    };
+    return { score, level: "ok", label: t("planner.healthOkLabel"), message: t("planner.healthOkMsg"), factors };
   }
   if (score >= 52) {
-    return {
-      score,
-      level: "warn",
-      label: t("planner.healthWarnLabel"),
-      message: t("planner.healthWarnMsg"),
-    };
+    return { score, level: "warn", label: t("planner.healthWarnLabel"), message: t("planner.healthWarnMsg"), factors };
   }
-  return {
-    score,
-    level: "danger",
-    label: t("planner.healthDangerLabel"),
-    message: t("planner.healthDangerMsg"),
-  };
+  return { score, level: "danger", label: t("planner.healthDangerLabel"), message: t("planner.healthDangerMsg"), factors };
 }
 
 export function getNextAction(plan: GeneratedPlan | null, todayRecord: StudyRecord | null, health: PlanHealth) {

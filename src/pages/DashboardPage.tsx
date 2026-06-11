@@ -159,6 +159,16 @@ export function DashboardPage() {
           <div className="progress-track" aria-label={t("dashboard.planHealthScore")}>
             <div className="progress-fill" style={{ ["--value" as string]: `${health.score}%` }} />
           </div>
+          {health.factors.length > 0 && (
+            <details className="score-why">
+              <summary>{t("common.whyScore")}</summary>
+              <ul>
+                {health.factors.map((f, i) => (
+                  <li key={i}>{f}</li>
+                ))}
+              </ul>
+            </details>
+          )}
         </section>
       </section>
 

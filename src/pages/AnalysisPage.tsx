@@ -740,6 +740,16 @@ export function AnalysisPage() {
               <small>{t("analysis.recordedComplete", { days: stats.recordedDays, avg: Math.round(stats.avgCompletion) })}</small>
             </div>
           </div>
+          {health.factors.length > 0 && (
+            <details className="score-why">
+              <summary>{t("common.whyScore")}</summary>
+              <ul>
+                {health.factors.map((f, i) => (
+                  <li key={i}>{f}</li>
+                ))}
+              </ul>
+            </details>
+          )}
         </section>
 
         <section className="card">

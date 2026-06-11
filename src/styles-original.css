@@ -1183,6 +1183,72 @@ img {
   transition: width 0.4s ease;
 }
 
+/* "Why this score" — native disclosure that explains a derived number. */
+.score-why {
+  margin-top: 14px;
+  font-size: 13px;
+}
+.score-why > summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  color: var(--primary-strong);
+  font-weight: 600;
+  list-style: none;
+  user-select: none;
+}
+.score-why > summary::-webkit-details-marker {
+  display: none;
+}
+.score-why > summary::before {
+  content: "?";
+  display: inline-grid;
+  place-items: center;
+  width: 17px;
+  height: 17px;
+  border-radius: 999px;
+  background: var(--primary-soft);
+  color: var(--primary-strong);
+  font-size: 11px;
+  font-weight: 700;
+}
+.score-why > summary:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+.score-why[open] > summary {
+  margin-bottom: 10px;
+}
+.score-why ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 6px;
+}
+.score-why li {
+  position: relative;
+  padding-left: 15px;
+  color: var(--muted);
+  line-height: 1.45;
+}
+.score-why li:first-child {
+  color: var(--ink-soft);
+  font-weight: 500;
+}
+.score-why li::before {
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: 8px;
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--line-strong);
+}
+
 .dashboard-kpi-row {
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
