@@ -160,6 +160,12 @@ export const en = {
     customPlaceholder: "e.g. review yesterday's mistakes for 10 min first; add a mock test on weekends...",
     generatePlan: "Generate study plan",
     planGenerated: "New study plan generated.",
+    quickStartTitle: "Quick start",
+    quickStartDesc: "Set 3 things and get your first plan. Everything else uses smart defaults you can refine below anytime.",
+    quickDaily: "Roughly how long per day",
+    quickDailyUnit: "min/day",
+    quickGenerate: "Generate my plan",
+    quickRefineHint: "Want more control? The full setup is right below.",
   },
   options: {
     currentLevel: {

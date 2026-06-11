@@ -161,6 +161,12 @@ export const zh = {
     customPlaceholder: "例如：每天先复习昨天错题 10 分钟；周末增加一套真题...",
     generatePlan: "生成学习计划",
     planGenerated: "新学习计划已生成。",
+    quickStartTitle: "一键起步",
+    quickStartDesc: "填 3 项就能生成第一版计划，其余用智能默认，之后可在下方随时细化。",
+    quickDaily: "每天大约学多久",
+    quickDailyUnit: "分钟/天",
+    quickGenerate: "生成我的计划",
+    quickRefineHint: "想更精细？完整设置就在下方。",
   },
   options: {
     currentLevel: {

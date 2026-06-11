@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Zap } from "lucide-react";
 import { useStudyDesk } from "../lib/studyDeskContext";
 import { LEVEL_CONFIG, STATIC_SELECT_OPTIONS, STATIC_WEAKNESS_OPTIONS, STATIC_BLOCKER_OPTIONS } from "../lib/constants";
 import { formatDate } from "../lib/utils";
@@ -110,6 +111,54 @@ export function SetupPage() {
     <div className="setup-page stack">
       <CloudSync />
       <ReminderSettings />
+
+      {!state.generatedPlan && (
+        <section className="panel quick-start-panel">
+          <div className="quick-start-head">
+            <span className="quick-start-spark"><Zap size={18} /></span>
+            <div>
+              <h2>{t("setup.quickStartTitle")}</h2>
+              <p>{t("setup.quickStartDesc")}</p>
+            </div>
+          </div>
+          <div className="quick-start-grid">
+            <div className="field">
+              <label htmlFor="qsLevel">{t("setup.targetLevel")}</label>
+              <select id="qsLevel" value={state.settings.level} onChange={(e) => setField("level", e.target.value as Level)}>
+                {Object.keys(LEVEL_CONFIG).map((key) => (
+                  <option key={key} value={key}>{key}</option>
+                ))}
+              </select>
+            </div>
+            <div className="field">
+              <label htmlFor="qsExam">{t("setup.examDate")}</label>
+              <input id="qsExam" type="date" value={state.settings.examDate} onChange={(e) => setField("examDate", e.target.value)} />
+            </div>
+            <div className="field">
+              <label htmlFor="qsDaily">{t("setup.quickDaily")}</label>
+              <input
+                id="qsDaily"
+                type="number"
+                inputMode="numeric"
+                min={0}
+                step={10}
+                value={state.settings.weekdayMinutes || ""}
+                onChange={(e) => {
+                  const v = Math.max(0, Number(e.target.value));
+                  updateSettings({ weekdayMinutes: v, weekendMinutes: v, dailyMinutes: v });
+                }}
+              />
+            </div>
+          </div>
+          <div className="quick-start-actions">
+            <button className="primary-button" type="button" onClick={handleGeneratePlan}>
+              <Zap size={15} /> {t("setup.quickGenerate")}
+            </button>
+            <span className="muted quick-start-hint">{t("setup.quickRefineHint")}</span>
+          </div>
+        </section>
+      )}
+
       <section className="panel setup-document-panel">
         <div className="setup-title-row">
           <span className="setup-step-badge">1</span>
