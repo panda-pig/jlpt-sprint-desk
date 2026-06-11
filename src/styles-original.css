@@ -2842,6 +2842,60 @@ tr:last-child td {
   flex-wrap: wrap;
 }
 
+/* Sign-in data conflict: ask which side to keep instead of silent overwrite. */
+.cloud-conflict {
+  margin-bottom: 14px;
+  padding: 16px;
+  border: 1px solid var(--amber);
+  border-radius: var(--radius);
+  background: rgba(177, 118, 75, 0.07);
+}
+.cloud-conflict-title {
+  display: block;
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 650;
+}
+.cloud-conflict-desc {
+  margin: 4px 0 14px;
+  color: var(--ink-soft);
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+.cloud-conflict-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.cloud-conflict-side {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+.cloud-conflict-side p {
+  margin: 0;
+  flex: 1;
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+.cloud-conflict-tag {
+  font-size: 11px;
+  font-weight: 740;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--primary-strong);
+}
+@media (max-width: 560px) {
+  .cloud-conflict-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .cloud-sync-user {
   display: inline-flex;
   align-items: center;

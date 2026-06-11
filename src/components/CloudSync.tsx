@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { Cloud, CloudCheck, LogOut, Mail } from "lucide-react";
 import { supabase, isCloudEnabled } from "../lib/supabase";
-import { sendMagicLink, signOut, reconcileOnSignIn, pushCloud } from "../lib/cloudSync";
+import { sendMagicLink, signOut, reconcileOnSignIn, pushCloud, getPendingConflict, resolveConflict, type DataSummary } from "../lib/cloudSync";
 import { toast } from "../lib/toast";
 import { useLocale } from "../i18n/LocaleProvider";
 
@@ -11,6 +11,7 @@ export function CloudSync() {
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [sent, setSent] = useState(false);
+  const [conflict, setConflict] = useState<{ local: DataSummary; cloud: DataSummary } | null>(null);
 
   const runReconcile = useCallback(async () => {
     const outcome = await reconcileOnSignIn();
@@ -19,6 +20,23 @@ export function CloudSync() {
       setTimeout(() => window.location.reload(), 600);
     } else if (outcome === "pushed") {
       toast(t("cloud.pushed"));
+    } else if (outcome === "conflict") {
+      setConflict(getPendingConflict());
+    }
+  }, [t]);
+
+  const handleResolve = useCallback(async (choice: "local" | "cloud") => {
+    setBusy(true);
+    const outcome = await resolveConflict(choice);
+    setBusy(false);
+    setConflict(null);
+    if (outcome === "pulled") {
+      toast(t("cloud.restored"));
+      setTimeout(() => window.location.reload(), 600);
+    } else if (outcome === "pushed") {
+      toast(t("cloud.conflictKept"));
+    } else {
+      toast(t("cloud.syncFailed", { error: "" }));
     }
   }, [t]);
 
@@ -85,6 +103,29 @@ export function CloudSync() {
           </div>
         </div>
       </div>
+
+      {conflict && (
+        <div className="cloud-conflict" role="alertdialog" aria-label={t("cloud.conflictTitle")}>
+          <strong className="cloud-conflict-title">{t("cloud.conflictTitle")}</strong>
+          <p className="cloud-conflict-desc">{t("cloud.conflictDesc")}</p>
+          <div className="cloud-conflict-grid">
+            <div className="cloud-conflict-side">
+              <span className="cloud-conflict-tag">{t("cloud.conflictThisDevice")}</span>
+              <p>{t("cloud.conflictSummary", { records: conflict.local.records, plans: conflict.local.hasPlan ? 1 : 0, profiles: conflict.local.profiles })}</p>
+              <button className="primary-button full" type="button" disabled={busy} onClick={() => handleResolve("local")}>
+                {t("cloud.conflictKeepLocal")}
+              </button>
+            </div>
+            <div className="cloud-conflict-side">
+              <span className="cloud-conflict-tag">{t("cloud.conflictCloud")}</span>
+              <p>{t("cloud.conflictSummary", { records: conflict.cloud.records, plans: conflict.cloud.hasPlan ? 1 : 0, profiles: conflict.cloud.profiles })}</p>
+              <button className="secondary-button full" type="button" disabled={busy} onClick={() => handleResolve("cloud")}>
+                {t("cloud.conflictUseCloud")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {userEmail ? (
         <div className="cloud-sync-account">

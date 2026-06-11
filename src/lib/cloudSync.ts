@@ -110,40 +110,122 @@ export async function pushCloud(): Promise<{ error: string | null }> {
   return { error: null };
 }
 
-export type SyncOutcome = "pulled" | "pushed" | "in-sync" | "disabled" | "error";
+export type SyncOutcome = "pulled" | "pushed" | "in-sync" | "conflict" | "disabled" | "error";
+
+export interface DataSummary {
+  records: number;
+  hasPlan: boolean;
+  profiles: number;
+}
+
+/** Order-independent equality of two app-data snapshots. */
+function sameData(a: CloudData, b: CloudData): boolean {
+  const ka = Object.keys(a).sort();
+  const kb = Object.keys(b).sort();
+  if (ka.length !== kb.length) return false;
+  for (let i = 0; i < ka.length; i++) {
+    if (ka[i] !== kb[i] || a[ka[i]] !== b[kb[i]]) return false;
+  }
+  return true;
+}
+
+/** A snapshot is "meaningful" if it holds any records or a generated plan. */
+function isMeaningful(data: CloudData): boolean {
+  return Object.entries(data).some(([k, v]) => {
+    if (k.endsWith(":records")) {
+      try { return Array.isArray(JSON.parse(v)) && JSON.parse(v).length > 0; } catch { return false; }
+    }
+    if (k.endsWith(":generatedPlan")) return !!v && v !== "null";
+    return false;
+  });
+}
+
+/** Human-facing summary used by the conflict prompt. */
+export function summarizeData(data: CloudData): DataSummary {
+  let records = 0;
+  let hasPlan = false;
+  let profiles = 0;
+  for (const [k, v] of Object.entries(data)) {
+    if (k.endsWith(":records")) {
+      try { records += JSON.parse(v).length; } catch { /* ignore */ }
+    } else if (k.endsWith(":generatedPlan")) {
+      if (v && v !== "null") hasPlan = true;
+    } else if (k === `${PREFIX}Profiles`) {
+      try { profiles = JSON.parse(v).length; } catch { /* ignore */ }
+    }
+  }
+  return { records, hasPlan, profiles };
+}
+
+// Holds the cloud snapshot while the user decides which side to keep.
+let pendingConflict: { data: CloudData; updatedAt: number } | null = null;
 
 /**
- * Reconcile local and cloud on sign-in, comparing the cloud's updated_at to the
- * LOCAL CLOCK (bumped on every local write, persisted across sign-out):
- * - Cloud empty                 → push local up (first device).
- * - Cloud newer than local edits → pull down, caller should reload to apply.
- * - Local newer/equal            → push local up (local edits win).
+ * Reconcile local and cloud on sign-in:
+ * - Cloud empty / local empty / identical → auto-resolve (push, pull, or align).
+ * - Both sides hold meaningful data AND differ → "conflict": do NOT overwrite
+ *   silently; stash the cloud snapshot and let the user choose (resolveConflict).
  *
- * Because the local clock survives sign-out, edits made while signed out are
- * "newer than cloud" and won't be silently overwritten on re-login.
+ * The local clock (bumped on every write, persisted across sign-out) still tells
+ * us which side is newer for the non-conflicting cases.
  */
 export async function reconcileOnSignIn(): Promise<SyncOutcome> {
   if (!isCloudEnabled()) return "disabled";
   try {
     const { data: cloud, updatedAt } = await pullCloud();
-    const localClock = getLocalClock();
 
     if (!cloud) {
       const { error } = await pushCloud();
       return error ? "error" : "pushed";
     }
-    // Cloud is newer than our local data → adopt it.
-    if (updatedAt > localClock) {
+
+    const local = collectLocalData();
+    if (sameData(local, cloud)) {
+      // Already identical — just align the clock, no write needed.
+      setLocalClock(Math.max(updatedAt, getLocalClock()));
+      return "in-sync";
+    }
+
+    const localHasData = isMeaningful(local);
+    const cloudHasData = isMeaningful(cloud);
+
+    // One side is effectively empty → safe to auto-resolve without asking.
+    if (!localHasData) {
       applyCloudData(cloud);
       setLocalClock(updatedAt);
       return "pulled";
     }
-    // Local is up to date or ahead → push.
-    const { error } = await pushCloud();
-    return error ? "error" : "pushed";
+    if (!cloudHasData) {
+      const { error } = await pushCloud();
+      return error ? "error" : "pushed";
+    }
+
+    // Both sides have real, divergent data → ask the user (no silent overwrite).
+    pendingConflict = { data: cloud, updatedAt };
+    return "conflict";
   } catch {
     return "error";
   }
+}
+
+/** Summaries of the two sides of a pending conflict (null when none). */
+export function getPendingConflict(): { local: DataSummary; cloud: DataSummary } | null {
+  if (!pendingConflict) return null;
+  return { local: summarizeData(collectLocalData()), cloud: summarizeData(pendingConflict.data) };
+}
+
+/** Resolve a pending conflict: keep this device (push) or use cloud (pull). */
+export async function resolveConflict(choice: "local" | "cloud"): Promise<SyncOutcome> {
+  const pending = pendingConflict;
+  pendingConflict = null;
+  if (!pending) return "error";
+  if (choice === "cloud") {
+    applyCloudData(pending.data);
+    setLocalClock(pending.updatedAt);
+    return "pulled";
+  }
+  const { error } = await pushCloud();
+  return error ? "error" : "pushed";
 }
 
 // Debounced background push triggered after local writes.
