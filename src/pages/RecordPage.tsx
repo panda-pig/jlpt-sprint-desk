@@ -9,6 +9,40 @@ import { useLocale } from "../i18n/LocaleProvider";
 import { moduleLabel, moduleShort, phaseLabel } from "../i18n";
 import type { StudyRecord } from "../lib/types";
 
+/** Split a single "total minutes" figure across the record modules, weighted by
+ *  today's plan (falls back to an even split). Sum is preserved exactly. */
+function distributeQuickMinutes(
+  total: number,
+  todayPlan: { tasks?: { module: string; minutes: number }[] } | null | undefined,
+  keys: readonly string[],
+): Record<string, number> {
+  const out: Record<string, number> = {};
+  keys.forEach((k) => { out[k] = 0; });
+  if (!total || total <= 0) return out;
+
+  const weights: Record<string, number> = {};
+  keys.forEach((k) => { weights[k] = 0; });
+  let hasPlan = false;
+  (todayPlan?.tasks || []).forEach((task) => {
+    if (keys.includes(task.module)) {
+      weights[task.module] += Number(task.minutes || 0);
+      hasPlan = true;
+    }
+  });
+  if (!hasPlan) keys.forEach((k) => { weights[k] = 1; });
+
+  const sumW = keys.reduce((s, k) => s + weights[k], 0) || 1;
+  let acc = 0;
+  keys.forEach((k) => { out[k] = Math.round((total * weights[k]) / sumW); acc += out[k]; });
+  // Push the rounding drift onto the largest-weight module so the sum is exact.
+  const diff = total - acc;
+  if (diff !== 0) {
+    const maxK = keys.reduce((a, b) => (weights[b] > weights[a] ? b : a), keys[0]);
+    out[maxK] = Math.max(0, out[maxK] + diff);
+  }
+  return out;
+}
+
 export function RecordPage() {
   const navigate = useNavigate();
   const { state, todayRecord, todayPlan, saveRecord, deleteRecord } = useStudyDesk();
@@ -32,8 +66,23 @@ export function RecordPage() {
     };
   });
 
+  // Quick log = completion + total minutes only (≈30s). Full log = every field.
+  // New today-record defaults to quick; an existing record opens in full so its
+  // detailed breakdown is visible and not silently overwritten.
+  const sumMinutes = (rec?: Partial<StudyRecord> | null) =>
+    rec?.minutes ? Object.values(rec.minutes).reduce((a, b) => a + Number(b || 0), 0) : 0;
+  const [mode, setMode] = useState<"quick" | "full">(todayRecord ? "full" : "quick");
+  const [quickMinutes, setQuickMinutes] = useState<number>(sumMinutes(todayRecord));
+
   const setFormField = useCallback(<K extends keyof StudyRecord>(key: K, value: StudyRecord[K]) => {
     setForm((prev) => ({ ...prev, [key]: value }));
+  }, []);
+
+  // Load a past/other record into the form for editing (always full mode).
+  const loadRecord = useCallback((record: StudyRecord) => {
+    setForm({ ...record });
+    setQuickMinutes(sumMinutes(record));
+    setMode("full");
   }, []);
 
   const setModuleMinutes = useCallback((module: string, value: number) => {
@@ -73,8 +122,13 @@ export function RecordPage() {
   }, []);
 
   const handleSubmit = useCallback(() => {
+    if (mode === "quick") {
+      const minutes = distributeQuickMinutes(quickMinutes, todayPlan, RECORD_MODULE_KEYS);
+      saveRecord({ ...form, minutes });
+      return;
+    }
     saveRecord(form);
-  }, [form, saveRecord]);
+  }, [mode, quickMinutes, todayPlan, form, saveRecord]);
 
   const recentRecords = [...state.records].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 5);
 
@@ -105,6 +159,49 @@ export function RecordPage() {
           </div>
 
           <div className="record-form stack">
+            <div className="record-mode-switch" role="group" aria-label={t("record.modeQuick")}>
+              <button type="button" className={mode === "quick" ? "is-active" : ""} onClick={() => setMode("quick")}>
+                {t("record.modeQuick")}
+              </button>
+              <button type="button" className={mode === "full" ? "is-active" : ""} onClick={() => setMode("full")}>
+                {t("record.modeFull")}
+              </button>
+            </div>
+
+            {mode === "quick" && (
+              <div className="quick-record stack">
+                <p className="muted quick-record-hint">{t("record.quickHint")}</p>
+                <div className="form-grid">
+                  <div className="field">
+                    <label htmlFor="quickCompletion">{t("record.completionLabel")}</label>
+                    <select
+                      id="quickCompletion"
+                      value={form.completion}
+                      onChange={(e) => setFormField("completion", e.target.value as StudyRecord["completion"])}
+                    >
+                      {COMPLETION_OPTIONS.map(([value]) => (
+                        <option key={value} value={value}>{tOption("completion", value)}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="field">
+                    <label htmlFor="quickMinutes">{t("record.quickMinutes")}</label>
+                    <input
+                      id="quickMinutes"
+                      type="number"
+                      inputMode="numeric"
+                      min={0}
+                      placeholder={t("record.quickMinutesPlaceholder")}
+                      value={quickMinutes || ""}
+                      onChange={(e) => setQuickMinutes(Math.max(0, Number(e.target.value)))}
+                    />
+                  </div>
+                </div>
+                <p className="muted quick-record-note">{t("record.quickSplitNote")}</p>
+              </div>
+            )}
+
+            {mode === "full" && (<>
             <fieldset className="record-fieldset">
               <legend>{t("record.moduleTimeCount")}</legend>
               <div className="module-record-grid">
@@ -319,6 +416,7 @@ export function RecordPage() {
                 ))}
               </div>
             </div>
+            </>)}
 
             <div className="button-row">
               <button className="primary-button" type="button" onClick={handleSubmit}>
@@ -450,7 +548,7 @@ export function RecordPage() {
                       {record.tomorrowFocus && <small>{t("record.tomorrowFirst", { focus: record.tomorrowFocus })}</small>}
                     </div>
                     <div className="history-actions">
-                      <button className="text-button" type="button" onClick={() => setForm({ ...record })}>{t("common.edit")}</button>
+                      <button className="text-button" type="button" onClick={() => loadRecord(record)}>{t("common.edit")}</button>
                       <button className="text-button danger" type="button" onClick={() => { if (confirm(t("record.deleteConfirm"))) deleteRecord(record.id); }}>{t("common.delete")}</button>
                     </div>
                   </li>

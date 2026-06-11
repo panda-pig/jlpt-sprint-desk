@@ -1938,6 +1938,52 @@ input[type="number"] {
   margin-top: 6px;
 }
 
+/* Quick / full segmented toggle at the top of the record form. */
+.record-mode-switch {
+  display: inline-flex;
+  gap: 2px;
+  width: fit-content;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-muted);
+}
+.record-mode-switch button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  padding: 6px 18px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  color: var(--muted);
+  background: transparent;
+  font-size: 13px;
+  font-weight: 650;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.16s var(--ease), color 0.16s var(--ease);
+}
+.record-mode-switch button.is-active {
+  color: var(--primary-strong);
+  background: var(--surface);
+  box-shadow: var(--shadow-soft);
+}
+.record-mode-switch button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+.quick-record-hint {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.quick-record-note {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--faint);
+}
+
 .record-fieldset {
   min-width: 0;
   display: grid;
