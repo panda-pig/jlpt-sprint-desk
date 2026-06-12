@@ -311,7 +311,7 @@ export function SetupPage() {
                 min={20}
                 max={600}
                 defaultValue={state.settings.weekdayMinutes || ""}
-                placeholder="例：120"
+                placeholder={t("common.egN", { n: 120 })}
                 onBlur={(e) => {
                   const val = e.target.value;
                   if (val === "") { setField("weekdayMinutes", 0); }
@@ -328,7 +328,7 @@ export function SetupPage() {
                 min={20}
                 max={720}
                 defaultValue={state.settings.weekendMinutes || ""}
-                placeholder="例：240"
+                placeholder={t("common.egN", { n: 240 })}
                 onBlur={(e) => {
                   const val = e.target.value;
                   if (val === "") { setField("weekendMinutes", 0); }
@@ -360,7 +360,7 @@ export function SetupPage() {
                 type="text"
                 inputMode="numeric"
                 defaultValue={state.settings.targetScore || ""}
-                placeholder="例：115"
+                placeholder={t("common.egN", { n: 115 })}
                 onBlur={(e) => {
                   const val = e.target.value;
                   if (val === "") {

@@ -52,6 +52,7 @@ export const zh = {
     listSep: "、",
     total: "总计",
     whyScore: "为什么是这个分数？",
+    egN: "例：{n}",
   },
   nav: {
     dashboard: "总览",

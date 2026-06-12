@@ -52,6 +52,7 @@ export const en = {
     listSep: ", ",
     total: "Total",
     whyScore: "Why this score?",
+    egN: "e.g. {n}",
   },
   nav: {
     dashboard: "Dashboard",
