@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { Save, RotateCcw, BookOpen, ClipboardList, ArrowRight, Settings, CalendarClock, ChevronDown } from "lucide-react";
 import { useStudyDesk } from "../lib/studyDeskContext";
 import { MODULE_COLORS, RECORD_MODULE_KEYS } from "../lib/constants";
-import { mergeDayWithEdit, buildStudyBudget, getReferencePlan, recordsSignature } from "../lib/planner";
-import { todayISO } from "../lib/utils";
+import { mergeDayWithEdit, buildStudyBudget, getReferencePlan, recordsSignature, isExamPast } from "../lib/planner";
+import { todayISO, daysUntil } from "../lib/utils";
 import { useLocale } from "../i18n/LocaleProvider";
 import { levelLabel as i18nLevelLabel, phaseLabel, moduleLabel, moduleShort } from "../i18n";
 
@@ -97,6 +97,9 @@ export function PlanPage() {
 
   const todayDay = upcomingDays[0];
   const budget = buildStudyBudget(state.settings);
+  // Recompute the countdown live (the stored daysLeft can be stale once time passes).
+  const examDaysLeft = daysUntil(generatedPlan.examDate);
+  const examPast = isExamPast(generatedPlan.examDate);
   const REFERENCE_PLAN = getReferencePlan();
   const recordDates = new Set(records.map((record) => record.date));
 
@@ -156,7 +159,13 @@ export function PlanPage() {
             <div className="summary-item">
               <span className="summary-label">{t("plan.examDate")}</span>
               <span className="summary-value">{generatedPlan.examDate || t("plan.notSet")}</span>
-              <span className="summary-note">{t("plan.daysUnit", { n: generatedPlan.daysLeft ?? "?" })}</span>
+              <span className="summary-note">
+                {examPast
+                  ? t("plan.examPastNote")
+                  : examDaysLeft === null
+                  ? t("plan.notSet")
+                  : t("plan.daysUnit", { n: examDaysLeft })}
+              </span>
             </div>
             <div className="summary-item">
               <span className="summary-label">{t("plan.dailyTarget")}</span>

@@ -12,6 +12,7 @@ import {
   daysUntil,
   isoWeekday,
   nowISO,
+  parseISODate,
   parseNumber,
   roundToFive,
   todayISO,
@@ -21,11 +22,29 @@ import {
 } from "./utils";
 import { t, tOption, moduleLabel, levelLabel as i18nLevelLabel } from "../i18n";
 
+/** True when the exam date is set and strictly before today. */
+export function isExamPast(examDate: string): boolean {
+  const d = parseISODate(examDate);
+  return d !== null && d.getTime() < todayStart().getTime();
+}
+
+/**
+ * Planning horizon in days. The exam date is a soft target — an unset date OR a
+ * date that has already passed (e.g. someone who left a July date but is now
+ * studying toward December) falls back to the level's default span, so the plan
+ * never degenerates into a 0/1-day window.
+ */
+export function getPlanningHorizon(settings: PlanSettings): number {
+  const base = LEVEL_CONFIG[settings.level].baseWeeks * 7;
+  const raw = daysUntil(settings.examDate);
+  if (raw === null || isExamPast(settings.examDate)) return base;
+  return Math.max(1, raw);
+}
+
 export function generatePlan(settings: PlanSettings, profileId: string): GeneratedPlan {
   const normalized = normalizeSettings(settings);
   const parsedDaysLeft = daysUntil(normalized.examDate);
-  const safeDaysLeft = parsedDaysLeft === null ? LEVEL_CONFIG[normalized.level].baseWeeks * 7 : Math.max(1, parsedDaysLeft);
-  const horizon = clamp(safeDaysLeft, 14, 240);
+  const horizon = clamp(getPlanningHorizon(normalized), 14, 240);
   const budget = buildStudyBudget(normalized);
   const dailyPlan: DailyPlanItem[] = [];
 
@@ -105,7 +124,9 @@ export function buildStudyBudget(settings: PlanSettings): StudyBudget {
 function buildContentBudget(settings: PlanSettings, weeklyMinutes: number) {
   const targets = LEVEL_CONTENT_TARGETS[settings.level] || LEVEL_CONTENT_TARGETS.N2;
   const daysLeft = daysUntil(settings.examDate);
-  const planningDays = daysLeft === null ? LEVEL_CONFIG[settings.level].baseWeeks * 7 : daysLeft;
+  // Past/unset dates fall back to the level's default span (see getPlanningHorizon)
+  // so a stale or empty exam date can't collapse the learning-day math to zero.
+  const planningDays = getPlanningHorizon(settings);
   const vocabRemaining = Math.max(0, targets.vocab - settings.learnedVocab);
   const grammarRemaining = Math.max(0, targets.grammar - settings.learnedGrammar);
   const vocabDays = settings.dailyVocabGoal > 0 ? Math.ceil(vocabRemaining / settings.dailyVocabGoal) : Infinity;
@@ -119,7 +140,8 @@ function buildContentBudget(settings: PlanSettings, weeklyMinutes: number) {
   let status = "ample";
   if (!Number.isFinite(learningDays)) {
     status = "lackDaily";
-  } else if (daysLeft !== null && daysLeft <= 3 && (vocabRemaining > 0 || grammarRemaining > 0)) {
+  } else if (daysLeft !== null && daysLeft <= 3 && !isExamPast(settings.examDate) && (vocabRemaining > 0 || grammarRemaining > 0)) {
+    // "Exam imminent" only for a real upcoming date — not a stale/passed one.
     status = "examReview";
   } else if (learningDays > Math.max(1, planningDays)) {
     status = "notEnough";

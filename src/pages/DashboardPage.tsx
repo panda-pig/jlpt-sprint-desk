@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useStudyDesk } from "../lib/studyDeskContext";
 import { daysUntil, clampPercent } from "../lib/utils";
-import { getTodayTargetMinutes } from "../lib/planner";
+import { getTodayTargetMinutes, isExamPast } from "../lib/planner";
 import { LEVEL_CONFIG } from "../lib/constants";
 import { ReminderBanner } from "../components/Reminder";
 import { useLocale } from "../i18n/LocaleProvider";
@@ -41,6 +41,7 @@ export function DashboardPage() {
   const { t } = useLocale();
 
   const daysLeft = daysUntil(state.settings.examDate);
+  const examPast = isExamPast(state.settings.examDate);
   const totalMinutes = state.records.reduce((sum, r) => {
     const mins = Object.values(r.minutes || {}).reduce((a, b) => a + Number(b || 0), 0);
     return sum + mins;
@@ -77,13 +78,25 @@ export function DashboardPage() {
           <section className="card metric-card">
             <div>
               <p className="metric-label">{t("dashboard.countdown")}</p>
-              <p className="metric-value">
-                {daysLeft === null ? t("dashboard.pendingSetup") : daysLeft} <small>{daysLeft === null ? t("dashboard.daysToSet") : t("dashboard.daysLeftSmall")}</small>
-              </p>
+              {daysLeft !== null && !examPast ? (
+                <p className="metric-value">
+                  {daysLeft} <small>{t("dashboard.daysLeftSmall")}</small>
+                </p>
+              ) : (
+                <p className="metric-value metric-value-soft">
+                  {examPast ? t("dashboard.examPast") : t("dashboard.pendingSetup")}
+                </p>
+              )}
             </div>
-            <div className="progress-track">
-              <div className="progress-fill" style={{ ["--value" as string]: `${clampPercent(daysLeft === null ? 0 : 100 - (daysLeft / 120) * 100)}%` }} />
-            </div>
+            {daysLeft !== null && !examPast ? (
+              <div className="progress-track">
+                <div className="progress-fill" style={{ ["--value" as string]: `${clampPercent(100 - (daysLeft / 120) * 100)}%` }} />
+              </div>
+            ) : (
+              <a className="metric-soft-link" href="#/setup" onClick={(e) => { e.preventDefault(); navigate("/setup"); }}>
+                {examPast ? t("dashboard.examUpdate") : t("dashboard.daysToSet")}
+              </a>
+            )}
           </section>
 
           <section className="card metric-card">

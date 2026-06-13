@@ -1168,6 +1168,24 @@ img {
   font-weight: 650;
 }
 
+/* Soft state for the countdown when the exam date is unset or already passed —
+   neutral, not alarming. */
+.metric-value-soft {
+  color: var(--muted);
+  font-size: clamp(20px, 2.4vw, 26px);
+  letter-spacing: -0.01em;
+}
+.metric-soft-link {
+  display: inline-flex;
+  align-items: center;
+  color: var(--primary-strong);
+  font-size: 13px;
+  font-weight: 600;
+}
+.metric-soft-link:hover {
+  text-decoration: underline;
+}
+
 .progress-track {
   height: 5px;
   overflow: hidden;
