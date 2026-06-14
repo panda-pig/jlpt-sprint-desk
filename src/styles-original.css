@@ -404,6 +404,28 @@ img {
   align-items: start;
 }
 
+/* Skeleton fallback while a code-split page chunk loads. */
+.page-loading {
+  display: grid;
+  gap: 18px;
+  padding: 4px 0;
+}
+.page-loading-block {
+  height: 180px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line);
+  background: linear-gradient(100deg, var(--surface) 30%, var(--surface-muted) 50%, var(--surface) 70%);
+  background-size: 200% 100%;
+  animation: page-loading-shimmer 1.3s ease-in-out infinite;
+}
+.page-loading-block.short {
+  height: 110px;
+}
+@keyframes page-loading-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
 .setup-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 360px;
