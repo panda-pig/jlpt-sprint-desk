@@ -39,6 +39,7 @@ export function BottomNav() {
           key={key}
           href={`#/${key}`}
           className={route === key ? "active" : ""}
+          aria-current={route === key ? "page" : undefined}
         >
           <Icon size={20} />
           <span>{t(labelKey)}</span>

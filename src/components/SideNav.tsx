@@ -23,6 +23,7 @@ export function SideNav({ activeRoute, onNavigate }: SideNavProps) {
           key={item.key}
           href={`#/${item.key}`}
           className={activeRoute === item.key ? "is-active" : ""}
+          aria-current={activeRoute === item.key ? "page" : undefined}
           onClick={onNavigate}
         >
           <span className="nav-icon">{item.icon}</span>

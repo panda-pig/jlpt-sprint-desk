@@ -10,6 +10,14 @@ const LOCALE_KEY = "jlptSprintDeskLocale";
 let listeners: Array<() => void> = [];
 let currentLocale: Locale = detectInitialLocale();
 
+/** Keep <html lang> in step with the UI language for screen readers / SEO. */
+function syncHtmlLang(locale: Locale): void {
+  if (typeof document !== "undefined") {
+    document.documentElement.lang = locale === "en" ? "en" : "zh-CN";
+  }
+}
+syncHtmlLang(currentLocale);
+
 function detectInitialLocale(): Locale {
   try {
     const saved = localStorage.getItem(LOCALE_KEY);
@@ -28,6 +36,7 @@ export function getLocale(): Locale {
 export function setLocale(locale: Locale): void {
   if (locale === currentLocale) return;
   currentLocale = locale;
+  syncHtmlLang(locale);
   try {
     localStorage.setItem(LOCALE_KEY, locale);
   } catch {

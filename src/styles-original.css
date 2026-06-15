@@ -1996,6 +1996,20 @@ textarea:focus {
   box-shadow: 0 0 0 3px rgba(79, 124, 95, 0.12);
 }
 
+/* Baseline keyboard focus ring for every interactive element (links, buttons,
+   form controls, native disclosures). Specific components may override above. */
+a:focus-visible,
+button:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+input:focus-visible,
+summary:focus-visible,
+[role="button"]:focus-visible,
+[tabindex="0"]:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
 input[type="number"] {
   font-variant-numeric: tabular-nums;
 }
