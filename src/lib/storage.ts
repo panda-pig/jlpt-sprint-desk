@@ -10,8 +10,8 @@ export function getProfiles(): Profile[] {
   return readJSON<Profile[]>(STORAGE_KEYS.profiles, []);
 }
 
-export function saveProfiles(profiles: Profile[]): void {
-  writeJSON(STORAGE_KEYS.profiles, profiles);
+export function saveProfiles(profiles: Profile[]): boolean {
+  return writeJSON(STORAGE_KEYS.profiles, profiles);
 }
 
 export function getActiveProfileId(): string | null {
@@ -26,8 +26,8 @@ export function getPlanSettings(profileId: string): PlanSettings {
   return readJSON<PlanSettings>(scopedKey(profileId, "planSettings"), {} as PlanSettings);
 }
 
-export function savePlanSettings(settings: PlanSettings, profileId: string): void {
-  writeJSON(scopedKey(profileId, "planSettings"), settings);
+export function savePlanSettings(settings: PlanSettings, profileId: string): boolean {
+  return writeJSON(scopedKey(profileId, "planSettings"), settings);
 }
 
 export function getGeneratedPlan(profileId: string): GeneratedPlan | null {
@@ -36,8 +36,8 @@ export function getGeneratedPlan(profileId: string): GeneratedPlan | null {
   return plan;
 }
 
-export function saveGeneratedPlan(plan: GeneratedPlan, profileId: string): void {
-  writeJSON(scopedKey(profileId, "generatedPlan"), plan);
+export function saveGeneratedPlan(plan: GeneratedPlan, profileId: string): boolean {
+  return writeJSON(scopedKey(profileId, "generatedPlan"), plan);
 }
 
 export function getPlanEdits(profileId: string): PlanEdits {
@@ -45,8 +45,8 @@ export function getPlanEdits(profileId: string): PlanEdits {
   return edits && typeof edits === "object" && !Array.isArray(edits) ? edits : {};
 }
 
-export function savePlanEdits(edits: PlanEdits, profileId: string): void {
-  writeJSON(scopedKey(profileId, "planEdits"), edits || {});
+export function savePlanEdits(edits: PlanEdits, profileId: string): boolean {
+  return writeJSON(scopedKey(profileId, "planEdits"), edits || {});
 }
 
 export function getRecords(profileId: string): StudyRecord[] {
@@ -54,8 +54,8 @@ export function getRecords(profileId: string): StudyRecord[] {
   return Array.isArray(records) ? records : [];
 }
 
-export function saveRecords(records: StudyRecord[], profileId: string): void {
-  writeJSON(scopedKey(profileId, "records"), Array.isArray(records) ? records : []);
+export function saveRecords(records: StudyRecord[], profileId: string): boolean {
+  return writeJSON(scopedKey(profileId, "records"), Array.isArray(records) ? records : []);
 }
 
 export function createProfile(name: string): Profile {

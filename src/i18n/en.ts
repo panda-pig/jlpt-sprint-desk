@@ -33,6 +33,7 @@ export const en = {
     planGenerated: "New study plan generated.",
     dayEditSaved: "Day {n} edits saved.",
     dayEditReset: "Day {n} restored to the generated plan.",
+    saveFailed: "Couldn't save — your browser storage may be full. Export a backup to be safe.",
   },
   common: {
     appName: "JLPT Sprint Desk",

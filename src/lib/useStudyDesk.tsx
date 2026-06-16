@@ -116,6 +116,10 @@ function loadInitialState(): StudyDeskState {
 
 export function StudyDeskProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<StudyDeskState>(loadInitialState);
+  // Mirror of what's currently persisted, used by commit() to (a) write only the
+  // slices that actually changed and (b) detect write failures (quota exceeded /
+  // private mode) so we never falsely report a save as successful.
+  const lastSavedRef = useRef<StudyDeskState>(state);
   // Recompute locale-dependent derived values (plan health, next action,
   // suggestions — all built from planner phrase tables) when language switches.
   const [locale, setLocaleTick] = useState(getLocale());
@@ -134,23 +138,35 @@ export function StudyDeskProvider({ children }: { children: ReactNode }) {
       const plan = generatePlan(prev.settings, prev.activeProfileId);
       plan.adjustmentSignature = prev.generatedPlan.adjustmentSignature;
       saveGeneratedPlan(plan, prev.activeProfileId);
+      const next = { ...prev, generatedPlan: plan };
+      lastSavedRef.current = next; // the regenerated plan is now persisted
       // The stored plan's prose just changed → mark local + mirror to cloud.
       schedulePush();
-      return { ...prev, generatedPlan: plan };
+      return next;
     });
   }, [locale]);
 
-  const commit = useCallback((next: StudyDeskState) => {
+  const commit = useCallback((next: StudyDeskState): boolean => {
     setState(next);
+    const prev = lastSavedRef.current;
+    const samePid = prev.activeProfileId === next.activeProfileId;
+    let ok = true;
     if (next.activeProfileId) {
-      savePlanSettings(next.settings, next.activeProfileId);
-      if (next.generatedPlan) saveGeneratedPlan(next.generatedPlan, next.activeProfileId);
-      savePlanEdits(next.planEdits, next.activeProfileId);
-      saveRecords(next.records, next.activeProfileId);
+      const pid = next.activeProfileId;
+      // Only re-serialize a slice when it actually changed (a record edit must not
+      // rewrite the whole — potentially 100KB+ — generated plan). When the active
+      // profile changed, every slice belongs to a new profile and must be written.
+      if (!samePid || next.settings !== prev.settings) ok = savePlanSettings(next.settings, pid) && ok;
+      if ((!samePid || next.generatedPlan !== prev.generatedPlan) && next.generatedPlan) ok = saveGeneratedPlan(next.generatedPlan, pid) && ok;
+      if (!samePid || next.planEdits !== prev.planEdits) ok = savePlanEdits(next.planEdits, pid) && ok;
+      if (!samePid || next.records !== prev.records) ok = saveRecords(next.records, pid) && ok;
     }
-    saveProfiles(next.profiles);
+    if (next.profiles !== prev.profiles) ok = saveProfiles(next.profiles) && ok;
+    lastSavedRef.current = next;
     // Mirror every local write up to the cloud (no-op when sync is disabled).
     schedulePush();
+    if (!ok) toast(t("toast.saveFailed"));
+    return ok;
   }, []);
 
   const todayRecord = useMemo(() => {
@@ -192,8 +208,7 @@ export function StudyDeskProvider({ children }: { children: ReactNode }) {
       records: [],
     };
     setActiveProfileId(profile.id);
-    commit(next);
-    toast(t("toast.profileCreated"));
+    if (commit(next)) toast(t("toast.profileCreated"));
   }, [state, commit]);
 
   const deleteProfile = useCallback((id: string) => {
@@ -218,6 +233,7 @@ export function StudyDeskProvider({ children }: { children: ReactNode }) {
         })()
       : { ...state, profiles: nextProfiles };
     setState(next);
+    lastSavedRef.current = next; // slices loaded from storage are already persisted
     schedulePush(); // profile data changed → mirror to cloud
     toast(t("toast.profileDeleted"));
   }, [state]);
@@ -234,6 +250,7 @@ export function StudyDeskProvider({ children }: { children: ReactNode }) {
     };
     toast(t("toast.profileSwitched"));
     setState(next);
+    lastSavedRef.current = next; // slices loaded from storage are already persisted
     schedulePush(); // active profile pointer changed → mirror to cloud
   }, [state]);
 
@@ -256,8 +273,7 @@ export function StudyDeskProvider({ children }: { children: ReactNode }) {
     if (!state.activeProfileId) return;
     const plan = generatePlan(state.settings, state.activeProfileId);
     const next: StudyDeskState = { ...state, generatedPlan: plan, planEdits: {} };
-    commit(next);
-    toast(t("toast.planGenerated"));
+    if (commit(next)) toast(t("toast.planGenerated"));
   }, [state, commit]);
 
   // Apply the data-driven adjustment by changing the time settings and
@@ -280,8 +296,7 @@ export function StudyDeskProvider({ children }: { children: ReactNode }) {
     }
     const plan = generatePlan(nextSettings, state.activeProfileId);
     plan.adjustmentSignature = sig;
-    commit({ ...state, settings: nextSettings, generatedPlan: plan });
-    toast(t("adjust.applied"));
+    if (commit({ ...state, settings: nextSettings, generatedPlan: plan })) toast(t("adjust.applied"));
   }, [state, commit]);
 
   const savePlanEdit = useCallback((dayIndex: number, text: string) => {
@@ -293,16 +308,14 @@ export function StudyDeskProvider({ children }: { children: ReactNode }) {
       delete nextEdits[String(dayIndex)];
     }
     const next: StudyDeskState = { ...state, planEdits: nextEdits };
-    commit(next);
-    toast(t("toast.dayEditSaved", { n: dayIndex }));
+    if (commit(next)) toast(t("toast.dayEditSaved", { n: dayIndex }));
   }, [state, commit]);
 
   const deletePlanEdit = useCallback((dayIndex: number) => {
     const nextEdits = { ...state.planEdits };
     delete nextEdits[String(dayIndex)];
     const next: StudyDeskState = { ...state, planEdits: nextEdits };
-    commit(next);
-    toast(t("toast.dayEditReset", { n: dayIndex }));
+    if (commit(next)) toast(t("toast.dayEditReset", { n: dayIndex }));
   }, [state, commit]);
 
   const saveRecord = useCallback((record: Partial<StudyRecord>) => {
@@ -341,15 +354,13 @@ export function StudyDeskProvider({ children }: { children: ReactNode }) {
     nextRecords.sort((a, b) => a.date.localeCompare(b.date));
 
     const next: StudyDeskState = { ...state, records: nextRecords };
-    commit(next);
-    toast(newRecord.date === now ? t("record.savedToday") : t("record.savedOn", { date: newRecord.date }));
+    if (commit(next)) toast(newRecord.date === now ? t("record.savedToday") : t("record.savedOn", { date: newRecord.date }));
   }, [state, commit]);
 
   const deleteRecord = useCallback((id: string) => {
     const nextRecords = state.records.filter((r) => r.id !== id);
     const next: StudyDeskState = { ...state, records: nextRecords };
-    commit(next);
-    toast(t("record.deleted"));
+    if (commit(next)) toast(t("record.deleted"));
   }, [state, commit]);
 
   const value: StudyDeskContextValue = {

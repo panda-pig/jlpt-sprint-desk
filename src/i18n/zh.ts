@@ -33,6 +33,7 @@ export const zh = {
     planGenerated: "新学习计划已生成。",
     dayEditSaved: "Day {n} 的调整已保存。",
     dayEditReset: "Day {n} 已恢复为生成计划。",
+    saveFailed: "保存失败——浏览器存储空间可能已满，建议先导出一份备份。",
   },
   common: {
     appName: "JLPT Sprint Desk",
