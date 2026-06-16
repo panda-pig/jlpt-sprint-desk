@@ -3,6 +3,7 @@ import { RECORD_MODULE_KEYS } from "./constants";
 import { escapeHtml, todayISO } from "./utils";
 import { getRecordMinutes } from "./utils";
 import { t, tOption, moduleLabel, phaseLabel, getLocale } from "../i18n";
+import { CURRENT_SCHEMA_VERSION } from "./migrations";
 
 function daysLeftText(daysLeft: number | null): string {
   return daysLeft === null ? t("export.docNotSet") : t("export.docDays", { n: daysLeft });
@@ -435,7 +436,7 @@ export function buildICS(plan: GeneratedPlan, profileName: string): string {
 export function buildBackupJSON(profileName: string, plan: GeneratedPlan | null, settings: PlanSettings, edits: Record<string, string>, records: StudyRecord[]): string {
   return JSON.stringify({
     exportedAt: todayISO(),
-    storageVersion: 2,
+    storageVersion: CURRENT_SCHEMA_VERSION,
     profileName,
     planSettings: settings,
     generatedPlan: plan,
