@@ -34,6 +34,7 @@ export const zh = {
     dayEditSaved: "Day {n} 的调整已保存。",
     dayEditReset: "Day {n} 已恢复为生成计划。",
     saveFailed: "保存失败——浏览器存储空间可能已满，建议先导出一份备份。",
+    dataCorrupt: "部分本地数据无法读取，已保留原始副本并暂以空白显示；如有备份建议导入恢复。",
   },
   common: {
     appName: "JLPT Sprint Desk",

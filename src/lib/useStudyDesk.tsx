@@ -33,7 +33,7 @@ import {
   getUpcomingDays,
   normalizeSettings,
 } from "./planner";
-import { todayISO } from "./utils";
+import { todayISO, getCorruptionCount } from "./utils";
 import { toast } from "./toast";
 import { schedulePush } from "./cloudSync";
 import { getLocale, subscribeLocale, t } from "../i18n";
@@ -124,6 +124,13 @@ export function StudyDeskProvider({ children }: { children: ReactNode }) {
   // suggestions — all built from planner phrase tables) when language switches.
   const [locale, setLocaleTick] = useState(getLocale());
   useEffect(() => subscribeLocale(() => setLocaleTick(getLocale())), []);
+
+  // loadInitialState() (in the useState initializer above) already read every
+  // slice; if any failed to parse, the raw value was backed up to a __corrupt
+  // key. Warn the user once so they know the blank state isn't a real data loss.
+  useEffect(() => {
+    if (getCorruptionCount() > 0) toast(t("toast.dataCorrupt"));
+  }, []);
 
   // The plan is generated once and stored, with task prose baked in the active
   // language. When the user switches language, regenerate so the stored plan's

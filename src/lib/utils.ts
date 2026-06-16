@@ -3,12 +3,32 @@ import type { StudyRecord, GeneratedPlan } from "./types";
 import { getTodayPlanDay } from "./planner";
 import { t, tOption, moduleLabel } from "../i18n";
 
+// Counts localStorage values that failed to parse this session, so the app can
+// warn the user once instead of silently treating corrupt data as empty.
+let corruptionCount = 0;
+export function getCorruptionCount(): number {
+  return corruptionCount;
+}
+
 export function readJSON<T>(key: string, fallback: T): T {
+  let raw: string | null = null;
   try {
-    const raw = localStorage.getItem(key);
+    raw = localStorage.getItem(key);
     if (!raw) return structuredCloneSafe(fallback);
     return JSON.parse(raw) as T;
   } catch {
+    corruptionCount += 1;
+    // Preserve the corrupt raw value under a sibling key BEFORE the app can
+    // overwrite it with the empty fallback — so it stays recoverable (and is
+    // included in backups / cloud snapshots).
+    try {
+      const backupKey = `${key}__corrupt`;
+      if (raw && !localStorage.getItem(backupKey)) {
+        localStorage.setItem(backupKey, raw);
+      }
+    } catch {
+      /* best effort */
+    }
     return structuredCloneSafe(fallback);
   }
 }

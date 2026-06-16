@@ -34,6 +34,7 @@ export const en = {
     dayEditSaved: "Day {n} edits saved.",
     dayEditReset: "Day {n} restored to the generated plan.",
     saveFailed: "Couldn't save — your browser storage may be full. Export a backup to be safe.",
+    dataCorrupt: "Some saved data couldn't be read and was set aside (a raw copy is kept). Showing a blank state — restore from a backup if you have one.",
   },
   common: {
     appName: "JLPT Sprint Desk",
