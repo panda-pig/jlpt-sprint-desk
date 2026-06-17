@@ -224,6 +224,14 @@ function allocateMinutes(total: number, weights: Record<string, number>, minBloc
     entries.forEach(([key, weight]) => {
       minutes[key] = Math.max(0, Math.round((total * weight) / totalWeight));
     });
+    // Per-module rounding can drift the sum a minute or two off `total`; push the
+    // difference onto the largest-weight module so the total is exact (never over).
+    const sum = entries.reduce((acc, [key]) => acc + minutes[key], 0);
+    const diff = total - sum;
+    if (diff !== 0 && entries.length) {
+      const maxKey = entries.reduce((a, b) => (weights[b[0]] > weights[a[0]] ? b : a))[0];
+      minutes[maxKey] = Math.max(0, minutes[maxKey] + diff);
+    }
     return minutes;
   }
 
