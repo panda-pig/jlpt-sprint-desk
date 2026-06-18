@@ -16,6 +16,7 @@ const PlanPage = lazy(() => import("./pages/PlanPage").then((m) => ({ default: m
 const RecordPage = lazy(() => import("./pages/RecordPage").then((m) => ({ default: m.RecordPage })));
 const AnalysisPage = lazy(() => import("./pages/AnalysisPage").then((m) => ({ default: m.AnalysisPage })));
 const ExportPage = lazy(() => import("./pages/ExportPage").then((m) => ({ default: m.ExportPage })));
+const SupportPage = lazy(() => import("./pages/SupportPage").then((m) => ({ default: m.SupportPage })));
 
 function PageFallback() {
   return (
@@ -39,6 +40,7 @@ function AnimatedRoutes() {
           <Route path="/record" element={<RecordPage />} />
           <Route path="/analysis" element={<AnalysisPage />} />
           <Route path="/export" element={<ExportPage />} />
+          <Route path="/support" element={<SupportPage />} />
         </Routes>
       </Suspense>
     </FadeTransition>
