@@ -70,6 +70,7 @@ export const en = {
     recordShort: "Record",
     analysisShort: "Review",
     exportShort: "Export",
+    supportShort: "Support",
     mobileNav: "Mobile navigation",
   },
   layout: {

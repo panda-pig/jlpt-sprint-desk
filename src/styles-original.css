@@ -4403,17 +4403,6 @@ tr:last-child td {
   color: var(--primary-strong);
   font-weight: 600;
 }
-.support-footer-link {
-  display: block;
-  margin-top: 4px;
-  padding: 6px 2px;
-  color: var(--amber);
-  font-size: 13px;
-  font-weight: 650;
-}
-.support-footer-link:hover {
-  text-decoration: underline;
-}
 @media (max-width: 460px) {
   .support-amount-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));

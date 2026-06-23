@@ -71,6 +71,7 @@ export const zh = {
     recordShort: "记录",
     analysisShort: "分析",
     exportShort: "导出",
+    supportShort: "支持",
     mobileNav: "移动端导航",
   },
   layout: {
