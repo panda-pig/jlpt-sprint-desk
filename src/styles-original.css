@@ -5120,37 +5120,8 @@ aside.stack > .card:nth-child(5) {
   color: #4a8a1e !important;                     /* darker green for good */
 }
 
-/* ── F. Cursor — replace with a large game-hand cursor (SVG data-URI).
-   Matches animal-island-ui demo site's big pointing hand. ──────────────── */
-/* The Cursor component sets cursor on .animal-cursor and descendants.
-   We override with a bigger, clearer hand cursor using an inline SVG.   */
-.animal-cursor,
-.animal-cursor *,
-.cursor-wrapper,
-.cursor-wrapper * {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath d='M8 2 L8 18 L11 18 L11 14 L14 14 L14 11 L17 11 L17 8 L20 8 L20 6 L23 6 L23 5 L25 5 L25 20 L23 22 L11 22 L8 19 Z' fill='%23f8f8f0' stroke='%23794f27' stroke-width='2' stroke-linejoin='round'/%3E%3Cpath d='M8 2 L8 18 L11 18 L11 14 L14 14 L14 11 L17 11 L17 8 L20 8 L20 6 L23 6 L23 5 L25 5 L25 20 L23 22 L11 22 L8 19 Z' fill='%23f8f8f0' stroke='%239f927d' stroke-width='1' stroke-linejoin='round'/%3E%3C/svg%3E") 8 2, auto !important;
-}
-
-/* Fallback: also set on body + all interactive elements in case Cursor
-   component's class name differs. */
-body,
-button,
-a,
-input,
-select,
-textarea,
-label,
-[role="button"],
-[tabindex] {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath d='M8 2 L8 18 L11 18 L11 14 L14 14 L14 11 L17 11 L17 8 L20 8 L20 6 L23 6 L23 5 L25 5 L25 20 L23 22 L11 22 L8 19 Z' fill='%23f8f8f0' stroke='%23794f27' stroke-width='2' stroke-linejoin='round'/%3E%3C/svg%3E") 8 2, auto;
-}
-
-/* Keep text-input cursor as I-beam (text cursor) for usability */
-input[type="text"],
-input[type="number"],
-input[type="email"],
-input[type="date"],
-input[type="password"],
-textarea {
-  cursor: text !important;
+/* ── F. Cursor — same asset + hotspot as animal-island-ui's demo-site Cursor. ── */
+.animal-cursor--force,
+.animal-cursor--force * {
+  cursor: url("./assets/animal-island-cursor.png") 4 0, default !important;
 }
