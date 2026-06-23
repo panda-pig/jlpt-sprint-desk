@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Coffee, Star, Share2, HeartHandshake } from "lucide-react";
+import { Button, Input, Title, Divider, Wallet } from "animal-island-ui";
 import { useLocale } from "../i18n/LocaleProvider";
 import { toast } from "../lib/toast";
 
@@ -69,7 +70,7 @@ export function SupportPage() {
         <section className="panel">
           <div className="section-head">
             <div>
-              <h2>{t("support.amountTitle")}</h2>
+              <Title size="small" color="app-teal">{t("support.amountTitle")}</Title>
               <p>{t("support.amountDesc")}</p>
             </div>
           </div>
@@ -92,7 +93,7 @@ export function SupportPage() {
               <span className="support-amount-emoji">✨</span>
               <span className="support-custom-field">
                 <span className="support-custom-prefix">¥</span>
-                <input
+                <Input
                   type="number"
                   inputMode="numeric"
                   min={1}
@@ -107,10 +108,14 @@ export function SupportPage() {
             </label>
           </div>
 
-          <button className="primary-button full support-pay-btn" type="button" disabled={!canPay} onClick={handlePay}>
-            <HeartHandshake size={16} />
+          <Button type="primary" block disabled={!canPay} onClick={handlePay} icon={<HeartHandshake size={16} />}>
             {amount > 0 ? t("support.payVia", { n: amount }) : t("support.pickAmount")}
-          </button>
+          </Button>
+          {amount > 0 && (
+            <div style={{ display: "flex", justifyContent: "center", marginTop: 12 }}>
+              <Wallet value={amount} size="medium" />
+            </div>
+          )}
           {configured ? (
             <p className="muted support-pay-hint">{t("support.payHint")}</p>
           ) : (
@@ -118,20 +123,22 @@ export function SupportPage() {
           )}
         </section>
 
+        <Divider type="wave-yellow" />
+
         <section className="panel">
           <div className="section-head">
             <div>
-              <h2>{t("support.freeTitle")}</h2>
+              <Title size="small" color="app-yellow">{t("support.freeTitle")}</Title>
               <p>{t("support.freeDesc")}</p>
             </div>
           </div>
           <div className="support-free-row">
-            <a className="secondary-button" href={REPO_URL} target="_blank" rel="noopener noreferrer">
-              <Star size={15} /> {t("support.star")}
+            <a href={REPO_URL} target="_blank" rel="noopener noreferrer">
+              <Button type="default" icon={<Star size={15} />}>{t("support.star")}</Button>
             </a>
-            <button className="secondary-button" type="button" onClick={handleShare}>
-              <Share2 size={15} /> {t("support.share")}
-            </button>
+            <Button type="default" onClick={handleShare} icon={<Share2 size={15} />}>
+              {t("support.share")}
+            </Button>
           </div>
           <p className="support-thanks">{t("support.thanks")}</p>
         </section>

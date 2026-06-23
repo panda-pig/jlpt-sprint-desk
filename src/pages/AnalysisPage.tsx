@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import {
   BarChart3,
   Lightbulb,
@@ -12,6 +13,7 @@ import {
   Award,
   ChevronRight,
 } from "lucide-react";
+import { Button, Card, Title, Divider } from "animal-island-ui";
 import { useStudyDesk } from "../lib/studyDeskContext";
 import {
   MODULE_COLORS,
@@ -30,6 +32,7 @@ function getCauseAction(cause: string): string {
 }
 
 export function AnalysisPage() {
+  const navigate = useNavigate();
   const {
     state,
     health,
@@ -49,9 +52,9 @@ export function AnalysisPage() {
           <div className="empty-state">
             <h3>{t("analysis.emptyTitle")}</h3>
             <p>{t("analysis.emptyDesc")}</p>
-            <a className="primary-button" href="#/record">
+            <Button type="primary" onClick={() => navigate("/record")}>
               {t("analysis.recordToday")}
-            </a>
+            </Button>
           </div>
         </section>
       </div>
@@ -253,10 +256,10 @@ export function AnalysisPage() {
         </div>
 
         {/* ─── 复盘结论 ─── */}
-        <section className="panel analysis-brief-panel">
+        <Card className="panel analysis-brief-panel">
           <div className="section-head">
             <div>
-              <h2>{t("analysis.briefTitle")}</h2>
+              <Title size="small" color="app-teal">{t("analysis.briefTitle")}</Title>
               <p>{t("analysis.briefDesc")}</p>
             </div>
           </div>
@@ -298,15 +301,17 @@ export function AnalysisPage() {
               </p>
             </article>
           </div>
-        </section>
+        </Card>
+
+        <Divider type="line-teal" />
 
         {/* ─── 学习节奏驾驶舱 ─── */}
-        <section className="panel">
+        <Card className="panel">
           <div className="section-head">
             <div>
-              <h2>
+              <Title size="small" color="app-teal">
                 <Activity size={18} /> {t("analysis.rhythmTitle")}
-              </h2>
+              </Title>
               <p>{t("analysis.rhythmDesc")}</p>
             </div>
           </div>
@@ -393,15 +398,15 @@ export function AnalysisPage() {
             </span>
             <span>{t("analysis.trendNote")}</span>
           </div>
-        </section>
+        </Card>
 
         {/* ─── 7 天完成度趋势 ─── */}
-        <section className="panel">
+        <Card className="panel">
           <div className="section-head">
             <div>
-              <h2>
+              <Title size="small" color="app-teal">
                 <Award size={18} /> {t("analysis.completionTrend")}
-              </h2>
+              </Title>
               <p>{t("analysis.completionTrendDesc")}</p>
             </div>
           </div>
@@ -456,15 +461,15 @@ export function AnalysisPage() {
               {t("analysis.completeLow")}
             </span>
           </div>
-        </section>
+        </Card>
 
         {/* ─── 模块投入深度分析 ─── */}
-        <section className="panel">
+        <Card className="panel">
           <div className="section-head">
             <div>
-              <h2>
+              <Title size="small" color="app-teal">
                 <BarChart3 size={18} /> {t("analysis.moduleDeep")}
-              </h2>
+              </Title>
               <p>{t("analysis.moduleDeepDesc")}</p>
             </div>
           </div>
@@ -575,20 +580,22 @@ export function AnalysisPage() {
             <div className="empty-state">
               <h3>{t("analysis.noModuleTime")}</h3>
               <p>{t("analysis.noModuleTimeDesc")}</p>
-              <a className="primary-button" href="#/record">
+              <Button type="primary" onClick={() => navigate("/record")}>
                 {t("analysis.goRecord")}
-              </a>
+              </Button>
             </div>
           )}
-        </section>
+        </Card>
+
+        <Divider type="line-teal" />
 
         {/* ─── 错因热力分布 ─── */}
-        <section className="panel">
+        <Card className="panel">
           <div className="section-head">
             <div>
-              <h2>
+              <Title size="small" color="app-orange">
                 <AlertTriangle size={18} /> {t("analysis.causeHeat")}
-              </h2>
+              </Title>
               <p>{t("analysis.causeHeatDesc")}</p>
             </div>
           </div>
@@ -636,20 +643,20 @@ export function AnalysisPage() {
             <div className="empty-state">
               <h3>{t("analysis.noCause")}</h3>
               <p>{t("analysis.noCauseDesc")}</p>
-              <a className="primary-button" href="#/record">
+              <Button type="primary" onClick={() => navigate("/record")}>
                 {t("analysis.goRecord")}
-              </a>
+              </Button>
             </div>
           )}
-        </section>
+        </Card>
 
         {/* ─── 学习质量指标 ─── */}
-        <section className="panel">
+        <Card className="panel">
           <div className="section-head">
             <div>
-              <h2>
+              <Title size="small" color="app-yellow">
                 <Zap size={18} /> {t("analysis.quality")}
-              </h2>
+              </Title>
               <p>{t("analysis.qualityDesc")}</p>
             </div>
           </div>
@@ -682,15 +689,15 @@ export function AnalysisPage() {
               </p>
             </article>
           </div>
-        </section>
+        </Card>
 
         {/* ─── 调整建议 ─── */}
-        <section className="panel">
+        <Card className="panel">
           <div className="section-head">
             <div>
-              <h2>
+              <Title size="small" color="app-green">
                 <Lightbulb size={18} /> {t("analysis.adjustSuggest")}
-              </h2>
+              </Title>
               <p>{t("analysis.adjustDesc")}</p>
             </div>
           </div>
@@ -707,12 +714,12 @@ export function AnalysisPage() {
           ) : (
             <p className="muted">{t("analysis.noSuggest")}</p>
           )}
-        </section>
+        </Card>
       </section>
 
       {/* ─── 侧边栏 ─── */}
       <aside className="stack">
-        <section className="card">
+        <Card className="card">
           <div className="section-head">
             <div>
               <h3>{t("analysis.planHealth")}</h3>
@@ -750,9 +757,9 @@ export function AnalysisPage() {
               </ul>
             </details>
           )}
-        </section>
+        </Card>
 
-        <section className="card">
+        <Card className="card">
           <div className="section-head">
             <div>
               <h3>{t("analysis.recordGap")}</h3>
@@ -780,9 +787,9 @@ export function AnalysisPage() {
               );
             })}
           </div>
-        </section>
+        </Card>
 
-        <section className="card">
+        <Card className="card">
           <div className="section-head">
             <div>
               <h3>{t("analysis.recent")}</h3>
@@ -833,7 +840,7 @@ export function AnalysisPage() {
           ) : (
             <p className="muted">{t("analysis.noRecords")}</p>
           )}
-        </section>
+        </Card>
       </aside>
     </div>
   );

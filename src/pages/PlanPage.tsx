@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Save, RotateCcw, BookOpen, ClipboardList, ArrowRight, Settings, CalendarClock, ChevronDown } from "lucide-react";
+import { Button, Card, Title } from "animal-island-ui";
 import { useStudyDesk } from "../lib/studyDeskContext";
 import { MODULE_COLORS, RECORD_MODULE_KEYS } from "../lib/constants";
 import { mergeDayWithEdit, buildStudyBudget, getReferencePlan, recordsSignature, isExamPast } from "../lib/planner";
@@ -86,9 +87,9 @@ export function PlanPage() {
                 <span>{t("plan.stepView")}</span>
               </div>
             </div>
-            <a className="primary-button" href="#/setup" onClick={(e) => { e.preventDefault(); navigate("/setup"); }}>
+            <Button type="primary" onClick={() => navigate("/setup")}>
               {t("plan.goGenerate")}
-            </a>
+            </Button>
           </div>
         </section>
       </div>
@@ -146,11 +147,11 @@ export function PlanPage() {
     <div className="page-grid">
       <section className="stack">
         {/* 计划结果 Hero */}
-        <section className="panel plan-result-hero">
+        <Card className="panel plan-result-hero">
           <div className="section-head">
             <div>
               <p className="eyebrow">Generated Plan</p>
-              <h2>{t("plan.heroTitle", { level: i18nLevelLabel(generatedPlan.level) })}</h2>
+              <Title size="small" color="app-teal">{t("plan.heroTitle", { level: i18nLevelLabel(generatedPlan.level) })}</Title>
               <p>{generatedPlan.strategy.summary}</p>
             </div>
             <span className="metric-chip"><strong>{health.label}</strong>{health.score}/100</span>
@@ -183,13 +184,13 @@ export function PlanPage() {
               <span className="summary-note">{t("plan.reserve", { p: Math.round(state.settings.reviewReserve * 100) })}</span>
             </div>
           </div>
-        </section>
+        </Card>
 
         {/* Plan sanity check */}
-        <section className="panel">
+        <Card className="panel">
           <div className="section-head">
             <div>
-              <h2>{t("plan.healthCheck")}</h2>
+              <Title size="small" color="app-teal">{t("plan.healthCheck")}</Title>
               <p>{t("plan.healthCheckDesc")}</p>
             </div>
           </div>
@@ -211,13 +212,13 @@ export function PlanPage() {
               <span className="diagnostic-value">{generatedPlan.strategy.focus}</span>
             </div>
           </div>
-        </section>
+        </Card>
 
         {/* Smart adjustment (data-driven, from the last 7 days) */}
-        <section className="panel adjust-panel">
+        <Card className="panel adjust-panel">
           <div className="section-head">
             <div>
-              <h2>{t("adjust.cardTitle")}</h2>
+              <Title size="small" color="app-yellow">{t("adjust.cardTitle")}</Title>
               <p>{t("adjust.cardDesc")}</p>
             </div>
             <span className={`adjust-badge adjust-${planAdjustment.type}`}>
@@ -239,19 +240,19 @@ export function PlanPage() {
               <p className="muted" style={{ marginTop: 12, fontSize: 13 }}>{t("adjust.appliedNote")}</p>
             ) : (
               <div className="button-row" style={{ marginTop: 14 }}>
-                <button className="primary-button" type="button" onClick={applyAutoAdjust}>
+                <Button type="primary" onClick={applyAutoAdjust}>
                   {t("adjust.apply")}
-                </button>
+                </Button>
               </div>
             )
           )}
-        </section>
+        </Card>
 
         {/* 14-day calendar */}
-        <section className="panel plan-calendar-panel">
+        <Card className="panel plan-calendar-panel">
           <div className="section-head">
             <div>
-              <h2>{t("plan.calendar14")}</h2>
+              <Title size="small" color="app-teal">{t("plan.calendar14")}</Title>
               <p>{t("plan.calendarDesc")}</p>
             </div>
           </div>
@@ -282,16 +283,16 @@ export function PlanPage() {
               );
             })}
           </div>
-        </section>
+        </Card>
 
         {/* 今日任务 */}
-        <section className="panel">
+        <Card className="panel">
           <div className="section-head">
             <div>
-              <h2>{t("plan.todayTasks")}</h2>
+              <Title size="small" color="app-green">{t("plan.todayTasks")}</Title>
               <p>{todayDay ? `${todayDay.date} · ${todayDay.weekday} · ${todayDay.title}` : t("plan.todayOutOfRange")}</p>
             </div>
-            <a className="primary-button" href="#/record" onClick={(e) => { e.preventDefault(); navigate("/record"); }}>{t("plan.recordToday")}</a>
+            <Button type="primary" onClick={() => navigate("/record")}>{t("plan.recordToday")}</Button>
           </div>
           {todayDay ? (
             <div className="stack">
@@ -316,22 +317,22 @@ export function PlanPage() {
             <div className="empty-state">
               <h3>{t("plan.noTodayPlan")}</h3>
               <p>{t("plan.noTodayPlanDesc")}</p>
-              <a className="primary-button" href="#/setup" onClick={(e) => { e.preventDefault(); navigate("/setup"); }}>{t("plan.reconfigure")}</a>
+              <Button type="primary" onClick={() => navigate("/setup")}>{t("plan.reconfigure")}</Button>
             </div>
           )}
-        </section>
+        </Card>
 
         {/* 14-day detailed plan */}
-        <section className="panel">
+        <Card className="panel">
           <div className="section-head">
             <div>
-              <h2>{t("plan.detail14")}</h2>
+              <Title size="small" color="app-blue">{t("plan.detail14")}</Title>
               <p>{t("plan.detail14Desc")}</p>
             </div>
             {todayWeekIdx >= 0 && (
-              <button className="ghost-button small" type="button" onClick={jumpToToday}>
+              <Button type="dashed" size="small" onClick={jumpToToday}>
                 <CalendarClock size={14} /> {t("plan.jumpToday")}
-              </button>
+              </Button>
             )}
           </div>
           <div className="plan-week-list">
@@ -401,21 +402,22 @@ export function PlanPage() {
                         onChange={(e) => setEditText(e.target.value)}
                       />
                       <div className="button-row">
-                        <button className="secondary-button" type="button" onClick={() => handleSaveEdit(day.dayIndex)}>
+                        <Button type="default" onClick={() => handleSaveEdit(day.dayIndex)}>
                           <Save size={14} /> {t("plan.saveAdjust")}
-                        </button>
-                        <button className="ghost-button" type="button" onClick={() => { setEditingDay(null); if (merged.hasEdit) deletePlanEdit(day.dayIndex); }}>
+                        </Button>
+                        <Button type="dashed" onClick={() => { setEditingDay(null); if (merged.hasEdit) deletePlanEdit(day.dayIndex); }}>
                           {t("plan.restorePlan")}
-                        </button>
+                        </Button>
                       </div>
                     </div>
                   ) : (
-                    <button
-                      className="ghost-button small"
+                    <Button
+                      type="dashed"
+                      size="small"
                       onClick={() => handleEdit(day.dayIndex, sourceText)}
                     >
                       <BookOpen size={14} /> {merged.hasEdit ? t("plan.editAdjust") : t("plan.fineTune")}
-                    </button>
+                    </Button>
                   )}
                           </article>
                         );
@@ -426,12 +428,12 @@ export function PlanPage() {
               );
             })}
           </div>
-        </section>
+        </Card>
       </section>
 
       <aside className="stack">
         {/* 学习预算 */}
-        <section className="card">
+        <Card className="card">
           <div className="section-head">
             <div>
               <h3>{t("plan.studyBudget")}</h3>
@@ -459,10 +461,10 @@ export function PlanPage() {
           ) : (
             <p className="muted">{t("plan.noBudget")}</p>
           )}
-        </section>
+        </Card>
 
         {/* Minimum version */}
-        <section className="card">
+        <Card className="card">
           <div className="section-head">
             <div>
               <h3>{t("plan.minimalVersion")}</h3>
@@ -474,10 +476,10 @@ export function PlanPage() {
               <li key={index} className="list-item"><span>{item}</span></li>
             ))}
           </ul>
-        </section>
+        </Card>
 
         {/* 路线图 */}
-        <section className="card">
+        <Card className="card">
           <div className="section-head">
             <div>
               <h3>{t("plan.roadmap")}</h3>
@@ -494,10 +496,10 @@ export function PlanPage() {
               </li>
             ))}
           </ul>
-        </section>
+        </Card>
 
         {/* 执行原则 */}
-        <section className="card">
+        <Card className="card">
           <div className="section-head">
             <div>
               <h3>{t("plan.principles")}</h3>
@@ -509,10 +511,10 @@ export function PlanPage() {
               <li key={index} className="list-item"><span>{principle}</span></li>
             ))}
           </ul>
-        </section>
+        </Card>
 
         {/* 教材锚点 */}
-        <section className="card">
+        <Card className="card">
           <div className="section-head">
             <div>
               <h3>{t("plan.materialAnchor")}</h3>
@@ -524,9 +526,9 @@ export function PlanPage() {
               <span key={index} className="chip">{material}</span>
             ))}
           </div>
-        </section>
+        </Card>
 
-        <section className="card reference-plan-card">
+        <Card className="card reference-plan-card">
           <div className="section-head">
             <div>
               <h3>{REFERENCE_PLAN.title}</h3>
@@ -560,9 +562,9 @@ export function PlanPage() {
               </article>
             ))}
           </div>
-        </section>
+        </Card>
 
-        <section className="card reference-plan-card compact">
+        <Card className="card reference-plan-card compact">
           <div className="section-head">
             <div>
               <h3>{t("plan.referenceMinimal")}</h3>
@@ -574,12 +576,12 @@ export function PlanPage() {
               <li key={i} className="list-item"><span>{item}</span></li>
             ))}
           </ul>
-        </section>
+        </Card>
 
         <div className="button-row">
-          <button className="secondary-button" onClick={generateNewPlan}>
+          <Button type="default" onClick={generateNewPlan}>
             <RotateCcw size={16} /> {t("plan.regenerate")}
-          </button>
+          </Button>
         </div>
       </aside>
     </div>

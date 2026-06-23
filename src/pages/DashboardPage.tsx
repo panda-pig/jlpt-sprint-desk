@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { Button, Card, Title, Divider } from "animal-island-ui";
 import { useStudyDesk } from "../lib/studyDeskContext";
 import { daysUntil, clampPercent } from "../lib/utils";
 import { getTodayTargetMinutes, isExamPast } from "../lib/planner";
@@ -64,18 +65,20 @@ export function DashboardPage() {
             <h2>{nextAction.title}</h2>
             <p>{nextAction.body}</p>
             <div className="hero-actions">
-              <a className="primary-button" href={nextAction.href} onClick={(e) => { e.preventDefault(); navigate(nextAction.href.replace("#/", "/")); }}>
+              <Button type="primary" onClick={() => navigate(nextAction.href.replace("#/", "/"))}>
                 {nextAction.cta}
-              </a>
-              <a className="secondary-button" href="#/plan" onClick={(e) => { e.preventDefault(); navigate("/plan"); }}>
+              </Button>
+              <Button type="default" onClick={() => navigate("/plan")}>
                 {t("nav.plan")}
-              </a>
+              </Button>
             </div>
           </div>
         </section>
 
+        <Divider type="line-teal" />
+
         <div className="three-col">
-          <section className="card metric-card">
+          <Card className="card metric-card">
             <div>
               <p className="metric-label">{t("dashboard.countdown")}</p>
               {daysLeft !== null && !examPast ? (
@@ -97,9 +100,9 @@ export function DashboardPage() {
                 {examPast ? t("dashboard.examUpdate") : t("dashboard.daysToSet")}
               </a>
             )}
-          </section>
+          </Card>
 
-          <section className="card metric-card">
+          <Card className="card metric-card">
             <div>
               <p className="metric-label">{t("dashboard.todayGoal")}</p>
               <p className="metric-value">
@@ -109,9 +112,9 @@ export function DashboardPage() {
             <div className="progress-track">
               <div className="progress-fill" style={{ ["--value" as string]: `${todayRecord ? completion : 0}%` }} />
             </div>
-          </section>
+          </Card>
 
-          <section className="card metric-card">
+          <Card className="card metric-card">
             <div>
               <p className="metric-label">{t("dashboard.totalInvested")}</p>
               <p className="metric-value">
@@ -121,13 +124,13 @@ export function DashboardPage() {
             <div className="progress-track">
               <div className="progress-fill" style={{ ["--value" as string]: `${clampPercent((totalMinutes / Math.max(1, getTodayTargetMinutes(state.settings) * 7)) * 100)}%` }} />
             </div>
-          </section>
+          </Card>
         </div>
 
-        <section className="panel">
+        <Card className="panel">
           <div className="section-head">
             <div>
-              <h2>{t("dashboard.todayLoop")}</h2>
+              <Title size="small" color="app-teal">{t("dashboard.todayLoop")}</Title>
               <p>{t("dashboard.todayLoopDesc")}</p>
             </div>
             <span className="metric-chip"><strong>{health.label}</strong>{health.score}/100</span>
@@ -152,22 +155,22 @@ export function DashboardPage() {
             <div className="empty-state">
               <h3>{t("dashboard.noPlanTitle")}</h3>
               <p>{t("dashboard.noPlanDesc")}</p>
-              <a className="primary-button" href="#/setup" onClick={(e) => { e.preventDefault(); navigate("/setup"); }}>
+              <Button type="primary" onClick={() => navigate("/setup")}>
                 {t("dashboard.goSetup")}
-              </a>
+              </Button>
             </div>
           )}
-        </section>
+        </Card>
 
-        <section className="panel">
+        <Card className="panel">
           <div className="section-head">
             <div>
-              <h2>{t("dashboard.planHealth")}</h2>
+              <Title size="small" color="app-teal">{t("dashboard.planHealth")}</Title>
               <p>{health.message}</p>
             </div>
-            <a className="ghost-button" href="#/analysis" onClick={(e) => { e.preventDefault(); navigate("/analysis"); }}>
+            <Button type="dashed" onClick={() => navigate("/analysis")}>
               {t("dashboard.viewAnalysis")}
-            </a>
+            </Button>
           </div>
           <div className="progress-track" aria-label={t("dashboard.planHealthScore")}>
             <div className="progress-fill" style={{ ["--value" as string]: `${health.score}%` }} />
@@ -182,19 +185,19 @@ export function DashboardPage() {
               </ul>
             </details>
           )}
-        </section>
+        </Card>
       </section>
 
       <aside className="stack">
-        <section className="card">
+        <Card className="card">
           <div className="section-head">
             <div>
               <h3>{profile?.name}</h3>
               <p>{levelLabel} · {t("dashboard.targetScore", { n: targetScore })}</p>
             </div>
-            <a className="secondary-button" href="#/setup" onClick={(e) => { e.preventDefault(); navigate("/setup"); }}>
+            <Button type="default" size="small" onClick={() => navigate("/setup")}>
               {t("dashboard.manage")}
-            </a>
+            </Button>
           </div>
           <div className="bar-list">
             <div className="list-item">
@@ -214,9 +217,9 @@ export function DashboardPage() {
               <strong>{t("dashboard.streakDays", { n: stats.streak })}</strong>
             </div>
           </div>
-        </section>
+        </Card>
 
-        <section className="card">
+        <Card className="card">
           <div className="section-head">
             <div>
               <h3>{t("dashboard.trend7")}</h3>
@@ -246,9 +249,9 @@ export function DashboardPage() {
               <span className="muted">{Math.round(stats.avgCompletion)}%</span>
             </div>
           </div>
-        </section>
+        </Card>
 
-        <section className="card">
+        <Card className="card">
           <div className="section-head">
             <div>
               <h3>{t("dashboard.weeklyTip")}</h3>
@@ -256,11 +259,11 @@ export function DashboardPage() {
             </div>
           </div>
           <div className="button-row">
-            <a className="primary-button full" href="#/record" onClick={(e) => { e.preventDefault(); navigate("/record"); }}>
+            <Button type="primary" block onClick={() => navigate("/record")}>
               {t("dashboard.fillRecord")}
-            </a>
+            </Button>
           </div>
-        </section>
+        </Card>
       </aside>
     </div>
   );

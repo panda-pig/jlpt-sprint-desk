@@ -1,6 +1,7 @@
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Zap } from "lucide-react";
+import { Button, Input, Select } from "animal-island-ui";
 import { useStudyDesk } from "../lib/studyDeskContext";
 import { LEVEL_CONFIG, STATIC_SELECT_OPTIONS, STATIC_WEAKNESS_OPTIONS, STATIC_BLOCKER_OPTIONS } from "../lib/constants";
 import { formatDate } from "../lib/utils";
@@ -38,39 +39,38 @@ export function SetupPage() {
 
   const [newProfileName, setNewProfileName] = useState("");
 
-  const targetScoreRef = useRef<HTMLInputElement>(null);
-  const dailyVocabGoalRef = useRef<HTMLInputElement>(null);
-  const dailyGrammarGoalRef = useRef<HTMLInputElement>(null);
-  const weekdayMinutesRef = useRef<HTMLInputElement>(null);
-  const weekendMinutesRef = useRef<HTMLInputElement>(null);
-
   useEffect(() => {
-    if (targetScoreRef.current) {
-      targetScoreRef.current.value = String(state.settings.targetScore || "");
+    const el = document.getElementById("targetScore") as HTMLInputElement | null;
+    if (el) {
+      el.value = String(state.settings.targetScore || "");
     }
   }, [state.settings.targetScore]);
 
   useEffect(() => {
-    if (dailyVocabGoalRef.current) {
-      dailyVocabGoalRef.current.value = String(state.settings.dailyVocabGoal || "");
+    const el = document.getElementById("dailyVocabGoal") as HTMLInputElement | null;
+    if (el) {
+      el.value = String(state.settings.dailyVocabGoal || "");
     }
   }, [state.settings.dailyVocabGoal]);
 
   useEffect(() => {
-    if (dailyGrammarGoalRef.current) {
-      dailyGrammarGoalRef.current.value = String(state.settings.dailyGrammarGoal || "");
+    const el = document.getElementById("dailyGrammarGoal") as HTMLInputElement | null;
+    if (el) {
+      el.value = String(state.settings.dailyGrammarGoal || "");
     }
   }, [state.settings.dailyGrammarGoal]);
 
   useEffect(() => {
-    if (weekdayMinutesRef.current) {
-      weekdayMinutesRef.current.value = String(state.settings.weekdayMinutes || "");
+    const el = document.getElementById("weekdayMinutes") as HTMLInputElement | null;
+    if (el) {
+      el.value = String(state.settings.weekdayMinutes || "");
     }
   }, [state.settings.weekdayMinutes]);
 
   useEffect(() => {
-    if (weekendMinutesRef.current) {
-      weekendMinutesRef.current.value = String(state.settings.weekendMinutes || "");
+    const el = document.getElementById("weekendMinutes") as HTMLInputElement | null;
+    if (el) {
+      el.value = String(state.settings.weekendMinutes || "");
     }
   }, [state.settings.weekendMinutes]);
 
@@ -124,19 +124,20 @@ export function SetupPage() {
           <div className="quick-start-grid">
             <div className="field">
               <label htmlFor="qsLevel">{t("setup.targetLevel")}</label>
-              <select id="qsLevel" value={state.settings.level} onChange={(e) => setField("level", e.target.value as Level)}>
-                {Object.keys(LEVEL_CONFIG).map((key) => (
-                  <option key={key} value={key}>{key}</option>
-                ))}
-              </select>
+              <Select
+                value={state.settings.level}
+                onChange={(key) => setField("level", key as Level)}
+                options={Object.keys(LEVEL_CONFIG).map((key) => ({ key, label: key }))}
+                aria-label={t("setup.targetLevel")}
+              />
             </div>
             <div className="field">
               <label htmlFor="qsExam">{t("setup.examDate")}</label>
-              <input id="qsExam" type="date" value={state.settings.examDate} onChange={(e) => setField("examDate", e.target.value)} />
+              <Input id="qsExam" type="date" value={state.settings.examDate} onChange={(e) => setField("examDate", e.target.value)} />
             </div>
             <div className="field">
               <label htmlFor="qsDaily">{t("setup.quickDaily")}</label>
-              <input
+              <Input
                 id="qsDaily"
                 type="number"
                 inputMode="numeric"
@@ -151,9 +152,9 @@ export function SetupPage() {
             </div>
           </div>
           <div className="quick-start-actions">
-            <button className="primary-button" type="button" onClick={handleGeneratePlan}>
-              <Zap size={15} /> {t("setup.quickGenerate")}
-            </button>
+            <Button type="primary" icon={<Zap size={15} />} onClick={handleGeneratePlan}>
+              {t("setup.quickGenerate")}
+            </Button>
             <span className="muted quick-start-hint">{t("setup.quickRefineHint")}</span>
           </div>
         </section>
@@ -171,17 +172,14 @@ export function SetupPage() {
         <div className="setup-document-grid">
           <div className="field">
             <label htmlFor="profileSelect">{t("setup.currentProfile")}</label>
-            <select
-              id="profileSelect"
+            <Select
               value={state.activeProfileId || ""}
-              onChange={(e) => setActiveProfile(e.target.value)}
-            >
-              {state.profiles.map((p) => (
-                <option key={p.id} value={p.id}>{p.name}</option>
-              ))}
-            </select>
+              onChange={(key) => setActiveProfile(key)}
+              options={state.profiles.map((p) => ({ key: p.id, label: p.name }))}
+              aria-label={t("setup.currentProfile")}
+            />
             <div className="button-row setup-actions">
-              <button className="secondary-button" type="button" onClick={() => {
+              <Button type="default" size="small" onClick={() => {
                 const backup: Record<string, string> = {};
                 Object.keys(localStorage).forEach((key) => {
                   if (key.startsWith("jlptSprintDesk")) {
@@ -200,7 +198,7 @@ export function SetupPage() {
                 a.click();
               }}>
                 {t("setup.exportBackup")}
-              </button>
+              </Button>
               <label className="secondary-button file-button">
                 {t("setup.importBackup")}
                 <input
@@ -239,9 +237,9 @@ export function SetupPage() {
                   }}
                 />
               </label>
-              <button
-                className="ghost-button"
-                type="button"
+              <Button
+                type="dashed"
+                size="small"
                 onClick={() => {
                   if (activeProfile && confirm(t("setup.deleteProfileConfirm", { name: activeProfile.name }))) {
                     deleteProfile(activeProfile.id);
@@ -249,12 +247,12 @@ export function SetupPage() {
                 }}
               >
                 {t("setup.deleteProfile")}
-              </button>
+              </Button>
             </div>
           </div>
           <form onSubmit={handleCreateProfile} className="field">
             <label htmlFor="profileName">{t("setup.newProfile")}</label>
-            <input
+            <Input
               id="profileName"
               name="profileName"
               aria-label={t("setup.newProfileName")}
@@ -262,7 +260,7 @@ export function SetupPage() {
               value={newProfileName}
               onChange={(e) => setNewProfileName(e.target.value)}
             />
-            <button className="primary-button fit" type="submit">{t("setup.create")}</button>
+            <Button type="primary" htmlType="submit">{t("setup.create")}</Button>
           </form>
         </div>
         {activeProfile && (
@@ -284,28 +282,29 @@ export function SetupPage() {
           <div className="form-grid three setup-grid">
             <div className="field">
               <label htmlFor="level">{t("setup.targetLevel")}</label>
-              <select id="level" value={state.settings.level} onChange={(e) => setField("level", e.target.value as Level)}>
-                {Object.keys(LEVEL_CONFIG).map((key) => (
-                  <option key={key} value={key}>{key}</option>
-                ))}
-              </select>
+              <Select
+                value={state.settings.level}
+                onChange={(key) => setField("level", key as Level)}
+                options={Object.keys(LEVEL_CONFIG).map((key) => ({ key, label: key }))}
+                aria-label={t("setup.targetLevel")}
+              />
             </div>
             <div className="field">
               <label htmlFor="currentLevel">{t("setup.currentLevel")}</label>
-              <select id="currentLevel" value={state.settings.currentLevel} onChange={(e) => setField("currentLevel", e.target.value)}>
-                {STATIC_SELECT_OPTIONS.currentLevel.map(([value]) => (
-                  <option key={value} value={value}>{tOption("currentLevel", value)}</option>
-                ))}
-              </select>
+              <Select
+                value={state.settings.currentLevel}
+                onChange={(key) => setField("currentLevel", key)}
+                options={STATIC_SELECT_OPTIONS.currentLevel.map(([value]) => ({ key: value, label: tOption("currentLevel", value) }))}
+                aria-label={t("setup.currentLevel")}
+              />
             </div>
             <div className="field">
               <label htmlFor="examDate">{t("setup.examDate")}</label>
-              <input id="examDate" type="date" value={state.settings.examDate} onChange={(e) => setField("examDate", e.target.value)} />
+              <Input id="examDate" type="date" value={state.settings.examDate} onChange={(e) => setField("examDate", e.target.value)} />
             </div>
             <div className="field">
               <label htmlFor="weekdayMinutes">{t("setup.weekdayMinutes")}</label>
-              <input
-                ref={weekdayMinutesRef}
+              <Input
                 id="weekdayMinutes"
                 type="number"
                 min={20}
@@ -321,8 +320,7 @@ export function SetupPage() {
             </div>
             <div className="field">
               <label htmlFor="weekendMinutes">{t("setup.weekendMinutes")}</label>
-              <input
-                ref={weekendMinutesRef}
+              <Input
                 id="weekendMinutes"
                 type="number"
                 min={20}
@@ -338,24 +336,25 @@ export function SetupPage() {
             </div>
             <div className="field">
               <label htmlFor="state">{t("setup.currentState")}</label>
-              <select id="state" value={state.settings.state} onChange={(e) => setField("state", e.target.value as PlanSettings["state"])}>
-                {STATIC_SELECT_OPTIONS.state.map(([value]) => (
-                  <option key={value} value={value}>{tOption("state", value)}</option>
-                ))}
-              </select>
+              <Select
+                value={state.settings.state}
+                onChange={(key) => setField("state", key as PlanSettings["state"])}
+                options={STATIC_SELECT_OPTIONS.state.map(([value]) => ({ key: value, label: tOption("state", value) }))}
+                aria-label={t("setup.currentState")}
+              />
             </div>
             <div className="field">
               <label htmlFor="studyDay">{t("setup.studyProgress")}</label>
-              <select id="studyDay" value={state.settings.studyDay} onChange={(e) => setField("studyDay", e.target.value)}>
-                {STATIC_SELECT_OPTIONS.studyDay.map(([value]) => (
-                  <option key={value} value={value}>{tOption("studyDay", value)}</option>
-                ))}
-              </select>
+              <Select
+                value={state.settings.studyDay}
+                onChange={(key) => setField("studyDay", key)}
+                options={STATIC_SELECT_OPTIONS.studyDay.map(([value]) => ({ key: value, label: tOption("studyDay", value) }))}
+                aria-label={t("setup.studyProgress")}
+              />
             </div>
             <div className="field">
               <label htmlFor="targetScore">{t("setup.targetScore")}</label>
-              <input
-                ref={targetScoreRef}
+              <Input
                 id="targetScore"
                 type="text"
                 inputMode="numeric"
@@ -388,43 +387,45 @@ export function SetupPage() {
           <div className="form-grid three setup-grid">
             <div className="field">
               <label htmlFor="vocabBook">{t("setup.vocabBook")}</label>
-              <select id="vocabBook" value={state.settings.vocabBook} onChange={(e) => setField("vocabBook", e.target.value)}>
-                {STATIC_SELECT_OPTIONS.vocabBook.map(([value]) => (
-                  <option key={value} value={value}>{tOption("vocabBook", value)}</option>
-                ))}
-              </select>
+              <Select
+                value={state.settings.vocabBook}
+                onChange={(key) => setField("vocabBook", key)}
+                options={STATIC_SELECT_OPTIONS.vocabBook.map(([value]) => ({ key: value, label: tOption("vocabBook", value) }))}
+                aria-label={t("setup.vocabBook")}
+              />
             </div>
             <div className="field">
               <label htmlFor="grammarBook">{t("setup.grammarBook")}</label>
-              <select id="grammarBook" value={state.settings.grammarBook} onChange={(e) => setField("grammarBook", e.target.value)}>
-                {STATIC_SELECT_OPTIONS.grammarBook.map(([value]) => (
-                  <option key={value} value={value}>{tOption("grammarBook", value)}</option>
-                ))}
-              </select>
+              <Select
+                value={state.settings.grammarBook}
+                onChange={(key) => setField("grammarBook", key)}
+                options={STATIC_SELECT_OPTIONS.grammarBook.map(([value]) => ({ key: value, label: tOption("grammarBook", value) }))}
+                aria-label={t("setup.grammarBook")}
+              />
             </div>
             <div className="field">
               <label htmlFor="kanjiBook">{t("setup.kanjiBook")}</label>
-              <select id="kanjiBook" value={state.settings.kanjiBook} onChange={(e) => setField("kanjiBook", e.target.value)}>
-                {STATIC_SELECT_OPTIONS.kanjiBook.map(([value]) => (
-                  <option key={value} value={value}>{tOption("kanjiBook", value)}</option>
-                ))}
-              </select>
+              <Select
+                value={state.settings.kanjiBook}
+                onChange={(key) => setField("kanjiBook", key)}
+                options={STATIC_SELECT_OPTIONS.kanjiBook.map(([value]) => ({ key: value, label: tOption("kanjiBook", value) }))}
+                aria-label={t("setup.kanjiBook")}
+              />
             </div>
             <div className="field">
               <label htmlFor="learnedVocab">{t("setup.learnedVocab")}</label>
-              <input id="learnedVocab" type="number" min={0} value={state.settings.learnedVocab || ''} onChange={(e) => {
+              <Input id="learnedVocab" type="number" min={0} value={state.settings.learnedVocab || ''} onChange={(e) => {
   const val = e.target.value;
   setField("learnedVocab", val === '' ? 0 : Number(val));
 }} />
             </div>
             <div className="field">
               <label htmlFor="dailyVocabGoal">{t("setup.dailyVocabGoal")}</label>
-              <input
+              <Input
                 id="dailyVocabGoal"
                 type="text"
                 inputMode="numeric"
                 defaultValue={state.settings.dailyVocabGoal || ""}
-                ref={dailyVocabGoalRef}
                 onBlur={(e) => {
                   const val = e.target.value.trim();
                   const num = val === "" ? 0 : Number(val);
@@ -434,19 +435,18 @@ export function SetupPage() {
             </div>
             <div className="field">
               <label htmlFor="learnedGrammar">{t("setup.learnedGrammar")}</label>
-              <input id="learnedGrammar" type="number" min={0} value={state.settings.learnedGrammar || ''} onChange={(e) => {
+              <Input id="learnedGrammar" type="number" min={0} value={state.settings.learnedGrammar || ''} onChange={(e) => {
   const val = e.target.value;
   setField("learnedGrammar", val === '' ? 0 : Number(val));
 }} />
             </div>
             <div className="field">
               <label htmlFor="dailyGrammarGoal">{t("setup.dailyGrammarGoal")}</label>
-              <input
+              <Input
                 id="dailyGrammarGoal"
                 type="text"
                 inputMode="numeric"
                 defaultValue={state.settings.dailyGrammarGoal || ""}
-                ref={dailyGrammarGoalRef}
                 onBlur={(e) => {
                   const val = e.target.value.trim();
                   const num = val === "" ? 0 : Number(val);
@@ -456,11 +456,12 @@ export function SetupPage() {
             </div>
             <div className="field">
               <label htmlFor="reviewReserve">{t("setup.reviewReserve")}</label>
-              <select id="reviewReserve" value={String(state.settings.reviewReserve)} onChange={(e) => setField("reviewReserve", Number(e.target.value))}>
-                {STATIC_SELECT_OPTIONS.reviewReserve.map(([value]) => (
-                  <option key={value} value={value}>{tOption("reviewReserve", value)}</option>
-                ))}
-              </select>
+              <Select
+                value={String(state.settings.reviewReserve)}
+                onChange={(key) => setField("reviewReserve", Number(key))}
+                options={STATIC_SELECT_OPTIONS.reviewReserve.map(([value]) => ({ key: value, label: tOption("reviewReserve", value) }))}
+                aria-label={t("setup.reviewReserve")}
+              />
             </div>
           </div>
         </section>
@@ -540,9 +541,9 @@ export function SetupPage() {
       </div>
 
       <div className="sticky-generate">
-        <button className="primary-button full" onClick={handleGeneratePlan}>
+        <Button type="primary" block onClick={handleGeneratePlan}>
           {t("setup.generatePlan")}
-        </button>
+        </Button>
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { FileText, Table, BarChart3, Download, Copy, Printer, Upload, AlertTriangle, Check, FileOutput, CalendarDays } from "lucide-react";
+import { Button, Title, Divider } from "animal-island-ui";
 import { useStudyDesk } from "../lib/studyDeskContext";
 import { buildMarkdown, buildCsv, buildReport, buildBackupJSON, buildPrintView, buildICS } from "../lib/exporter";
 import { downloadText, copyText } from "../lib/utils";
@@ -132,7 +133,7 @@ export function ExportPage() {
       <section className="panel export-type-panel">
         <div className="section-head compact">
           <div>
-            <h2>{t("export.chooseFormat")}</h2>
+            <Title size="small" color="app-teal">{t("export.chooseFormat")}</Title>
             <p>{t("export.chooseFormatDesc")}</p>
           </div>
         </div>
@@ -163,6 +164,8 @@ export function ExportPage() {
         </div>
       </section>
 
+      <Divider type="line-teal" />
+
       <section className="panel export-preview-panel">
         <div className="export-preview-header">
           <div className="export-preview-info">
@@ -177,14 +180,12 @@ export function ExportPage() {
             </div>
           </div>
           <div className="export-preview-actions">
-            <button className="secondary-button" onClick={handleCopy} disabled={!output}>
-              <Copy size={15} />
+            <Button type="default" onClick={handleCopy} disabled={!output} icon={<Copy size={15} />}>
               {copied ? t("export.copyDone") : t("export.copy")}
-            </button>
-            <button className="primary-button" onClick={handleDownload} disabled={!output}>
-              <Download size={15} />
+            </Button>
+            <Button type="primary" onClick={handleDownload} disabled={!output} icon={<Download size={15} />}>
               {t("export.download")}
-            </button>
+            </Button>
           </div>
         </div>
         <textarea

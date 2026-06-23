@@ -1,3 +1,4 @@
+import { Time } from "animal-island-ui";
 import { ROUTES } from "../lib/constants";
 import { useStudyDesk } from "../lib/studyDeskContext";
 import { useLocale } from "../i18n/LocaleProvider";
@@ -20,6 +21,7 @@ export function TopBar({ route }: TopBarProps) {
         <h1>{t(`nav.${navKey}`)}</h1>
       </div>
       <div className="top-status">
+        <Time />
         {activeProfile && (
           <span>{activeProfile.name} · {state.settings.level}</span>
         )}

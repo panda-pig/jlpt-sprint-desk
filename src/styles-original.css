@@ -1,35 +1,48 @@
 :root {
-  /* Calm "study instrument" palette — warm paper + quiet sage + clay accent.
-     (Ported from the Open Design "Redesign B" direction.) */
-  --bg: #f4f3ee;
-  --bg-strong: #ecebe4;
-  --surface: #fbfbf8;
-  --surface-muted: #f1f0ea;
-  --surface-tint: #eef3ee;
-  --ink: #2c2b27;
-  --ink-soft: #4d4b45;
-  --muted: #6c6862;
-  --faint: #a6a39c;
-  --line: #e9e7e1;
-  --line-strong: #dcd9d1;
-  --primary: #4f7c5f;
-  --primary-strong: #3f6a50;
-  --primary-soft: #eef3ee;
-  --blue: #5a78c4;
-  --teal: #2f9488;
-  --amber: #b1764b;
-  --coral: #b0563f;
-  --green: #4f7c5f;
-  --red: #b4423a;
-  /* Elevation — tinted to the warm-paper hue, layered for real depth. */
-  --shadow-soft: 0 1px 2px rgba(44, 43, 39, 0.04), 0 1px 1px rgba(44, 43, 39, 0.03);
-  --shadow: 0 1px 2px rgba(44, 43, 39, 0.05), 0 8px 20px -8px rgba(44, 43, 39, 0.12);
-  --shadow-lift: 0 2px 4px rgba(44, 43, 39, 0.06), 0 16px 34px -12px rgba(44, 43, 39, 0.16);
-  /* Shape scale — one consistent system (controls / cards / pills). */
-  --radius-sm: 9px;
-  --radius: 12px;
-  --radius-lg: 16px;
-  --radius-pill: 999px;
+  /* Animal-Island design language — warm parchment + mint teal + game-UI 3D.
+     Inspired by animal-island-ui's design tokens (non-commercial, educational). */
+  --bg: #f8f8f0;
+  --bg-strong: #f0e8d8;
+  --surface: rgb(247, 243, 223);
+  --surface-muted: #f0e8d8;
+  --surface-tint: #e6f9f6;
+  --ink: #794f27;
+  --ink-soft: #725d42;
+  --muted: #9f927d;
+  --faint: #c4b89e;
+  --line: #9f927d;
+  --line-strong: #c4b89e;
+  --primary: #19c8b9;
+  --primary-strong: #11a89b;
+  --primary-soft: #e6f9f6;
+  --blue: #889df0;
+  --teal: #19c8b9;
+  --amber: #f5c31c;
+  --coral: #e05a5a;
+  --green: #6fba2c;
+  --red: #e05a5a;
+  /* Game-special colors. */
+  --focus-yellow: #ffcc00;
+  --focus-yellow-dark: #e0b800;
+  --sidebar-active-bg: #b7c6e5;
+  --sidebar-hover-bg: #d6dff0;
+  --accent-yellow: #f5c31c;
+  --accent-coral: #f8a6b2;
+  --accent-blue: #889df0;
+  /* 3D shadow colors — pixel-stack bottom shadows for game-button feel. */
+  --shadow-btn: #bdaea0;
+  --shadow-input: #d4c9b4;
+  --shadow-switch-on: #5a9e1e;
+  /* Elevation — warm-tinted, soft. Used for default/dashed/text buttons, NOT primary. */
+  --shadow-soft: 0 2px 4px 0 rgba(61, 52, 40, 0.06);
+  --shadow: 0 3px 10px 0 rgba(61, 52, 40, 0.1);
+  --shadow-lift: 0 8px 24px 0 rgba(61, 52, 40, 0.14);
+  /* Shape scale — pill-first, generous, rounded. */
+  --radius-sm: 12px;
+  --radius: 18px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+  --radius-pill: 50px;
   /* Spacing scale (4px base). */
   --space-1: 4px;
   --space-2: 8px;
@@ -39,20 +52,18 @@
   --space-6: 24px;
   --space-7: 32px;
   --space-8: 40px;
-  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
   --sidebar-width: 248px;
   --topbar-height: 72px;
   font-family:
-    "Inter", "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
-    system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  /* Display face for instrument-style numerals + large headings. Latin-only:
-     CJK characters fall through to Noto Sans SC automatically. */
+    "Nunito", "Noto Sans SC", -apple-system, "PingFang SC", "Hiragino Sans GB",
+    "Microsoft YaHei", system-ui, sans-serif;
+  /* Display face for numerals + large headings — Nunito rounded weights. */
   --display:
-    "Space Grotesk", "Noto Sans SC", "PingFang SC", "Hiragino Sans GB",
+    "Nunito", "Noto Sans SC", "PingFang SC", "Hiragino Sans GB",
     "Microsoft YaHei", system-ui, sans-serif;
   color: var(--ink);
   background: var(--bg);
-  /* Inter optical refinements: better lowercase 'a'/'g', tabular figures off by default. */
   font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -79,16 +90,21 @@ body {
   letter-spacing: -0.003em;
 }
 
-/* Subtle paper grain — breaks the flat fill, sits above the background and
-   below all content. Fixed + non-interactive so it never affects layout. */
+/* Subtle warm cream grain + scattered soft dots — island-life texture.
+   Fixed + non-interactive so it never affects layout. */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.5;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  opacity: 0.6;
+  background-image:
+    radial-gradient(circle at 15% 20%, rgba(25, 200, 185, 0.06) 0, transparent 2px),
+    radial-gradient(circle at 85% 15%, rgba(245, 195, 28, 0.05) 0, transparent 2px),
+    radial-gradient(circle at 75% 80%, rgba(248, 166, 178, 0.05) 0, transparent 2px),
+    radial-gradient(circle at 25% 75%, rgba(136, 157, 240, 0.05) 0, transparent 2px),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
 }
 
 .app-shell {
@@ -142,7 +158,7 @@ img {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  border-right: 1px solid var(--line);
+  border-right: 2px solid var(--line);
   background: var(--surface);
   backdrop-filter: blur(18px);
   z-index: 20;
@@ -163,12 +179,13 @@ img {
   height: 38px;
   display: grid;
   place-items: center;
-  border-radius: 8px;
+  border-radius: 14px;
   color: #fff;
   background: var(--primary);
   font-size: 15px;
   font-weight: 800;
   letter-spacing: -0.02em;
+  box-shadow: var(--shadow-soft);
 }
 
 .brand strong {
@@ -198,16 +215,17 @@ img {
   align-items: center;
   gap: 11px;
   padding: 0 10px;
-  border-radius: var(--radius);
+  border-radius: var(--radius-sm);
   color: var(--ink-soft);
   font-size: 14px;
-  font-weight: 650;
-  transition: background 0.18s ease, color 0.18s ease;
+  font-weight: 600;
+  transition: background 0.25s cubic-bezier(0.4, 0, 0.2, 1), color 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .side-nav a:hover {
-  background: var(--surface);
-  color: var(--primary-strong);
+  background: var(--sidebar-hover-bg);
+  color: var(--ink);
+  transform: translateX(2px);
 }
 
 .side-nav a:hover .nav-icon {
@@ -215,13 +233,13 @@ img {
 }
 
 .side-nav a.is-active {
-  color: var(--primary-strong);
-  background: var(--primary-soft);
-  font-weight: 750;
+  color: #fff;
+  background: var(--sidebar-active-bg);
+  font-weight: 700;
 }
 
 .side-nav a.is-active .nav-icon {
-  background: var(--primary);
+  background: rgba(255, 255, 255, 0.3);
   color: #fff;
   border-color: transparent;
 }
@@ -232,19 +250,19 @@ img {
   height: 26px;
   display: grid;
   place-items: center;
-  border: 1px solid var(--line);
-  border-radius: 6px;
+  border: 2px solid var(--line);
+  border-radius: 10px;
   background: var(--surface);
   color: var(--primary);
   font-size: 11px;
   font-weight: 800;
-  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+  transition: background 0.2s var(--ease), color 0.2s var(--ease), border-color 0.2s var(--ease);
 }
 
 .side-footer {
   margin-top: auto;
   padding: 18px 16px 22px;
-  border-top: 1px solid var(--line);
+  border-top: 2px solid var(--line);
 }
 
 .side-footer p {
@@ -258,9 +276,9 @@ img {
   gap: 2px;
   margin-bottom: 12px;
   padding: 3px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: var(--surface-muted);
+  border: 2px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
 }
 
 .lang-switch button {
@@ -270,22 +288,22 @@ img {
   justify-content: center;
   min-height: 30px;
   padding: 4px 12px;
-  border: 1px solid transparent;
-  border-radius: 6px;
+  border: 2px solid transparent;
+  border-radius: var(--radius-pill);
   color: var(--muted);
   background: transparent;
   font-size: 13px;
-  font-weight: 750;
+  font-weight: 700;
   line-height: 1;
   white-space: nowrap;
   cursor: pointer;
-  transition: background 0.16s ease, color 0.16s ease;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .lang-switch button.is-active {
-  color: var(--primary-strong);
-  background: var(--surface);
-  box-shadow: 0 1px 2px rgba(40, 40, 35, 0.08);
+  color: #fff;
+  background: var(--primary);
+  box-shadow: 0 3px 0 0 var(--shadow-btn);
 }
 
 .workspace {
@@ -303,8 +321,8 @@ img {
   justify-content: space-between;
   gap: 24px;
   padding: 16px clamp(18px, 3vw, 44px);
-  border-bottom: 1px solid rgba(219, 227, 223, 0.8);
-  background: rgba(244, 243, 238, 0.88);
+  border-bottom: 2px solid var(--line);
+  background: rgba(248, 248, 240, 0.92);
   backdrop-filter: blur(16px);
   z-index: 10;
 }
@@ -316,6 +334,19 @@ img {
   font-weight: 600;
   color: var(--ink);
   letter-spacing: -0.02em;
+}
+
+/* Small leaf accent before topbar titles — sticker/note feel. */
+.topbar h1::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 8px;
+  border-radius: 50% 0 50% 0;
+  background: var(--primary);
+  vertical-align: 0.15em;
+  opacity: 0.8;
 }
 
 .eyebrow {
@@ -342,13 +373,13 @@ img {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 5px 10px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
+  padding: 5px 12px;
+  border: 2px solid var(--line);
+  border-radius: var(--radius-pill);
   background: var(--surface);
   color: var(--ink-soft);
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   white-space: nowrap;
 }
 
@@ -368,11 +399,22 @@ img {
   flex: 0 0 auto;
   display: grid;
   place-items: center;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
+  border: 2px solid var(--line);
+  border-radius: var(--radius-sm);
   background: var(--surface);
   color: var(--primary);
   cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.icon-button:hover {
+  background: var(--primary-soft);
+  border-color: var(--primary);
+  transform: translateY(-1px);
+}
+
+.icon-button:active {
+  transform: translateY(1px);
 }
 
 .menu-button span {
@@ -413,7 +455,7 @@ img {
 .page-loading-block {
   height: 180px;
   border-radius: var(--radius-lg);
-  border: 1px solid var(--line);
+  border: 2px solid var(--line);
   background: linear-gradient(100deg, var(--surface) 30%, var(--surface-muted) 50%, var(--surface) 70%);
   background-size: 200% 100%;
   animation: page-loading-shimmer 1.3s ease-in-out infinite;
@@ -460,11 +502,11 @@ img {
 .panel,
 .hero-panel {
   min-width: 0;
-  border: 1px solid var(--line);
+  border: 2px solid var(--line);
   border-radius: var(--radius-lg);
   background: var(--surface);
-  box-shadow: var(--shadow-soft);
-  transition: box-shadow 0.25s var(--ease), border-color 0.25s var(--ease), transform 0.25s var(--ease);
+  box-shadow: none;
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .card,
@@ -472,7 +514,14 @@ img {
   padding: 24px;
 }
 
-/* Flat, light hero — no photo, dark text on surface (Redesign B). */
+/* Cards gently float on hover — game-card feel, no default shadow. */
+.card:hover,
+.panel:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+/* Flat, light hero — no photo, warm text on cream (island-life style). */
 .hero-panel {
   position: relative;
   overflow: hidden;
@@ -482,7 +531,7 @@ img {
   padding: 30px 30px 26px;
   color: var(--ink);
   background:
-    radial-gradient(120% 140% at 100% 0%, var(--surface-tint) 0%, rgba(238, 243, 238, 0) 55%),
+    radial-gradient(120% 140% at 100% 0%, var(--surface-tint) 0%, rgba(230, 249, 246, 0) 55%),
     var(--surface);
 }
 
@@ -517,6 +566,19 @@ img {
   align-items: flex-start;
   gap: 16px;
   margin-bottom: 20px;
+}
+
+/* Wood-sign accent: a small rounded leaf-dot before section titles. */
+.section-head h2::before,
+.section-head h3::before {
+  content: "";
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 10px;
+  border-radius: 50% 0 50% 0;
+  background: var(--primary);
+  vertical-align: -0.05em;
 }
 
 .section-head h2,
@@ -590,9 +652,9 @@ img {
   gap: 10px 12px;
   align-items: center;
   padding: 12px;
-  border: 1px solid var(--line);
+  border: 2px solid var(--line);
   border-radius: var(--radius);
-  background: var(--surface-muted);
+  background: var(--surface);
 }
 
 .flow-steps span,
@@ -602,7 +664,7 @@ img {
   height: 34px;
   display: grid;
   place-items: center;
-  border-radius: var(--radius);
+  border-radius: var(--radius-sm);
   background: var(--primary);
   color: #fff;
   font-weight: 740;
@@ -641,7 +703,7 @@ img {
 .step-heading > strong {
   margin-left: auto;
   padding: 7px 10px;
-  border: 1px solid var(--line);
+  border: 2px solid var(--line);
   border-radius: 999px;
   background: var(--surface-muted);
   color: var(--primary-strong);
@@ -652,9 +714,9 @@ img {
   display: grid;
   gap: 14px;
   padding: 18px;
-  border: 1px solid var(--line);
+  border: 2px solid var(--line);
   border-radius: var(--radius);
-  background: var(--surface-muted);
+  background: var(--surface);
 }
 
 .setup-page {
@@ -673,7 +735,7 @@ img {
   padding: clamp(20px, 2.6vw, 30px);
   border-color: var(--primary);
   background:
-    radial-gradient(120% 140% at 100% 0%, var(--primary-soft) 0%, rgba(238, 243, 238, 0) 58%),
+    radial-gradient(120% 140% at 100% 0%, var(--primary-soft) 0%, rgba(230, 249, 246, 0) 58%),
     var(--surface);
 }
 .quick-start-head {
@@ -688,7 +750,7 @@ img {
   place-items: center;
   width: 38px;
   height: 38px;
-  border-radius: var(--radius-sm);
+  border-radius: 14px;
   color: #fff;
   background: var(--primary);
 }
@@ -794,7 +856,7 @@ img {
   display: inline-flex;
   justify-content: center;
   padding: 12px 18px;
-  border: 1px solid var(--line);
+  border: 2px solid var(--line);
   border-radius: 999px;
   background: var(--surface);
   color: var(--primary-strong);
@@ -916,7 +978,7 @@ img {
 .diagnostic-item {
   min-width: 0;
   padding: 14px;
-  border: 1px solid var(--line);
+  border: 2px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface);
 }
@@ -961,9 +1023,9 @@ img {
   grid-template-columns: 42px minmax(0, 1fr);
   gap: 12px;
   padding: 14px;
-  border: 1px solid var(--line);
+  border: 2px solid var(--line);
   border-radius: var(--radius);
-  background: var(--surface-muted);
+  background: var(--surface);
 }
 
 .task-block-head {
@@ -1003,7 +1065,7 @@ img {
   gap: 12px;
 }
 .plan-week {
-  border: 1px solid var(--line);
+  border: 2px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface);
   overflow: hidden;
@@ -1080,7 +1142,7 @@ img {
   align-content: space-between;
   gap: 8px;
   padding: 12px;
-  border: 1px solid var(--line);
+  border: 2px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface-muted);
 }
@@ -1088,11 +1150,11 @@ img {
 .calendar-day.is-today {
   border-color: var(--primary);
   background: var(--surface-tint);
-  box-shadow: inset 0 0 0 1px rgba(79, 124, 95, 0.12);
+  box-shadow: inset 0 0 0 1px rgba(25, 200, 185, 0.18);
 }
 
 .calendar-day.is-light {
-  background: #fbfbf8;
+  background: var(--surface);
 }
 
 .calendar-day-top {
@@ -1136,8 +1198,8 @@ img {
   display: inline-flex;
   padding: 3px 6px;
   border-radius: 999px;
-  background: #fff;
-  border: 1px solid var(--line);
+  background: var(--surface);
+  border: 2px solid var(--line);
   color: var(--primary-strong);
   font-size: 10px;
   font-weight: 740;
@@ -1212,7 +1274,7 @@ img {
   height: 5px;
   overflow: hidden;
   border-radius: 999px;
-  background: rgba(79, 124, 95, 0.12);
+  background: rgba(25, 200, 185, 0.18);
 }
 
 .progress-fill {
@@ -1301,14 +1363,14 @@ img {
   align-content: space-between;
   gap: 10px;
   padding: 16px;
-  border: 1px solid var(--line);
+  border: 2px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface);
 }
 
 .kpi-card.is-highlight {
-  border-color: rgba(79, 124, 95, 0.22);
-  background: linear-gradient(135deg, rgba(79, 124, 95, 0.04), rgba(79, 124, 95, 0.01));
+  border-color: rgba(25, 200, 185, 0.25);
+  background: linear-gradient(135deg, rgba(25, 200, 185, 0.05), rgba(25, 200, 185, 0.01));
 }
 
 .kpi-header {
@@ -1347,7 +1409,7 @@ img {
   height: 6px;
   overflow: hidden;
   border-radius: 999px;
-  background: #dce8e2;
+  background: rgba(25, 200, 185, 0.2);
 }
 
 .kpi-fill {
@@ -1370,7 +1432,7 @@ img {
   align-content: space-between;
   gap: 10px;
   padding: 18px;
-  border: 1px solid var(--line);
+  border: 2px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface);
 }
@@ -1406,7 +1468,7 @@ img {
   height: 8px;
   overflow: hidden;
   border-radius: 999px;
-  background: #dce8e2;
+  background: rgba(25, 200, 185, 0.2);
   margin-top: 6px;
 }
 
@@ -1437,7 +1499,7 @@ img {
   height: 16px;
   border-radius: 50%;
   border: 2px solid var(--surface);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 6px rgba(61, 52, 40, 0.12);
   transition: all 0.3s ease;
 }
 
@@ -1492,7 +1554,7 @@ img {
 .module-bar-track {
   height: 10px;
   border-radius: 999px;
-  background: var(--surface-muted);
+  background: rgba(25, 200, 185, 0.15);
   overflow: hidden;
   min-width: 0;
 }
@@ -1516,7 +1578,7 @@ img {
   gap: 10px;
   margin-bottom: 20px;
   padding: 14px;
-  border: 1px solid var(--line);
+  border: 2px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface);
 }
@@ -1542,14 +1604,14 @@ img {
 .heat-track {
   height: 8px;
   border-radius: 999px;
-  background: var(--surface-muted);
+  background: rgba(25, 200, 185, 0.15);
   overflow: hidden;
   min-width: 0;
 }
 
 .heat-fill {
   height: 100%;
-  border-radius: 999px;
+  border-radius: inherit;
   background: linear-gradient(90deg, var(--teal), var(--primary));
   transition: width 0.5s ease;
 }
@@ -1574,7 +1636,7 @@ img {
   align-content: start;
   gap: 10px;
   padding: 18px;
-  border: 1px solid var(--line);
+  border: 2px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface);
 }
@@ -1621,20 +1683,20 @@ img {
 .secondary-button,
 .ghost-button,
 .danger-button {
-  min-height: 40px;
+  min-height: 45px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 7px;
-  padding: 9px 16px;
-  border-radius: var(--radius-sm);
-  border: 1px solid transparent;
+  padding: 0 20px;
+  border-radius: var(--radius-pill);
+  border: 2px solid transparent;
   font-size: 14px;
-  font-weight: 650;
-  letter-spacing: -0.005em;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1;
   cursor: pointer;
-  transition: transform 0.16s var(--ease), background 0.16s var(--ease),
-    border-color 0.16s var(--ease), box-shadow 0.16s var(--ease);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .primary-button,
@@ -1659,29 +1721,37 @@ img {
 .primary-button {
   color: #fff;
   background: var(--primary);
-  box-shadow: 0 1px 2px rgba(44, 43, 39, 0.12);
+  box-shadow: 0 5px 0 0 var(--shadow-btn);
 }
 
 .primary-button:hover {
-  background: var(--primary-strong);
+  background: #3dd4c6;
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px -6px rgba(63, 106, 80, 0.5);
+  box-shadow: 0 6px 0 0 var(--shadow-btn);
 }
 
 .primary-button:active {
-  transform: translateY(0) scale(0.99);
-  box-shadow: 0 1px 2px rgba(44, 43, 39, 0.12);
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 0 var(--shadow-btn);
 }
 
 .secondary-button {
   color: var(--ink);
-  border-color: var(--line-strong);
+  border-color: var(--line);
   background: var(--surface);
+  box-shadow: var(--shadow-soft);
 }
 
 .secondary-button:hover {
   border-color: var(--primary);
-  background: var(--surface-muted);
+  background: var(--primary-soft);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+
+.secondary-button:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-soft);
 }
 
 /* Disabled buttons read as inactive and don't respond to hover/press. */
@@ -1700,15 +1770,34 @@ img {
   color: var(--primary-strong);
   border-color: transparent;
   background: var(--primary-soft);
+  box-shadow: var(--shadow-soft);
 }
 
 .ghost-button:hover {
-  background: rgba(79, 124, 95, 0.16);
+  background: rgba(25, 200, 185, 0.18);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+
+.ghost-button:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-soft);
 }
 
 .danger-button {
   color: #fff;
   background: var(--red);
+  box-shadow: 0 5px 0 0 #c94444;
+}
+
+.danger-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 0 0 #c94444;
+}
+
+.danger-button:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 0 #c94444;
 }
 
 .full {
@@ -1757,9 +1846,9 @@ img {
   justify-content: space-between;
   gap: 14px;
   padding: 14px;
-  border: 1px solid var(--line);
+  border: 2px solid var(--line);
   border-radius: var(--radius);
-  background: var(--surface-muted);
+  background: var(--surface);
 }
 
 .task-item {
@@ -1821,7 +1910,7 @@ img {
   flex: 0 0 34px;
   display: grid;
   place-items: center;
-  border-radius: 8px;
+  border-radius: 12px;
   background: var(--primary-soft);
   color: var(--primary-strong);
   font-size: 11px;
@@ -1834,8 +1923,8 @@ img {
 }
 
 .module-dot.grammar {
-  background: #f5eadc;
-  color: var(--amber);
+  background: var(--surface-muted);
+  color: #c9a23a;
 }
 
 .module-dot.reading {
@@ -1868,7 +1957,7 @@ img {
   padding: 6px 10px;
   border-radius: 999px;
   background: var(--surface);
-  border: 1px solid var(--line);
+  border: 2px solid var(--line);
   color: var(--primary-strong);
   font-size: 12px;
   font-weight: 800;
@@ -1897,8 +1986,8 @@ img {
   height: 96px;
   margin: 0 auto;
   border-radius: 50%;
-  background: rgba(79, 124, 95, 0.08);
-  color: var(--brand);
+  background: rgba(25, 200, 185, 0.1);
+  color: var(--primary-strong);
 }
 
 .empty-state h2,
@@ -1935,8 +2024,8 @@ img {
   gap: 8px;
   padding: 8px 14px;
   border-radius: 999px;
-  background: rgba(79, 124, 95, 0.06);
-  color: var(--brand);
+  background: rgba(25, 200, 185, 0.08);
+  color: var(--primary-strong);
   font-size: 13px;
   font-weight: 700;
 }
@@ -1980,45 +2069,56 @@ input,
 select,
 textarea {
   width: 100%;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: #fff;
-  color: var(--ink);
+  border: 2.5px solid var(--line-strong);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--ink-soft);
+  font-weight: 500;
+  letter-spacing: 0.01em;
   outline: none;
-  transition: border-color 0.16s ease, box-shadow 0.16s ease;
+  transition: border-color 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 input,
 select {
   min-height: 40px;
-  padding: 8px 11px;
+  padding: 0 18px;
 }
 
 textarea {
   min-height: 96px;
-  padding: 10px 12px;
+  padding: 10px 18px;
   resize: vertical;
   line-height: 1.58;
+  border-radius: var(--radius);
 }
 
-input:focus,
-select:focus,
-textarea:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(79, 124, 95, 0.12);
+input:hover,
+select:hover,
+textarea:hover {
+  border-color: #a89878;
 }
 
-/* Baseline keyboard focus ring for every interactive element (links, buttons,
-   form controls, native disclosures). Specific components may override above. */
+/* Only apply the game-yellow focus ring to raw inputs/selects that are NOT
+   inside an animal-island-ui component (those handle their own focus styling). */
+input:not([class*="animal-"]):focus,
+select:not([class*="animal-"]):focus,
+textarea:not([class*="animal-"]):focus {
+  border-color: var(--focus-yellow);
+  box-shadow: 0 0 0 3px rgba(255, 204, 0, 0.15);
+}
+
+/* Baseline keyboard focus ring for every interactive element — game-style yellow.
+   Skip animal-island-ui components which have their own focus styling. */
 a:focus-visible,
-button:focus-visible,
-select:focus-visible,
-textarea:focus-visible,
-input:focus-visible,
+button:not([class*="animal-"]):focus-visible,
+select:not([class*="animal-"]):focus-visible,
+textarea:not([class*="animal-"]):focus-visible,
+input:not([class*="animal-"]):focus-visible,
 summary:focus-visible,
 [role="button"]:focus-visible,
 [tabindex="0"]:focus-visible {
-  outline: 2px solid var(--primary);
+  outline: 2px solid var(--focus-yellow);
   outline-offset: 2px;
 }
 
@@ -2049,7 +2149,7 @@ input[type="number"] {
   align-items: center;
   justify-content: center;
   padding: 7px 11px;
-  border: 1px solid var(--line);
+  border: 2px solid var(--line);
   border-radius: 999px;
   background: var(--surface);
   color: var(--ink-soft);
@@ -2069,24 +2169,24 @@ input[type="number"] {
   align-items: center;
   gap: 10px;
   padding: 12px 16px;
-  border: 1.5px solid var(--line);
-  border-radius: 12px;
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
   background: var(--surface);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s var(--ease);
   min-height: 48px;
 }
 
 .choice-card:hover {
   border-color: var(--primary);
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(79, 124, 95, 0.08);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(25, 200, 185, 0.12);
 }
 
 .choice-card.selected {
   border-color: var(--primary);
   background: var(--primary-soft);
-  box-shadow: 0 0 0 3px rgba(79, 124, 95, 0.12);
+  box-shadow: 0 0 0 3px rgba(25, 200, 185, 0.16);
 }
 
 .choice-card input {
@@ -2135,9 +2235,9 @@ input[type="number"] {
   gap: 2px;
   width: fit-content;
   padding: 3px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  background: var(--surface-muted);
+  border: 2px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
 }
 .record-mode-switch button {
   display: inline-flex;
@@ -2145,20 +2245,20 @@ input[type="number"] {
   justify-content: center;
   min-height: 32px;
   padding: 6px 18px;
-  border: 1px solid transparent;
-  border-radius: 7px;
+  border: 2px solid transparent;
+  border-radius: var(--radius-pill);
   color: var(--muted);
   background: transparent;
   font-size: 13px;
-  font-weight: 650;
+  font-weight: 600;
   white-space: nowrap;
   cursor: pointer;
-  transition: background 0.16s var(--ease), color 0.16s var(--ease);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .record-mode-switch button.is-active {
-  color: var(--primary-strong);
-  background: var(--surface);
-  box-shadow: var(--shadow-soft);
+  color: #fff;
+  background: var(--primary);
+  box-shadow: 0 3px 0 0 var(--shadow-btn);
 }
 .record-mode-switch button:focus-visible {
   outline: 2px solid var(--primary);
@@ -2181,7 +2281,7 @@ input[type="number"] {
   gap: 12px;
   margin: 0;
   padding: 14px;
-  border: 1px solid var(--line);
+  border: 2px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface-muted);
 }
@@ -2205,7 +2305,7 @@ input[type="number"] {
   display: grid;
   gap: 8px;
   padding: 12px;
-  border: 1px solid var(--line);
+  border: 2px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface);
 }
@@ -2237,7 +2337,7 @@ input[type="number"] {
   gap: 10px;
   margin: 0;
   padding: 12px;
-  border: 1px solid var(--line);
+  border: 2px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface);
 }
@@ -2274,7 +2374,7 @@ input[type="number"] {
   align-items: center;
   justify-content: center;
   padding: 7px 11px;
-  border: 1px solid var(--line);
+  border: 2px solid var(--line);
   border-radius: 999px;
   background: var(--surface);
   color: var(--ink-soft);
@@ -2304,7 +2404,7 @@ input[type="number"] {
 .record-result {
   min-width: 0;
   padding: 16px;
-  border: 1px solid var(--line);
+  border: 2px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface);
 }
@@ -2344,7 +2444,7 @@ input[type="number"] {
   gap: 10px;
   align-items: center;
   padding: 10px 12px;
-  border: 1px solid var(--line);
+  border: 2px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface-muted);
 }
@@ -2417,7 +2517,7 @@ input[type="number"] {
 
 .table-wrap {
   overflow: auto;
-  border: 1px solid var(--line);
+  border: 2px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface);
 }
@@ -2464,7 +2564,7 @@ tr:last-child td {
   height: 10px;
   overflow: hidden;
   border-radius: 999px;
-  background: #e4ebe7;
+  background: rgba(25, 200, 185, 0.18);
 }
 
 .bar-fill {
@@ -2487,7 +2587,7 @@ tr:last-child td {
   display: grid;
   place-items: center;
   border-radius: 50%;
-  box-shadow: 0 16px 34px rgba(40, 40, 35, 0.08);
+  box-shadow: 0 16px 34px rgba(61, 52, 40, 0.1);
 }
 
 .module-donut::after {
@@ -2539,7 +2639,7 @@ tr:last-child td {
   gap: 10px;
   align-items: center;
   padding: 9px 10px;
-  border: 1px solid var(--line);
+  border: 2px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface-muted);
 }
@@ -2567,7 +2667,7 @@ tr:last-child td {
 
 .analysis-brief-panel {
   background:
-    linear-gradient(135deg, rgba(232, 241, 237, 0.92), var(--surface)),
+    linear-gradient(135deg, rgba(230, 249, 246, 0.92), var(--surface)),
     var(--surface);
 }
 
@@ -2586,13 +2686,13 @@ tr:last-child td {
   align-content: start;
   gap: 8px;
   padding: 18px;
-  border: 1px solid var(--line);
+  border: 2px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface);
 }
 
 .insight-card.is-primary {
-  border-color: rgba(79, 124, 95, 0.28);
+  border-color: rgba(25, 200, 185, 0.3);
   background: var(--primary);
   color: #fff;
 }
@@ -2653,10 +2753,10 @@ tr:last-child td {
   display: flex;
   align-items: flex-end;
   overflow: hidden;
-  border: 1px solid var(--line);
+  border: 2px solid var(--line);
   border-radius: var(--radius);
   background:
-    linear-gradient(180deg, rgba(232, 241, 237, 0.46), var(--surface)),
+    linear-gradient(180deg, rgba(230, 249, 246, 0.46), var(--surface)),
     var(--surface-muted);
 }
 
@@ -2677,7 +2777,7 @@ tr:last-child td {
 
 .trend-day.is-empty .trend-bar {
   height: 8px;
-  background: repeating-linear-gradient(135deg, #dfe8e3 0 8px, #f7faf8 8px 16px);
+  background: repeating-linear-gradient(135deg, rgba(159, 146, 125, 0.3) 0 8px, var(--surface) 8px 16px);
 }
 
 .trend-day strong {
@@ -2729,7 +2829,7 @@ tr:last-child td {
   display: grid;
   gap: 8px;
   padding: 14px;
-  border: 1px solid var(--line);
+  border: 2px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface-muted);
 }
@@ -2776,7 +2876,7 @@ tr:last-child td {
   gap: 14px;
   align-items: center;
   padding: 14px;
-  border: 1px solid var(--line);
+  border: 2px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface-muted);
 }
@@ -2786,7 +2886,7 @@ tr:last-child td {
   height: 42px;
   display: grid;
   place-items: center;
-  border-radius: var(--radius);
+  border-radius: var(--radius-sm);
   background: var(--primary-soft);
   color: var(--primary-strong);
   font-weight: 800;
@@ -2816,7 +2916,7 @@ tr:last-child td {
   height: 8px;
   overflow: hidden;
   border-radius: 999px;
-  background: #e4ebe7;
+  background: rgba(25, 200, 185, 0.18);
 }
 
 .cause-meter i {
@@ -2840,7 +2940,7 @@ tr:last-child td {
   gap: 12px;
   align-items: start;
   padding: 14px;
-  border: 1px solid var(--line);
+  border: 2px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface);
 }
@@ -2850,7 +2950,7 @@ tr:last-child td {
   height: 42px;
   display: grid;
   place-items: center;
-  border-radius: var(--radius);
+  border-radius: var(--radius-sm);
   color: #fff;
   background: var(--primary);
   font-size: 13px;
@@ -2877,7 +2977,7 @@ tr:last-child td {
   display: grid;
   place-items: center;
   border-radius: 50%;
-  background: conic-gradient(var(--primary) var(--score), #e4ebe7 0);
+  background: conic-gradient(var(--primary) var(--score), rgba(25, 200, 185, 0.18) 0);
   box-shadow: var(--shadow-soft);
 }
 
@@ -2932,13 +3032,13 @@ tr:last-child td {
   justify-items: center;
   gap: 2px;
   padding: 8px 4px;
-  border: 1px solid var(--line);
+  border: 2px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface-muted);
 }
 
 .gap-week .is-recorded {
-  border-color: rgba(79, 124, 95, 0.28);
+  border-color: rgba(25, 200, 185, 0.3);
   background: var(--primary-soft);
 }
 
@@ -2972,10 +3072,10 @@ tr:last-child td {
 
 .notice {
   padding: 12px 16px;
-  border: 1px solid var(--line);
+  border: 2px solid var(--line);
   border-left: 3px solid var(--primary);
   border-radius: var(--radius);
-  background: rgba(79, 124, 95, 0.04);
+  background: rgba(25, 200, 185, 0.06);
   font-size: 14px;
   line-height: 1.5;
 }
@@ -2990,8 +3090,8 @@ tr:last-child td {
 
 /* ── Cloud sync panel ── */
 .cloud-sync-panel {
-  border-color: rgba(79, 124, 95, 0.18);
-  background: linear-gradient(135deg, rgba(79, 124, 95, 0.05), var(--surface));
+  border-color: rgba(25, 200, 185, 0.2);
+  background: linear-gradient(135deg, rgba(25, 200, 185, 0.06), var(--surface));
 }
 
 .cloud-sync-head {
@@ -3006,7 +3106,7 @@ tr:last-child td {
   height: 40px;
   display: grid;
   place-items: center;
-  border-radius: 10px;
+  border-radius: 14px;
   color: #fff;
   background: var(--primary);
 }
@@ -3039,7 +3139,7 @@ tr:last-child td {
   padding: 16px;
   border: 1px solid var(--amber);
   border-radius: var(--radius);
-  background: rgba(177, 118, 75, 0.07);
+  background: rgba(245, 195, 28, 0.1);
 }
 .cloud-conflict-title {
   display: block;
@@ -3063,7 +3163,7 @@ tr:last-child td {
   flex-direction: column;
   gap: 8px;
   padding: 12px;
-  border: 1px solid var(--line);
+  border: 2px solid var(--line);
   border-radius: var(--radius-sm);
   background: var(--surface);
 }
@@ -3119,10 +3219,10 @@ tr:last-child td {
   align-items: center;
   gap: 14px;
   padding: 14px 16px;
-  border: 1px solid rgba(183, 122, 32, 0.28);
+  border: 1px solid rgba(245, 195, 28, 0.3);
   border-left: 3px solid var(--amber);
   border-radius: var(--radius);
-  background: linear-gradient(135deg, rgba(183, 122, 32, 0.07), var(--surface));
+  background: linear-gradient(135deg, rgba(245, 195, 28, 0.1), var(--surface));
 }
 
 .reminder-banner-icon {
@@ -3131,7 +3231,7 @@ tr:last-child td {
   height: 38px;
   display: grid;
   place-items: center;
-  border-radius: 9px;
+  border-radius: 12px;
   color: #fff;
   background: var(--amber);
 }
@@ -3190,7 +3290,7 @@ tr:last-child td {
   height: 40px;
   display: grid;
   place-items: center;
-  border-radius: 10px;
+  border-radius: 14px;
   color: #fff;
   background: var(--primary);
 }
@@ -3238,26 +3338,32 @@ tr:last-child td {
   display: inline-flex;
   align-items: center;
   padding: 3px;
-  border-radius: 999px;
-  background: var(--line-strong);
-  transition: background 0.18s ease;
+  border: 2.5px solid var(--line-strong);
+  border-radius: var(--radius-pill);
+  background: var(--shadow-input);
+  box-shadow: inset 0 2px 4px rgba(114, 93, 66, 0.15);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .reminder-switch-thumb {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-  transition: transform 0.18s ease;
+  background: var(--surface);
+  border: 2.5px solid var(--shadow-btn);
+  box-shadow: none;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .reminder-switch input:checked + .reminder-switch-track {
-  background: var(--primary);
+  background: #86d67a;
+  border-color: var(--green);
+  box-shadow: inset 0 2px 4px rgba(90, 158, 30, 0.2);
 }
 
 .reminder-switch input:checked + .reminder-switch-track .reminder-switch-thumb {
   transform: translateX(18px);
+  border-color: var(--shadow-switch-on);
 }
 
 @media (max-width: 560px) {
@@ -3273,7 +3379,7 @@ tr:last-child td {
 .reference-plan-card {
   display: grid;
   gap: 14px;
-  background: linear-gradient(180deg, rgba(232, 241, 237, 0.88), var(--surface));
+  background: linear-gradient(180deg, rgba(230, 249, 246, 0.88), var(--surface));
 }
 
 .reference-plan-card.compact .reference-days {
@@ -3299,7 +3405,7 @@ tr:last-child td {
 .reference-day {
   min-width: 0;
   padding: 13px;
-  border: 1px solid var(--line);
+  border: 2px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface);
 }
@@ -3361,10 +3467,10 @@ tr:last-child td {
 
 .toast {
   max-width: min(360px, calc(100vw - 32px));
-  padding: 12px 14px;
+  padding: 12px 16px;
   border: 1px solid var(--line-strong);
   border-radius: var(--radius);
-  background: #fff;
+  background: var(--surface);
   box-shadow: var(--shadow);
   color: var(--ink);
   font-weight: 700;
@@ -3626,19 +3732,19 @@ tr:last-child td {
 }
 
 .adjust-badge.adjust-increase {
-  color: #1f5135;
-  background: rgba(61, 119, 87, 0.16);
+  color: #3d6b1a;
+  background: rgba(111, 186, 44, 0.2);
 }
 
 .adjust-badge.adjust-decrease {
-  color: #8a4a13;
-  background: rgba(183, 122, 32, 0.16);
+  color: #8a6a13;
+  background: rgba(245, 195, 28, 0.2);
 }
 
 .adjust-badge.adjust-maintain {
   color: var(--ink-soft);
   background: var(--surface-muted);
-  border: 1px solid var(--line);
+  border: 2px solid var(--line);
 }
 
 /* Sticky mobile save bar on the record page — hidden on desktop, shown above
@@ -3656,7 +3762,7 @@ tr:last-child td {
     z-index: 90;
     display: block;
     padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0));
-    background: rgba(246, 247, 244, 0.94);
+    background: rgba(248, 248, 240, 0.94);
     backdrop-filter: blur(12px);
     border-top: 1px solid var(--line);
   }
@@ -3686,8 +3792,8 @@ tr:last-child td {
   justify-content: center;
   gap: 0;
   background: var(--surface);
-  border-top: 1px solid var(--line);
-  box-shadow: 0 -4px 20px rgba(40, 40, 35, 0.08);
+  border-top: 2px solid var(--line);
+  box-shadow: 0 -4px 20px rgba(61, 52, 40, 0.1);
   z-index: 100;
   padding: 0 env(safe-area-inset-bottom, 0);
 }
@@ -3703,9 +3809,9 @@ tr:last-child td {
   padding: 6px 4px 4px;
   color: var(--muted);
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 600;
   border-radius: 0;
-  transition: color 0.2s ease, transform 0.12s ease;
+  transition: color 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -3715,7 +3821,7 @@ tr:last-child td {
 
 .bottom-nav a.active {
   color: var(--primary);
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .bottom-nav a.active svg {
@@ -3726,11 +3832,11 @@ tr:last-child td {
   content: "";
   position: absolute;
   top: 0;
-  left: 25%;
-  right: 25%;
-  height: 2px;
+  left: 30%;
+  right: 30%;
+  height: 3px;
   background: var(--primary);
-  border-radius: 0 0 2px 2px;
+  border-radius: 0 0 999px 999px;
 }
 
 .bottom-nav a {
@@ -3740,22 +3846,26 @@ tr:last-child td {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 200;
   padding: 20px;
+  animation: animal-fade-in 0.25s ease;
 }
 
+/* Organic blob-shape modal — Animal-Island signature clip-path. */
 .modal-content {
   background: var(--surface);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  clip-path: url(#animal-modal-clip);
+  box-shadow: var(--shadow-lift);
   max-width: 560px;
   width: 100%;
   max-height: 80vh;
   overflow-y: auto;
+  padding: 48px 48px 32px;
+  animation: animal-zoom-in 0.3s ease;
 }
 
 .modal-header {
@@ -3772,16 +3882,23 @@ tr:last-child td {
 }
 
 .modal-close {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
   background: none;
-  border: none;
+  border: 1px solid transparent;
+  border-radius: 999px;
   font-size: 24px;
   cursor: pointer;
   color: var(--muted);
   line-height: 1;
+  transition: background 0.2s var(--ease), color 0.2s var(--ease);
 }
 
 .modal-close:hover {
   color: var(--ink);
+  background: var(--surface-muted);
 }
 
 .modal-body {
@@ -3864,7 +3981,7 @@ tr:last-child td {
   align-items: center;
   gap: 8px;
   padding: 20px 12px;
-  border: 1.5px solid var(--line);
+  border: 2px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface);
   cursor: pointer;
@@ -3882,7 +3999,7 @@ tr:last-child td {
 .export-card.active {
   border-color: var(--primary);
   background: var(--primary-soft);
-  box-shadow: 0 0 0 3px rgba(79, 124, 95, 0.1);
+  box-shadow: 0 0 0 3px rgba(25, 200, 185, 0.14);
 }
 
 .export-card-icon {
@@ -3890,7 +4007,7 @@ tr:last-child td {
   height: 44px;
   display: grid;
   place-items: center;
-  border-radius: 10px;
+  border-radius: 14px;
   flex-shrink: 0;
 }
 
@@ -3958,7 +4075,7 @@ tr:last-child td {
   place-items: center;
   background: var(--primary-soft);
   color: var(--primary);
-  border-radius: 8px;
+  border-radius: 12px;
   flex-shrink: 0;
 }
 
@@ -4003,7 +4120,7 @@ tr:last-child td {
   padding: 16px 20px;
   border: none;
   border-radius: 0;
-  background: #fafbfa;
+  background: var(--surface);
   font-family: "SF Mono", "Fira Code", "JetBrains Mono", monospace;
   font-size: 12px;
   line-height: 1.6;
@@ -4020,7 +4137,7 @@ tr:last-child td {
 .import-panel {
   padding: 0;
   overflow: hidden;
-  border-color: rgba(185, 86, 69, 0.2);
+  border-color: rgba(244, 166, 166, 0.25);
 }
 
 .import-header {
@@ -4028,8 +4145,8 @@ tr:last-child td {
   align-items: flex-start;
   gap: 12px;
   padding: 16px 20px;
-  background: rgba(185, 86, 69, 0.05);
-  border-bottom: 1px solid rgba(185, 86, 69, 0.1);
+  background: rgba(244, 166, 166, 0.06);
+  border-bottom: 1px solid rgba(244, 166, 166, 0.12);
 }
 
 .import-icon {
@@ -4037,9 +4154,9 @@ tr:last-child td {
   height: 36px;
   display: grid;
   place-items: center;
-  background: rgba(185, 86, 69, 0.1);
+  background: rgba(244, 166, 166, 0.12);
   color: var(--coral);
-  border-radius: 8px;
+  border-radius: 12px;
   flex-shrink: 0;
 }
 
@@ -4093,8 +4210,8 @@ tr:last-child td {
   gap: 8px;
   margin-top: 14px;
   padding: 10px 14px;
-  background: rgba(185, 86, 69, 0.06);
-  border-radius: 6px;
+  background: rgba(244, 166, 166, 0.08);
+  border-radius: 12px;
   color: var(--coral);
   font-size: 12px;
   font-weight: 700;
@@ -4175,7 +4292,7 @@ tr:last-child td {
   place-items: center;
   width: 42px;
   height: 42px;
-  border-radius: var(--radius-sm);
+  border-radius: 14px;
   color: #fff;
   background: var(--amber);
 }
@@ -4218,7 +4335,7 @@ tr:last-child td {
 .support-amount-chip.is-selected {
   border-color: var(--primary);
   background: var(--primary-soft);
-  box-shadow: inset 0 0 0 1px var(--primary);
+  box-shadow: inset 0 0 0 1px var(--primary), var(--shadow-soft);
 }
 .support-amount-emoji {
   font-size: 20px;
@@ -4313,4 +4430,727 @@ tr:last-child td {
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* ── Animal-Island animation keyframes ─────────────────────────────────── */
+@keyframes animal-zoom-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes animal-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes ac-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ANIMAL-ISLAND ENHANCEMENT LAYER (v4 — text contrast fix)
+   References the animal-island-ui DESIGN_PROMPT.md color spec:
+   - Headings/sidebar: #794f27  (darkest brown)
+   - Body in components: #725d42  (medium brown)
+   - Secondary text:    #8a7b66  (was #9f927d — too light on pastel cards)
+   - Disabled only:     #c4b89e  (NEVER for readable text)
+   Polka-dot cards, Title ribbons, Divider lines, sea footer, game-UI accents.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── 0. Text contrast fix — align with animal-island-ui official spec ─────────── */
+/* The original --muted (#9f927d) is too light on pastel card backgrounds.
+   animal-island-ui's own DESIGN_PROMPT.md defines:
+     Body text:     #725d42
+     Secondary:     #8a7b66  (darker than #9f927d)
+     Muted/placeholder: #c4b89e (disabled-level, ONLY for placeholders)
+   We deepen --muted to #8a7b66 so descriptive text is readable everywhere. */
+
+:root {
+  --muted: #8a7b66;       /* was #9f927d — official "muted" value */
+  --faint: #b0a48c;       /* was #c4b89e — still light but slightly darker for non-placeholder use */
+}
+
+/* Ensure .muted class and section descriptions use readable body color. */
+.muted,
+.section-head p,
+.panel > .section-head p,
+.card p,
+.panel p,
+.task-item small,
+.list-item small,
+.summary-note,
+.bar-list small,
+.quick-record-hint,
+.quick-record-note,
+.diagnostic-value,
+.adjust-reason {
+  color: var(--ink-soft);  /* #725d42 — official body text color */
+}
+
+/* Truly muted labels (metric-label, eyebrow, nav small) stay lighter but readable. */
+.metric-label,
+.eyebrow,
+.brand small,
+.setup-step-badge,
+.calendar-meta,
+.plan-week-meta,
+.reference-meta .tag {
+  color: var(--muted);    /* #8a7b66 — now darker, still secondary */
+}
+
+/* ── 0. Soft pastel palette (mirrors animal-island-ui Card colors at ~12% strength) ── */
+
+:root {
+  /* Mint teal — the primary island accent, softened */
+  --ai-teal-bg: #f0f8f5;
+  --ai-teal-border: #b5d9cf;
+  --ai-teal-accent: #6fb5a8;
+
+  /* Warm cream / sand — replaces harsh amber */
+  --ai-cream-bg: #faf5ea;
+  --ai-cream-border: #e0d4b8;
+  --ai-cream-accent: #c4a860;
+
+  /* Soft pink */
+  --ai-pink-bg: #faf0f1;
+  --ai-pink-border: #e6c5c8;
+
+  /* Soft blue */
+  --ai-blue-bg: #f0f2fa;
+  --ai-blue-border: #c5cce8;
+
+  /* Soft green */
+  --ai-green-bg: #f0f5ee;
+  --ai-green-border: #c5d8c0;
+
+  /* Neutral dot color — very subtle, warm */
+  --ai-dot: rgba(180, 165, 135, 0.06);
+  --ai-dot-2: rgba(180, 165, 135, 0.03);
+}
+
+/* ── 1. Cards — whisper-light polka dots on cream ──────────────────────────── */
+/* The blog case study uses Card color="..." with soft pastel fills.
+   Here we apply the same pastel feel to existing CSS-class cards. */
+
+.card,
+.panel {
+  background:
+    radial-gradient(circle, var(--ai-dot) 1px, transparent 1px) 0 0 / 28px 28px,
+    radial-gradient(circle, var(--ai-dot-2) 0.7px, transparent 0.7px) 7px 7px / 14px 14px,
+    var(--surface);
+  border-color: var(--ai-cream-border);
+  border-width: 1.5px;
+}
+
+/* Adjacent cards get soft pastel families — very light, like watercolor. */
+.page-grid > section.stack > .panel:nth-child(2),
+.page-grid > section.stack > .card:nth-child(2),
+aside.stack > .card:nth-child(2) {
+  background:
+    radial-gradient(circle, rgba(200, 160, 165, 0.06) 1px, transparent 1px) 0 0 / 28px 28px,
+    radial-gradient(circle, rgba(200, 160, 165, 0.03) 0.7px, transparent 0.7px) 7px 7px / 14px 14px,
+    var(--ai-pink-bg);
+  border-color: var(--ai-pink-border);
+}
+
+.page-grid > section.stack > .panel:nth-child(3),
+.page-grid > section.stack > .card:nth-child(3),
+aside.stack > .card:nth-child(3) {
+  background:
+    radial-gradient(circle, rgba(190, 175, 140, 0.06) 1px, transparent 1px) 0 0 / 28px 28px,
+    radial-gradient(circle, rgba(190, 175, 140, 0.03) 0.7px, transparent 0.7px) 7px 7px / 14px 14px,
+    var(--ai-cream-bg);
+  border-color: var(--ai-cream-border);
+}
+
+.page-grid > section.stack > .panel:nth-child(4),
+.page-grid > section.stack > .card:nth-child(4),
+aside.stack > .card:nth-child(4) {
+  background:
+    radial-gradient(circle, rgba(160, 170, 200, 0.06) 1px, transparent 1px) 0 0 / 28px 28px,
+    radial-gradient(circle, rgba(160, 170, 200, 0.03) 0.7px, transparent 0.7px) 7px 7px / 14px 14px,
+    var(--ai-blue-bg);
+  border-color: var(--ai-blue-border);
+}
+
+.page-grid > section.stack > .panel:nth-child(5),
+.page-grid > section.stack > .card:nth-child(5),
+aside.stack > .card:nth-child(5) {
+  background:
+    radial-gradient(circle, rgba(165, 185, 155, 0.06) 1px, transparent 1px) 0 0 / 28px 28px,
+    radial-gradient(circle, rgba(165, 185, 155, 0.03) 0.7px, transparent 0.7px) 7px 7px / 14px 14px,
+    var(--ai-green-bg);
+  border-color: var(--ai-green-border);
+}
+
+/* Metric cards — warm cream dots, gentle. */
+.metric-card {
+  background:
+    radial-gradient(circle, rgba(190, 175, 140, 0.05) 1px, transparent 1px) 0 0 / 24px 24px,
+    radial-gradient(circle, rgba(190, 175, 140, 0.02) 0.7px, transparent 0.7px) 6px 6px / 12px 12px,
+    var(--ai-cream-bg);
+  border-color: var(--ai-cream-border);
+}
+
+/* Hero panel — soft teal wash like island sky. */
+.hero-panel {
+  background:
+    radial-gradient(circle, rgba(159, 207, 198, 0.06) 1px, transparent 1px) 0 0 / 32px 32px,
+    radial-gradient(circle, rgba(159, 207, 198, 0.03) 0.7px, transparent 0.7px) 8px 8px / 16px 16px,
+    radial-gradient(120% 140% at 100% 0%, var(--ai-teal-bg) 0%, rgba(240, 248, 245, 0) 55%),
+    var(--surface);
+  border-color: var(--ai-teal-border);
+}
+
+/* ── 2. Section titles — now using animal-island-ui <Title> ribbon component.
+   The Title component renders its own swallowtail ribbon, so we remove
+   the old CSS leaf-dot prefix to avoid double decoration. ─────────────────── */
+
+.section-head h2::before,
+.section-head h3::before {
+  content: none;
+}
+
+/* Title component renders as inline-block div — give it breathing room. */
+.section-head .animal-island-title,
+.section-head [class*="animal-title"] {
+  margin-bottom: 4px;
+}
+
+/* ── 3. Sidebar — clean cream, gentle active ────────────────────────────────── */
+
+.sidebar {
+  background:
+    radial-gradient(circle, var(--ai-dot) 0.8px, transparent 0.8px) 0 0 / 28px 28px,
+    var(--surface);
+  border-color: var(--ai-cream-border);
+}
+
+/* Active nav — soft teal tint + left bar, like a gentle highlighter. */
+.side-nav a.is-active {
+  color: var(--ink);
+  background: var(--ai-teal-bg);
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  box-shadow: inset 3px 0 0 0 var(--ai-teal-accent);
+  border: none;
+}
+.side-nav a.is-active .nav-icon {
+  background: var(--ai-teal-accent);
+  color: #fff;
+  border-color: var(--ai-teal-accent);
+}
+
+/* Nav icon — soft warm square. */
+.nav-icon {
+  border-color: var(--ai-cream-border);
+  background: var(--surface);
+}
+
+/* Brand mark — leaf shape. */
+.brand-mark {
+  border-radius: 50% 0 50% 0;
+  box-shadow: 0 2px 0 0 var(--ai-teal-accent);
+}
+
+/* Language switch active — gentle. */
+.lang-switch button.is-active {
+  box-shadow: 0 2px 0 0 var(--shadow-btn);
+}
+
+/* ── 4. Topbar — clean, no heavy texture ────────────────────────────────────── */
+
+.topbar {
+  background: rgba(248, 248, 240, 0.92);
+  backdrop-filter: blur(16px);
+  border-color: var(--ai-cream-border);
+}
+
+.topbar h1::before {
+  width: 10px;
+  height: 10px;
+  border-radius: 50% 0 50% 0;
+  background: var(--ai-teal-accent);
+  opacity: 0.8;
+}
+
+/* ── 5. Progress / charts — soft teal fills ──────────────────────────────────── */
+
+.progress-track {
+  background: var(--surface-muted);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+.progress-fill {
+  background: linear-gradient(180deg, #8dd0c4 0%, var(--ai-teal-accent) 100%);
+  border-radius: var(--radius-pill);
+  transition: width 0.6s var(--ease);
+}
+
+/* KPI cards — soft pastel borders. */
+.kpi-card:nth-child(1) { border-color: var(--ai-teal-border); }
+.kpi-card:nth-child(2) { border-color: var(--ai-cream-border); }
+.kpi-card:nth-child(3) { border-color: var(--ai-pink-border); }
+.kpi-card:nth-child(4) { border-color: var(--ai-blue-border); }
+.kpi-card:nth-child(5) { border-color: var(--ai-green-border); }
+.kpi-card:nth-child(6) { border-color: #e6c5c0; }
+
+.kpi-fill {
+  background: linear-gradient(180deg, #8dd0c4 0%, var(--ai-teal-accent) 100%);
+  border-radius: var(--radius-pill);
+}
+
+.bar-fill {
+  background: linear-gradient(180deg, #8dd0c4 0%, var(--ai-teal-accent) 100%);
+  border-radius: var(--radius-pill);
+}
+
+/* ── 6. Empty state — gentle dashed ─────────────────────────────────────────── */
+
+.empty-state {
+  border: 2px dashed var(--ai-cream-border);
+  border-radius: var(--radius-lg);
+  background: var(--ai-cream-bg);
+  padding: 32px 24px;
+  text-align: center;
+}
+
+.empty-state h3 {
+  color: var(--ai-teal-accent);
+}
+
+/* ── 7. Notice — warm cream ─────────────────────────────────────────────────── */
+
+.notice {
+  border: 1.5px solid var(--ai-cream-border);
+  border-radius: var(--radius);
+  background: var(--ai-cream-bg);
+  padding: 14px 18px;
+}
+
+/* ── 8. Footer — now using animal-island-ui <Footer type="sea" seamless />
+   The CSS ::after tree decoration is removed in favor of the real
+   component. No CSS needed here. ─────────────────────────────────────────── */
+
+/* ── 9. Buttons — keep 3D for primary only ──────────────────────────────────── */
+
+.primary-button {
+  box-shadow: 0 5px 0 0 var(--shadow-btn);
+  transition: box-shadow 0.15s var(--ease), transform 0.15s var(--ease);
+}
+.primary-button:hover {
+  box-shadow: 0 6px 0 0 var(--shadow-btn);
+  transform: translateY(-1px);
+}
+.primary-button:active {
+  box-shadow: 0 1px 0 0 var(--shadow-btn);
+  transform: translateY(2px);
+}
+
+/* ── 10. Calendar / task blocks ─────────────────────────────────────────────── */
+
+.calendar-day.is-today {
+  border-color: var(--ai-teal-border);
+  background: var(--ai-teal-bg);
+  box-shadow: 0 2px 0 0 var(--ai-teal-accent);
+}
+
+.calendar-day.is-light {
+  background: var(--surface-muted);
+}
+
+.task-block {
+  border: 1.5px solid var(--ai-cream-border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.task-block-index {
+  color: var(--ai-teal-accent);
+  font-weight: 900;
+}
+
+.module-dot {
+  box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.05);
+}
+
+/* ── 11. Chips & tags ───────────────────────────────────────────────────────── */
+
+.chip {
+  border-radius: var(--radius-pill);
+  background: var(--ai-teal-bg);
+  border: 1.5px solid var(--ai-teal-border);
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+
+.tag {
+  border-radius: var(--radius-pill);
+  font-weight: 700;
+}
+
+/* ── 12. Time pill / metric chip ────────────────────────────────────────────── */
+
+.time-pill {
+  border-radius: var(--radius-pill);
+  background: var(--ai-teal-bg);
+  border: 1.5px solid var(--ai-teal-border);
+  color: var(--ai-teal-accent);
+  font-weight: 700;
+}
+
+.metric-chip {
+  border-radius: var(--radius-pill);
+  background: var(--ai-teal-bg);
+  border: 1.5px solid var(--ai-teal-border);
+}
+
+.metric-chip strong {
+  color: var(--ai-teal-accent);
+}
+
+/* ── 13. Insight / quality / action cards ───────────────────────────────────── */
+
+.insight-card.is-primary {
+  border-color: var(--ai-teal-border);
+  background: var(--ai-teal-bg);
+}
+
+.insight-card:not(.is-primary) {
+  border-color: var(--ai-cream-border);
+}
+
+.action-card {
+  border: 1.5px solid var(--ai-cream-border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  transition: transform 0.25s var(--ease), border-color 0.25s var(--ease);
+}
+.action-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--ai-teal-border);
+}
+
+/* ── 14. Plan week accordion ────────────────────────────────────────────────── */
+
+.plan-week {
+  border: 1.5px solid var(--ai-cream-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: border-color 0.3s var(--ease);
+}
+.plan-week.is-open {
+  border-color: var(--ai-teal-border);
+}
+
+.plan-week-head {
+  background: var(--surface);
+}
+
+.plan-week-badge {
+  border-radius: var(--radius-pill);
+  background: var(--ai-teal-accent);
+  color: #fff;
+  font-weight: 700;
+  font-size: 11px;
+  padding: 2px 10px;
+}
+
+/* ── 15. Choice cards ──────────────────────────────────────────────────────── */
+
+.choice-card.selected {
+  border-color: var(--ai-teal-accent);
+  background: var(--ai-teal-bg);
+  box-shadow: 0 2px 0 0 var(--ai-teal-accent);
+}
+
+/* ── 16. Record history cards ──────────────────────────────────────────────── */
+
+.history-card {
+  border: 1.5px solid var(--ai-cream-border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  transition: transform 0.25s var(--ease), border-color 0.25s var(--ease);
+}
+.history-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--ai-teal-border);
+}
+
+/* ── 17. Health gauge ──────────────────────────────────────────────────────── */
+
+.health-ring {
+  border-color: var(--ai-teal-accent);
+}
+
+/* ── 18. Export cards ──────────────────────────────────────────────────────── */
+
+.export-card {
+  border: 1.5px solid var(--ai-cream-border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  transition: transform 0.25s var(--ease), border-color 0.25s var(--ease), box-shadow 0.25s var(--ease);
+}
+.export-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--ai-teal-border);
+}
+.export-card.active {
+  border-color: var(--ai-teal-accent);
+  border-width: 2.5px;
+  box-shadow: 0 2px 0 0 var(--ai-teal-accent);
+}
+
+/* ── 19. Support amount chips ──────────────────────────────────────────────── */
+
+.support-amount-chip {
+  border: 1.5px solid var(--ai-cream-border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  transition: transform 0.25s var(--ease), border-color 0.25s var(--ease), box-shadow 0.25s var(--ease);
+}
+.support-amount-chip:hover {
+  transform: translateY(-2px);
+  border-color: var(--ai-teal-border);
+}
+.support-amount-chip.is-selected {
+  border-color: var(--ai-teal-accent);
+  border-width: 2.5px;
+  box-shadow: 0 2px 0 0 var(--ai-teal-accent);
+  background: var(--ai-teal-bg);
+}
+
+/* ── 20. Checkbox pop animation (native inputs styled like animal-island-ui) ── */
+
+@keyframes ai-checkbox-pop {
+  0% { transform: scale(0.4); }
+  60% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+.choice input[type="checkbox"],
+.choice-card input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  border: 2.5px solid var(--ai-cream-border);
+  border-radius: 8px;
+  background: var(--surface);
+  cursor: pointer;
+  transition: border-color 0.2s var(--ease), transform 0.2s var(--ease);
+  flex-shrink: 0;
+}
+
+.choice input[type="checkbox"]:hover,
+.choice-card input[type="checkbox"]:hover {
+  border-color: var(--ai-teal-accent);
+  transform: translateY(-1px);
+}
+
+.choice input[type="checkbox"]:checked,
+.choice-card input[type="checkbox"]:checked {
+  background: var(--ai-teal-accent);
+  border-color: var(--ai-teal-accent);
+  animation: ai-checkbox-pop 0.15s var(--ease);
+}
+
+.choice input[type="checkbox"]:checked::after,
+.choice-card input[type="checkbox"]:checked::after {
+  content: "";
+  display: block;
+  width: 6px;
+  height: 10px;
+  border: 2px solid #fff;
+  border-top: 0;
+  border-left: 0;
+  transform: rotate(45deg);
+  margin: 1px auto 0;
+}
+
+.choice input[type="checkbox"]:focus-visible,
+.choice-card input[type="checkbox"]:focus-visible {
+  outline: 2px solid #ffcc00;
+  outline-offset: 2px;
+}
+
+/* ── 21. Scrollbar ──────────────────────────────────────────────────────────── */
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--surface-muted);
+  border-radius: var(--radius-pill);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--ai-teal-border);
+  border-radius: var(--radius-pill);
+  border: 2px solid var(--surface-muted);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ai-teal-accent);
+}
+
+/* ── 21. Selection color ─────────────────────────────────────────────────────── */
+
+::selection {
+  background: rgba(111, 181, 168, 0.15);
+  color: var(--ink);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   CONTRAST FIX LAYER (v4.1)
+   Fixes text-on-color issues where enhancement layer backgrounds
+   overrode original text colors, making content invisible.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── A. Task-block index (01/02 badges) — white text was washed out on soft teal.
+   Use a DEEPER teal background so white text reads clearly. ──────────────── */
+.task-block-index {
+  background: var(--primary-strong) !important;  /* #11a89b — deep teal */
+  color: #fff !important;
+  font-weight: 900;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.15);     /* subtle stroke for legibility */
+}
+
+/* ── B. Insight-card.is-primary — was bg:var(--primary) + color:#fff, but
+   enhancement layer changed it to var(--ai-teal-bg) (very light) while
+   keeping white text → invisible. Fix: use deep teal bg + white text. ──── */
+.insight-card.is-primary {
+  background: var(--primary) !important;         /* #19c8b9 — proper teal */
+  border-color: var(--primary-strong) !important;
+  color: #fff !important;
+}
+.insight-card.is-primary span,
+.insight-card.is-primary p {
+  color: #fff !important;
+  opacity: 0.95;
+}
+.insight-card.is-primary strong {
+  color: #fff !important;
+}
+
+/* ── C. Record fieldset / choice options — border + bg were softened to
+   cream, but legend and option text stayed --ink-soft which is fine.
+   The issue is the CHOICE-CARD checkbox labels getting covered. Ensure
+   legend, option label, and custom field text are all dark brown. ────── */
+.record-fieldset {
+  background: var(--surface) !important;
+  border-color: var(--ai-cream-border);
+}
+.record-fieldset legend {
+  color: var(--ink) !important;                 /* #794f27 — darkest, clearly visible */
+  font-weight: 800;
+}
+.record-choice-field legend {
+  color: var(--ink) !important;
+  font-weight: 800;
+}
+.record-option span {
+  color: var(--ink-soft) !important;            /* #725d42 — readable body */
+}
+.record-option input:checked + span {
+  color: var(--primary-strong) !important;
+}
+.module-record-card {
+  background: var(--surface) !important;
+  border-color: var(--ai-cream-border);
+}
+.module-record-head {
+  color: var(--ink) !important;
+}
+
+/* ── D. Choice-card text (Setup page) — ensure label text is readable
+   on both normal and selected (teal bg) states. ─────────────────────────── */
+.choice-card {
+  background: var(--surface);
+}
+.choice-card .choice-text {
+  color: var(--ink-soft);
+}
+.choice-card.selected .choice-text {
+  color: var(--ink);                             /* darker on teal bg */
+}
+.choice-card label,
+.choice-card .choice-label {
+  color: var(--ink-soft) !important;
+}
+.choice-card.selected label,
+.choice-card.selected .choice-label {
+  color: var(--ink) !important;
+}
+
+/* ── E. Summary items / diagnostic values — ensure readable on pastel ──────── */
+.summary-label {
+  color: var(--muted) !important;
+}
+.summary-value {
+  color: var(--ink) !important;
+}
+.summary-note {
+  color: var(--ink-soft) !important;
+}
+.diagnostic-label {
+  color: var(--muted) !important;
+}
+.diagnostic-value {
+  color: var(--ink) !important;
+  font-weight: 800;
+}
+.diagnostic-value.warning {
+  color: #c4801e !important;                     /* darker amber for warning */
+}
+.diagnostic-value.good {
+  color: #4a8a1e !important;                     /* darker green for good */
+}
+
+/* ── F. Cursor — replace with a large game-hand cursor (SVG data-URI).
+   Matches animal-island-ui demo site's big pointing hand. ──────────────── */
+/* The Cursor component sets cursor on .animal-cursor and descendants.
+   We override with a bigger, clearer hand cursor using an inline SVG.   */
+.animal-cursor,
+.animal-cursor *,
+.cursor-wrapper,
+.cursor-wrapper * {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath d='M8 2 L8 18 L11 18 L11 14 L14 14 L14 11 L17 11 L17 8 L20 8 L20 6 L23 6 L23 5 L25 5 L25 20 L23 22 L11 22 L8 19 Z' fill='%23f8f8f0' stroke='%23794f27' stroke-width='2' stroke-linejoin='round'/%3E%3Cpath d='M8 2 L8 18 L11 18 L11 14 L14 14 L14 11 L17 11 L17 8 L20 8 L20 6 L23 6 L23 5 L25 5 L25 20 L23 22 L11 22 L8 19 Z' fill='%23f8f8f0' stroke='%239f927d' stroke-width='1' stroke-linejoin='round'/%3E%3C/svg%3E") 8 2, auto !important;
+}
+
+/* Fallback: also set on body + all interactive elements in case Cursor
+   component's class name differs. */
+body,
+button,
+a,
+input,
+select,
+textarea,
+label,
+[role="button"],
+[tabindex] {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cpath d='M8 2 L8 18 L11 18 L11 14 L14 14 L14 11 L17 11 L17 8 L20 8 L20 6 L23 6 L23 5 L25 5 L25 20 L23 22 L11 22 L8 19 Z' fill='%23f8f8f0' stroke='%23794f27' stroke-width='2' stroke-linejoin='round'/%3E%3C/svg%3E") 8 2, auto;
+}
+
+/* Keep text-input cursor as I-beam (text cursor) for usability */
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="date"],
+input[type="password"],
+textarea {
+  cursor: text !important;
 }

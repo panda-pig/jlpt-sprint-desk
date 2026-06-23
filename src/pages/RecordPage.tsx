@@ -2,6 +2,7 @@ import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useStudyDesk } from "../lib/studyDeskContext";
 import { BookOpen } from "lucide-react";
+import { Button, Input, Select, Title, Tabs } from "animal-island-ui";
 import { COMPLETION_OPTIONS, MODULE_COUNT_PLACEHOLDERS, RECORD_CHOICE_OPTIONS, RECORD_MODULE_KEYS } from "../lib/constants";
 import { todayISO, getCompletionPercent, getRecordMinutes, getRecordTotalCount, getRecordAccuracyPercent, normalizeWrongQuestionText, buildRecordRecommendation, buildTomorrowTimePlan } from "../lib/utils";
 import { summarizeModuleCounts } from "../lib/planner";
@@ -149,7 +150,7 @@ export function RecordPage() {
         <section className="panel">
           <div className="section-head">
             <div>
-              <h2>{form.date && form.date !== todayISO() ? t("record.editHistory", { date: form.date }) : todayRecord ? t("record.editToday") : t("record.todayTitle")}</h2>
+              <Title size="small" color="app-teal">{form.date && form.date !== todayISO() ? t("record.editHistory", { date: form.date }) : todayRecord ? t("record.editToday") : t("record.todayTitle")}</Title>
               <p>{form.date && form.date !== todayISO() ? t("record.editHistoryDesc") : todayRecord ? t("record.editTodayDesc") : t("record.todayDesc")} {t("record.dateLabel")}{form.date || todayISO()}</p>
             </div>
             <span className="metric-chip">
@@ -159,14 +160,14 @@ export function RecordPage() {
           </div>
 
           <div className="record-form stack">
-            <div className="record-mode-switch" role="group" aria-label={t("record.modeQuick")}>
-              <button type="button" className={mode === "quick" ? "is-active" : ""} onClick={() => setMode("quick")}>
-                {t("record.modeQuick")}
-              </button>
-              <button type="button" className={mode === "full" ? "is-active" : ""} onClick={() => setMode("full")}>
-                {t("record.modeFull")}
-              </button>
-            </div>
+            <Tabs
+              activeKey={mode}
+              onChange={(key) => setMode(key as "quick" | "full")}
+              items={[
+                { key: "quick", label: t("record.modeQuick"), children: null },
+                { key: "full", label: t("record.modeFull"), children: null },
+              ]}
+            />
 
             {mode === "quick" && (
               <div className="quick-record stack">
@@ -174,19 +175,16 @@ export function RecordPage() {
                 <div className="form-grid">
                   <div className="field">
                     <label htmlFor="quickCompletion">{t("record.completionLabel")}</label>
-                    <select
-                      id="quickCompletion"
-                      value={form.completion}
-                      onChange={(e) => setFormField("completion", e.target.value as StudyRecord["completion"])}
-                    >
-                      {COMPLETION_OPTIONS.map(([value]) => (
-                        <option key={value} value={value}>{tOption("completion", value)}</option>
-                      ))}
-                    </select>
+                    <Select
+                      value={form.completion || ""}
+                      onChange={(key) => setFormField("completion", key as StudyRecord["completion"])}
+                      options={COMPLETION_OPTIONS.map(([value]) => ({ key: value, label: tOption("completion", value) }))}
+                      aria-label={t("record.completionLabel")}
+                    />
                   </div>
                   <div className="field">
                     <label htmlFor="quickMinutes">{t("record.quickMinutes")}</label>
-                    <input
+                    <Input
                       id="quickMinutes"
                       type="number"
                       inputMode="numeric"
@@ -214,7 +212,7 @@ export function RecordPage() {
                     <div className="module-record-inputs">
                       <div className="field">
                         <label htmlFor={`${key}Minutes`}>{t("record.timeMin")}</label>
-                        <input
+                        <Input
                           id={`${key}Minutes`}
                           type="number"
                           inputMode="numeric"
@@ -226,7 +224,7 @@ export function RecordPage() {
                       </div>
                       <div className="field">
                         <label htmlFor={`${key}Count`}>{t("record.countLabel", { unit: tOption("countUnit", key) })}</label>
-                        <input
+                        <Input
                           id={`${key}Count`}
                           type="number"
                           inputMode="numeric"
@@ -259,7 +257,7 @@ export function RecordPage() {
                 </div>
                 <div className="field record-custom-field">
                   <label htmlFor="overtimeReasonCustom">{t("record.customInput")}</label>
-                  <input
+                  <Input
                     id="overtimeReasonCustom"
                     type="text"
                     placeholder={t("record.overtimePlaceholder")}
@@ -285,7 +283,7 @@ export function RecordPage() {
                 </div>
                 <div className="field record-custom-field">
                   <label htmlFor="accuracyCustom">{t("record.customInput")}</label>
-                  <input
+                  <Input
                     id="accuracyCustom"
                     type="text"
                     placeholder={t("record.accuracyPlaceholder")}
@@ -311,7 +309,7 @@ export function RecordPage() {
                 </div>
                 <div className="field record-custom-field">
                   <label htmlFor="timeNoteCustom">{t("record.customInput")}</label>
-                  <input
+                  <Input
                     id="timeNoteCustom"
                     type="text"
                     placeholder={t("record.timeNotePlaceholder")}
@@ -337,7 +335,7 @@ export function RecordPage() {
                 </div>
                 <div className="field record-custom-field">
                   <label htmlFor="tomorrowFocusCustom">{t("record.customInput")}</label>
-                  <input
+                  <Input
                     id="tomorrowFocusCustom"
                     type="text"
                     placeholder={t("record.tomorrowFocusPlaceholder")}
@@ -351,15 +349,12 @@ export function RecordPage() {
             <div className="form-grid">
               <div className="field">
                 <label htmlFor="completion">{t("record.completionLabel")}</label>
-                <select
-                  id="completion"
-                  value={form.completion}
-                  onChange={(e) => setFormField("completion", e.target.value as StudyRecord["completion"])}
-                >
-                  {COMPLETION_OPTIONS.map(([value]) => (
-                    <option key={value} value={value}>{tOption("completion", value)}</option>
-                  ))}
-                </select>
+                <Select
+                  value={form.completion || ""}
+                  onChange={(key) => setFormField("completion", key as StudyRecord["completion"])}
+                  options={COMPLETION_OPTIONS.map(([value]) => ({ key: value, label: tOption("completion", value) }))}
+                  aria-label={t("record.completionLabel")}
+                />
               </div>
             </div>
 
@@ -419,12 +414,12 @@ export function RecordPage() {
             </>)}
 
             <div className="button-row">
-              <button className="primary-button" type="button" onClick={handleSubmit}>
+              <Button type="primary" onClick={handleSubmit}>
                 {summaryRecord ? t("record.submitUpdate") : t("record.submitSave")}
-              </button>
-              <a className="secondary-button" href="#/analysis" onClick={(e) => { e.preventDefault(); navigate("/analysis"); }}>
+              </Button>
+              <Button type="default" onClick={() => navigate("/analysis")}>
                 {t("record.viewReview")}
-              </a>
+              </Button>
             </div>
           </div>
 
@@ -515,7 +510,7 @@ export function RecordPage() {
             <div className="empty-state">
               <h3>{t("record.noPlanTodayTitle")}</h3>
               <p>{t("record.noPlanTodayDesc")}</p>
-              <a className="primary-button" href="#/setup" onClick={(e) => { e.preventDefault(); navigate("/setup"); }}>{t("record.resetPlan")}</a>
+              <Button type="primary" onClick={() => navigate("/setup")}>{t("record.resetPlan")}</Button>
             </div>
           )}
         </section>
@@ -548,8 +543,8 @@ export function RecordPage() {
                       {record.tomorrowFocus && <small>{t("record.tomorrowFirst", { focus: record.tomorrowFocus })}</small>}
                     </div>
                     <div className="history-actions">
-                      <button className="text-button" type="button" onClick={() => loadRecord(record)}>{t("common.edit")}</button>
-                      <button className="text-button danger" type="button" onClick={() => { if (confirm(t("record.deleteConfirm"))) deleteRecord(record.id); }}>{t("common.delete")}</button>
+                      <Button type="text" size="small" onClick={() => loadRecord(record)}>{t("common.edit")}</Button>
+                      <Button type="text" danger size="small" onClick={() => { if (confirm(t("record.deleteConfirm"))) deleteRecord(record.id); }}>{t("common.delete")}</Button>
                     </div>
                   </li>
                 );
@@ -562,9 +557,9 @@ export function RecordPage() {
       </aside>
 
       <div className="record-mobile-save">
-        <button className="primary-button full" type="button" onClick={handleSubmit}>
+        <Button type="primary" block onClick={handleSubmit}>
           {summaryRecord ? t("record.submitUpdate") : t("record.submitSave")}
-        </button>
+        </Button>
       </div>
     </div>
   );
