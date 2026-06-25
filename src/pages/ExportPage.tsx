@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { FileText, Table, BarChart3, Download, Copy, Printer, Upload, AlertTriangle, Check, FileOutput, CalendarDays } from "lucide-react";
 import { Button, Title, Divider } from "animal-island-ui";
 import { useStudyDesk } from "../lib/studyDeskContext";
@@ -15,6 +15,7 @@ export function ExportPage() {
   const [activeTab, setActiveTab] = useState("markdown");
   const [output, setOutput] = useState("");
   const [copied, setCopied] = useState(false);
+  const importInputRef = useRef<HTMLInputElement>(null);
 
   const profileName = state.profiles.find((p) => p.id === state.activeProfileId)?.name || t("export.unnamed");
 
@@ -211,10 +212,10 @@ export function ExportPage() {
           <div className="import-upload-zone">
             <Upload size={32} />
             <span>{t("export.dropHint")}</span>
-            <label className="secondary-button file-button">
+            <input ref={importInputRef} type="file" accept=".json" style={{ display: "none" }} onChange={handleImport} />
+            <Button type="default" onClick={() => importInputRef.current?.click()}>
               {t("export.chooseFile")}
-              <input type="file" accept=".json" onChange={handleImport} />
-            </label>
+            </Button>
           </div>
           <div className="import-warning">
             <AlertTriangle size={14} />

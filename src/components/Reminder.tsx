@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Bell, BellOff, PenLine, X } from "lucide-react";
+import { Button } from "animal-island-ui";
 import { useStudyDesk } from "../lib/studyDeskContext";
 import {
   getReminderSettings,
@@ -50,9 +51,9 @@ export function ReminderBanner() {
         <span>{t("reminder.bannerDesc")}</span>
       </div>
       <div className="reminder-banner-actions">
-        <button className="primary-button" type="button" onClick={() => navigate("/record")}>
+        <Button type="primary" onClick={() => navigate("/record")}>
           {t("reminder.bannerCta")}
-        </button>
+        </Button>
         <button className="reminder-banner-close" type="button" aria-label={t("common.close")} onClick={() => setDismissed(true)}>
           <X size={16} />
         </button>
@@ -123,9 +124,9 @@ export function ReminderSettings() {
             ) : perm === "denied" ? (
               <p className="muted">{t("reminder.denied")}</p>
             ) : (
-              <button className="secondary-button fit" type="button" onClick={async () => setPerm(await requestNotificationPermission())}>
+              <Button type="default" onClick={async () => setPerm(await requestNotificationPermission())}>
                 {t("reminder.grantNotif")}
-              </button>
+              </Button>
             )
           ) : (
             <p className="muted">{t("reminder.unsupported")}</p>

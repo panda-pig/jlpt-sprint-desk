@@ -1,4 +1,5 @@
 import { Component, type ReactNode } from "react";
+import { Button } from "animal-island-ui";
 import { t } from "../i18n";
 
 interface Props {
@@ -57,12 +58,12 @@ export class ErrorBoundary extends Component<Props, State> {
             </pre>
           )}
           <div className="button-row" style={{ justifyContent: "center" }}>
-            <button className="primary-button" onClick={this.handleReload}>
+            <Button type="primary" onClick={this.handleReload}>
               {t("error.refresh")}
-            </button>
-            <button className="secondary-button" onClick={this.handleGoHome}>
+            </Button>
+            <Button type="default" onClick={this.handleGoHome}>
               {t("error.home")}
-            </button>
+            </Button>
           </div>
         </div>
       );

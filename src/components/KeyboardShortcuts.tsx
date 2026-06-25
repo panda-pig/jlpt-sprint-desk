@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Keyboard, X } from "lucide-react";
+import { Button } from "animal-island-ui";
 import { useLocale } from "../i18n/LocaleProvider";
 
 const SHORTCUTS = [
@@ -113,13 +114,13 @@ export function KeyboardShortcuts() {
             <Keyboard size={20} style={{ color: "var(--primary, #315f4f)" }} />
             <h3 style={{ margin: 0, fontSize: "16px", fontWeight: 600 }}>{t("shortcuts.title")}</h3>
           </div>
-          <button
-            className="ghost-button"
+          <Button
+            type="text"
             onClick={() => setShowHelp(false)}
-            style={{ padding: "4px" }}
+            aria-label={t("common.close")}
           >
             <X size={18} />
-          </button>
+          </Button>
         </div>
         <p style={{ color: "var(--muted, #70817a)", fontSize: "13px", marginBottom: "16px" }}>
           {t("shortcuts.hint", { key: "?", esc: "Esc" })}

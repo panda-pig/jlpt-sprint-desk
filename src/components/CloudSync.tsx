@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { Cloud, CloudCheck, LogOut, Mail } from "lucide-react";
+import { Button } from "animal-island-ui";
 import { supabase, isCloudEnabled } from "../lib/supabase";
 import { sendMagicLink, signOut, reconcileOnSignIn, pushCloud, getPendingConflict, resolveConflict, type DataSummary } from "../lib/cloudSync";
 import { toast } from "../lib/toast";
@@ -112,16 +113,16 @@ export function CloudSync() {
             <div className="cloud-conflict-side">
               <span className="cloud-conflict-tag">{t("cloud.conflictThisDevice")}</span>
               <p>{t("cloud.conflictSummary", { records: conflict.local.records, plans: conflict.local.hasPlan ? 1 : 0, profiles: conflict.local.profiles })}</p>
-              <button className="primary-button full" type="button" disabled={busy} onClick={() => handleResolve("local")}>
+              <Button type="primary" block disabled={busy} onClick={() => handleResolve("local")}>
                 {t("cloud.conflictKeepLocal")}
-              </button>
+              </Button>
             </div>
             <div className="cloud-conflict-side">
               <span className="cloud-conflict-tag">{t("cloud.conflictCloud")}</span>
               <p>{t("cloud.conflictSummary", { records: conflict.cloud.records, plans: conflict.cloud.hasPlan ? 1 : 0, profiles: conflict.cloud.profiles })}</p>
-              <button className="secondary-button full" type="button" disabled={busy} onClick={() => handleResolve("cloud")}>
+              <Button type="default" block disabled={busy} onClick={() => handleResolve("cloud")}>
                 {t("cloud.conflictUseCloud")}
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -134,18 +135,18 @@ export function CloudSync() {
             <strong>{userEmail}</strong>
           </div>
           <div className="button-row">
-            <button className="secondary-button" type="button" onClick={handleManualSync} disabled={busy}>
+            <Button type="default" onClick={handleManualSync} disabled={busy}>
               {t("cloud.syncNow")}
-            </button>
-            <button className="ghost-button" type="button" onClick={handleSignOut}>
-              <LogOut size={15} /> {t("cloud.signOut")}
-            </button>
+            </Button>
+            <Button type="text" icon={<LogOut size={15} />} onClick={handleSignOut}>
+              {t("cloud.signOut")}
+            </Button>
           </div>
         </div>
       ) : sent ? (
         <div className="cloud-sync-sent">
           <p>{t("cloud.sentNote", { email })}</p>
-          <button className="text-button" type="button" onClick={() => setSent(false)}>{t("cloud.changeEmail")}</button>
+          <Button type="link" onClick={() => setSent(false)}>{t("cloud.changeEmail")}</Button>
         </div>
       ) : (
         <div className="cloud-sync-form">
@@ -157,9 +158,9 @@ export function CloudSync() {
             onChange={(e) => setEmail(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter") handleSend(); }}
           />
-          <button className="primary-button" type="button" onClick={handleSend} disabled={busy}>
+          <Button type="primary" onClick={handleSend} disabled={busy}>
             {busy ? t("cloud.sending") : t("cloud.sendLink")}
-          </button>
+          </Button>
         </div>
       )}
     </section>

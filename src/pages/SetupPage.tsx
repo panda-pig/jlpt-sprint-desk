@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Zap } from "lucide-react";
 import { Button, Input, Select } from "animal-island-ui";
@@ -38,6 +38,7 @@ export function SetupPage() {
   const { t, tOption } = useLocale();
 
   const [newProfileName, setNewProfileName] = useState("");
+  const backupInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const el = document.getElementById("targetScore") as HTMLInputElement | null;
@@ -199,12 +200,12 @@ export function SetupPage() {
               }}>
                 {t("setup.exportBackup")}
               </Button>
-              <label className="secondary-button file-button">
-                {t("setup.importBackup")}
-                <input
+              <input
+                  ref={backupInputRef}
                   id="setupBackupInput"
                   type="file"
                   accept="application/json,.json"
+                  style={{ display: "none" }}
                   onChange={(e) => {
                     const file = e.target.files?.[0];
                     if (!file) return;
@@ -236,7 +237,9 @@ export function SetupPage() {
                     reader.readAsText(file);
                   }}
                 />
-              </label>
+              <Button type="default" onClick={() => backupInputRef.current?.click()}>
+                {t("setup.importBackup")}
+              </Button>
               <Button
                 type="dashed"
                 size="small"
