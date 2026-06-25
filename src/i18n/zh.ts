@@ -96,6 +96,8 @@ export const zh = {
     amtBook: "一本练习册",
     custom: "自定义",
     customPlaceholder: "金额",
+    youTip: "你将支持",
+    payGo: "去爱发电支付",
     payVia: "去爱发电支付 ¥{n}",
     pickAmount: "先选一个金额",
     payHint: "将打开爱发电（新标签），用微信 / 支付宝完成支付。",

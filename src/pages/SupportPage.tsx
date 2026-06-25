@@ -108,19 +108,18 @@ export function SupportPage() {
             </label>
           </div>
 
-          <Button type="primary" block disabled={!canPay} onClick={handlePay} icon={<HeartHandshake size={16} />}>
-            {amount > 0 ? t("support.payVia", { n: amount }) : t("support.pickAmount")}
-          </Button>
-          {amount > 0 && (
-            <div style={{ display: "flex", justifyContent: "center", marginTop: 12 }}>
-              <Wallet value={amount} size="medium" />
-            </div>
-          )}
-          {configured ? (
-            <p className="muted support-pay-hint">{t("support.payHint")}</p>
-          ) : (
-            <p className="muted support-pay-hint">{t("support.setupHint")}</p>
-          )}
+          <div className="support-pay-area">
+            {amount > 0 && (
+              <div className="support-amount-summary">
+                <span className="muted">{t("support.youTip")}</span>
+                <Wallet value={amount} size="medium" />
+              </div>
+            )}
+            <Button type="primary" block disabled={!canPay} onClick={handlePay} icon={<HeartHandshake size={16} />}>
+              {amount > 0 ? t("support.payGo") : t("support.pickAmount")}
+            </Button>
+            <p className="muted support-pay-hint">{configured ? t("support.payHint") : t("support.setupHint")}</p>
+          </div>
         </section>
 
         <Divider type="wave-yellow" />

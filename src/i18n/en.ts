@@ -95,6 +95,8 @@ export const en = {
     amtBook: "A workbook",
     custom: "Custom",
     customPlaceholder: "Amount",
+    youTip: "You're tipping",
+    payGo: "Pay on Afdian",
     payVia: "Pay ¥{n} on Afdian",
     pickAmount: "Pick an amount first",
     payHint: "Opens Afdian in a new tab to finish with WeChat Pay / Alipay.",
