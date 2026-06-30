@@ -2,7 +2,7 @@ import { createContext, useContext } from "react";
 import type { GeneratedPlan, PlanEdits, PlanSettings, Profile, StudyRecord } from "./types";
 import type { getNextAction, getPlanHealth, getRecentStats, getTodayPlanDay, getUpcomingDays, suggestPlanAdjustment } from "./planner";
 
-interface StudyDeskState {
+export interface StudyDeskState {
   profiles: Profile[];
   activeProfileId: string | null;
   settings: PlanSettings;

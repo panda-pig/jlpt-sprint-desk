@@ -6,7 +6,7 @@ import { FadeTransition } from "./components/FadeTransition";
 import { KeyboardShortcuts } from "./components/KeyboardShortcuts";
 import { ReminderNotifier } from "./components/Reminder";
 import { LocaleProvider } from "./i18n/LocaleProvider";
-import { StudyDeskProvider } from "./lib/useStudyDesk";
+import { StudyDeskProvider } from "./lib/StudyDeskProvider";
 // Dashboard is the landing route → keep it eager for instant first paint.
 import { DashboardPage } from "./pages/DashboardPage";
 // The rest are code-split so heavy bits (export HTML builder, charts) stay out
