@@ -1,5 +1,7 @@
 import { Time } from "animal-island-ui";
 import { ROUTES } from "../lib/constants";
+import { daysUntil } from "../lib/utils";
+import { isExamPast } from "../lib/planner";
 import { useStudyDesk } from "../lib/studyDeskContext";
 import { useLocale } from "../i18n/LocaleProvider";
 
@@ -13,6 +15,10 @@ export function TopBar({ route }: TopBarProps) {
   const routeInfo = ROUTES[route as keyof typeof ROUTES] || ROUTES.dashboard;
   const navKey = (route in ROUTES ? route : "dashboard");
   const activeProfile = state.profiles.find((p) => p.id === state.activeProfileId);
+  // Live countdown from the current exam date — NOT the plan's baked-in daysLeft,
+  // which is a snapshot frozen at generation time and would never tick down.
+  const daysLeft = daysUntil(state.settings.examDate);
+  const examPast = isExamPast(state.settings.examDate);
 
   return (
     <>
@@ -25,8 +31,8 @@ export function TopBar({ route }: TopBarProps) {
         {activeProfile && (
           <span>{activeProfile.name} · {state.settings.level}</span>
         )}
-        {state.generatedPlan?.daysLeft !== null && state.generatedPlan?.daysLeft !== undefined && (
-          <span>{t("common.daysLeft", { n: state.generatedPlan.daysLeft })}</span>
+        {daysLeft !== null && !examPast && (
+          <span>{t("common.daysLeft", { n: daysLeft })}</span>
         )}
         <span className={todayRecord ? "health-ok" : "health-warn"}>
           {todayRecord ? t("layout.todayRecorded") : t("layout.todayNotRecorded")}
