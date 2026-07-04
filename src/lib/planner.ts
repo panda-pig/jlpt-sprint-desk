@@ -5,6 +5,7 @@ import {
   LEVEL_CONTENT_TARGETS,
   MODULE_LABELS,
   RECORD_MODULE_KEYS,
+  nextJlptExamDate,
 } from "./constants";
 import {
   addDays,
@@ -322,7 +323,7 @@ function getDefaultSettings(): PlanSettings {
   return {
     level: "N1",
     currentLevel: "N2 边缘",
-    examDate: "2026-07-05",
+    examDate: nextJlptExamDate(),
     targetScore: 115,
     weekdayMinutes: 120,
     weekendMinutes: 240,

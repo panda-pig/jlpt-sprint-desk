@@ -198,10 +198,40 @@ export const BOOK_LABELS: Record<string, Record<string, string>> = {
   listeningBook: Object.fromEntries(STATIC_SELECT_OPTIONS.listeningBook),
 };
 
+/** First Sunday of the given month (monthIndex 0=Jan … 6=Jul … 11=Dec), local time. */
+function firstSundayOf(year: number, monthIndex: number): Date {
+  const first = new Date(year, monthIndex, 1);
+  return new Date(year, monthIndex, 1 + ((7 - first.getDay()) % 7));
+}
+
+function toLocalISODate(d: Date): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+/**
+ * The next JLPT sitting as an ISO date. JLPT is held on the first Sunday of July
+ * and of December; this returns the soonest sitting that is at least
+ * `minPrepDays` away, so a fresh user's default plan is always meaningful
+ * (never "exam is tomorrow"). The exam date is a soft target the user changes on
+ * the Setup page — this is only the default seed, computed from today so it can
+ * never go stale the way a hardcoded calendar date would.
+ */
+export function nextJlptExamDate(from: Date = new Date(), minPrepDays = 28): string {
+  const threshold = new Date(from.getFullYear(), from.getMonth(), from.getDate() + minPrepDays).getTime();
+  const year = from.getFullYear();
+  for (let y = year; y <= year + 2; y += 1) {
+    for (const monthIndex of [6, 11]) {
+      const sitting = firstSundayOf(y, monthIndex);
+      if (sitting.getTime() >= threshold) return toLocalISODate(sitting);
+    }
+  }
+  return toLocalISODate(firstSundayOf(year + 2, 6)); // safety net, unreachable in practice
+}
+
 export const DEFAULT_SETTINGS = {
   level: "N1" as Level,
   currentLevel: "N2 边缘",
-  examDate: "2026-07-05",
+  examDate: nextJlptExamDate(),
   targetScore: 115,
   weekdayMinutes: 120,
   weekendMinutes: 240,
