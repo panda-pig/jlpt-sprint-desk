@@ -135,6 +135,7 @@ export function SetupPage() {
             <div className="field">
               <label htmlFor="qsExam">{t("setup.examDate")}</label>
               <Input id="qsExam" type="date" value={state.settings.examDate} onChange={(e) => setField("examDate", e.target.value)} />
+              <small>{t("setup.examDateHint")}</small>
             </div>
             <div className="field">
               <label htmlFor="qsDaily">{t("setup.quickDaily")}</label>
@@ -304,6 +305,7 @@ export function SetupPage() {
             <div className="field">
               <label htmlFor="examDate">{t("setup.examDate")}</label>
               <Input id="examDate" type="date" value={state.settings.examDate} onChange={(e) => setField("examDate", e.target.value)} />
+              <small>{t("setup.examDateHint")}</small>
             </div>
             <div className="field">
               <label htmlFor="weekdayMinutes">{t("setup.weekdayMinutes")}</label>

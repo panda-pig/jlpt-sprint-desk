@@ -168,6 +168,7 @@ export const zh = {
     targetLevel: "目标等级",
     currentLevel: "当前水平",
     examDate: "考试日期",
+    examDateHint: "默认已按下一场 JLPT 自动填写（每年 7、12 月首个周日）；如与你的实际考期不同，请直接修改。",
     weekdayMinutes: "工作日时间",
     weekendMinutes: "周末时间",
     currentState: "当前状态",

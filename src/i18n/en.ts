@@ -167,6 +167,7 @@ export const en = {
     targetLevel: "Target level",
     currentLevel: "Current level",
     examDate: "Exam date",
+    examDateHint: "Auto-filled with the next JLPT sitting (first Sunday of July & December); edit it if your exam differs.",
     weekdayMinutes: "Weekday minutes",
     weekendMinutes: "Weekend minutes",
     currentState: "Current state",
