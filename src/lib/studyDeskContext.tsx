@@ -30,6 +30,7 @@ export interface StudyDeskContextValue {
   updateProfileName: (id: string, name: string) => void;
   updateSettings: (patch: Partial<PlanSettings>) => void;
   generateNewPlan: () => void;
+  advanceToNextExam: () => void;
   applyAutoAdjust: () => void;
   savePlanEdit: (dayIndex: number, text: string) => void;
   deletePlanEdit: (dayIndex: number) => void;

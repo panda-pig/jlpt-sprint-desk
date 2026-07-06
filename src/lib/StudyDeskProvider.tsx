@@ -37,6 +37,7 @@ import { todayISO, getCorruptionCount } from "./utils";
 import { toast } from "./toast";
 import { schedulePush } from "./cloudSync";
 import { getLocale, subscribeLocale, t } from "../i18n";
+import { nextJlptExamDate } from "./constants";
 
 import { StudyDeskContext, type StudyDeskContextValue, type StudyDeskState } from "./studyDeskContext";
 
@@ -274,6 +275,18 @@ export function StudyDeskProvider({ children }: { children: ReactNode }) {
     if (commit(next)) toast(t("toast.planGenerated"));
   }, [state, commit]);
 
+  // After the exam passes, roll the (soft) exam date forward to the next JLPT
+  // sitting and regenerate the plan in a single commit — so the horizon, tasks
+  // and countdown all reflect the new target atomically.
+  const advanceToNextExam = useCallback(() => {
+    if (!state.activeProfileId) return;
+    const nextSettings = normalizeSettings({ ...state.settings, examDate: nextJlptExamDate() });
+    const plan = generatePlan(nextSettings, state.activeProfileId);
+    if (commit({ ...state, settings: nextSettings, generatedPlan: plan, planEdits: {} })) {
+      toast(t("toast.examAdvanced", { date: nextSettings.examDate }));
+    }
+  }, [state, commit]);
+
   // Apply the data-driven adjustment by changing the time settings and
   // regenerating the plan, so the budget/pie/daily-target/tasks all stay
   // consistent. A records signature blocks re-applying for unchanged data.
@@ -380,6 +393,7 @@ export function StudyDeskProvider({ children }: { children: ReactNode }) {
     updateProfileName,
     updateSettings,
     generateNewPlan,
+    advanceToNextExam,
     applyAutoAdjust,
     savePlanEdit,
     deletePlanEdit,

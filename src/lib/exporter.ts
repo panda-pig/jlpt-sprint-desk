@@ -2,10 +2,13 @@ import type { GeneratedPlan, PlanSettings, StudyRecord } from "./types";
 import { RECORD_MODULE_KEYS } from "./constants";
 import { escapeHtml, todayISO, daysUntil } from "./utils";
 import { getRecordMinutes } from "./utils";
+import { isExamPast } from "./planner";
 import { t, tOption, moduleLabel, phaseLabel, getLocale } from "../i18n";
 import { CURRENT_SCHEMA_VERSION } from "./migrations";
 
-function daysLeftText(daysLeft: number | null): string {
+function daysLeftText(examDate: string): string {
+  if (isExamPast(examDate)) return t("export.docExamEnded");
+  const daysLeft = daysUntil(examDate);
   return daysLeft === null ? t("export.docNotSet") : t("export.docDays", { n: daysLeft });
 }
 
@@ -20,7 +23,7 @@ export function buildMarkdown(plan: GeneratedPlan, records: StudyRecord[], profi
     "",
     `- ${t("export.docTargetLevel")}: ${plan.level}`,
     `- ${t("export.docExamDate")}: ${plan.examDate || t("export.docNotSet")}`,
-    `- ${t("export.docDaysLeft")}: ${daysLeftText(daysUntil(plan.examDate))}`,
+    `- ${t("export.docDaysLeft")}: ${daysLeftText(plan.examDate)}`,
     `- ${t("export.docPhase")}: ${phaseLabel(plan.phase)}`,
     `- ${t("export.docHealth")}: ${tOption("budgetStatus", plan.studyBudget.status)} / ${tOption("timeStatus", plan.studyBudget.timeStatus)}`,
     `- ${t("export.docStrategy")}: ${plan.strategy.summary}`,
@@ -305,7 +308,7 @@ p { line-height: 1.68; }
   <div class="cover-meta">
     <div><span>${escapeHtml(t("export.docProfile"))}</span><strong>${escapeHtml(profileName)}</strong></div>
     <div><span>${escapeHtml(t("export.docExamDate"))}</span><strong>${escapeHtml(plan.examDate || t("export.docNotSet"))}</strong></div>
-    <div><span>${escapeHtml(t("export.docDaysLeft"))}</span><strong>${escapeHtml(daysLeftText(daysUntil(plan.examDate)))}</strong></div>
+    <div><span>${escapeHtml(t("export.docDaysLeft"))}</span><strong>${escapeHtml(daysLeftText(plan.examDate))}</strong></div>
     <div><span>${escapeHtml(t("export.docPhase"))}</span><strong>${escapeHtml(phaseLabel(plan.phase))}</strong></div>
     <div><span>${escapeHtml(t("export.docGeneratedAt"))}</span><strong>${escapeHtml(reportDate)}</strong></div>
   </div>
@@ -467,7 +470,7 @@ export function buildPrintView(plan: GeneratedPlan): string {
     "</head>",
     "<body>",
     `<h1>${t("export.docPlanTitle", { level: escapeHtml(plan.level) })}</h1>`,
-    `<p class="meta">${escapeHtml(t("export.docPrintMeta", { exam: plan.examDate || t("export.docNotSet"), days: daysLeftText(daysUntil(plan.examDate)), phase: phaseLabel(plan.phase) }))}</p>`,
+    `<p class="meta">${escapeHtml(t("export.docPrintMeta", { exam: plan.examDate || t("export.docNotSet"), days: daysLeftText(plan.examDate), phase: phaseLabel(plan.phase) }))}</p>`,
     "",
     `<h2>${t("export.docTodayTasks")}</h2>`,
     "<ul>",

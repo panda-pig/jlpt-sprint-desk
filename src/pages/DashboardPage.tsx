@@ -3,7 +3,7 @@ import { Button, Card, Title, Divider } from "animal-island-ui";
 import { useStudyDesk } from "../lib/studyDeskContext";
 import { daysUntil, clampPercent } from "../lib/utils";
 import { getTodayTargetMinutes, isExamPast } from "../lib/planner";
-import { LEVEL_CONFIG } from "../lib/constants";
+import { LEVEL_CONFIG, nextJlptExamDate } from "../lib/constants";
 import { ReminderBanner } from "../components/Reminder";
 import { useLocale } from "../i18n/LocaleProvider";
 import { moduleLabel, moduleShort, levelLabel as i18nLevelLabel, phaseLabel } from "../i18n";
@@ -38,11 +38,13 @@ export function DashboardPage() {
     health,
     stats,
     nextAction,
+    advanceToNextExam,
   } = useStudyDesk();
   const { t } = useLocale();
 
   const daysLeft = daysUntil(state.settings.examDate);
   const examPast = isExamPast(state.settings.examDate);
+  const nextExamDate = nextJlptExamDate();
   const totalMinutes = state.records.reduce((sum, r) => {
     const mins = Object.values(r.minutes || {}).reduce((a, b) => a + Number(b || 0), 0);
     return sum + mins;
@@ -95,9 +97,13 @@ export function DashboardPage() {
               <div className="progress-track">
                 <div className="progress-fill" style={{ ["--value" as string]: `${clampPercent(100 - (daysLeft / 120) * 100)}%` }} />
               </div>
+            ) : examPast ? (
+              <button type="button" className="metric-soft-link metric-soft-action" onClick={advanceToNextExam}>
+                {t("dashboard.switchToNext", { date: nextExamDate })}
+              </button>
             ) : (
               <a className="metric-soft-link" href="#/setup" onClick={(e) => { e.preventDefault(); navigate("/setup"); }}>
-                {examPast ? t("dashboard.examUpdate") : t("dashboard.daysToSet")}
+                {t("dashboard.daysToSet")}
               </a>
             )}
           </Card>

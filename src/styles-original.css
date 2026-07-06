@@ -1282,6 +1282,15 @@ img {
 .metric-soft-link:hover {
   text-decoration: underline;
 }
+/* Button variant (e.g. "switch to next exam") — reset native button chrome so it
+   reads as a soft link, but keeps a pointer + left alignment. */
+.metric-soft-action {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+}
 
 .progress-track {
   height: 5px;
