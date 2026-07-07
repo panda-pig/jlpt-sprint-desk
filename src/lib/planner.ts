@@ -1,6 +1,7 @@
 import type { DailyPlanItem, GeneratedPlan, Level, PlanHealth, PlanSettings, RecentStats, RoadmapItem, StudyBudget, StudyRecord, StudyTask } from "./types";
 import {
   BASE_LEVELS,
+  DEFAULT_SETTINGS,
   LEVEL_CONFIG,
   LEVEL_CONTENT_TARGETS,
   MODULE_LABELS,
@@ -77,7 +78,6 @@ export function generatePlan(settings: PlanSettings, profileId: string): Generat
     startDate: todayISO(),
     level: normalized.level,
     examDate: normalized.examDate,
-    daysLeft: parsedDaysLeft,
     horizon,
     phase: phaseForDay(1, horizon),
     strategy: buildStrategy(normalized, parsedDaysLeft, budget),
@@ -319,42 +319,12 @@ function normalizeBase(value: string): string {
   return BASE_LEVELS[value] ? value : "mid";
 }
 
+// Fresh copy of the canonical defaults (constants.DEFAULT_SETTINGS). examDate is
+// recomputed each call because DEFAULT_SETTINGS.examDate = nextJlptExamDate() is
+// evaluated once at module load — re-derive it so a long-lived tab still seeds the
+// next upcoming sitting rather than a stale one.
 function getDefaultSettings(): PlanSettings {
-  return {
-    level: "N1",
-    currentLevel: "N2 边缘",
-    examDate: nextJlptExamDate(),
-    targetScore: 115,
-    weekdayMinutes: 120,
-    weekendMinutes: 240,
-    dailyMinutes: 120,
-    sessionDays: [1, 2, 3, 4, 5, 6, 7],
-    state: "scattered",
-    studyDay: "1",
-    vocabBook: "green",
-    grammarBook: "blue",
-    kanjiBook: "animal",
-    readingBook: "owned",
-    listeningBook: "owned",
-    learnedVocab: 0,
-    dailyVocabGoal: 100,
-    learnedGrammar: 0,
-    dailyGrammarGoal: 10,
-    reviewReserve: 0.3,
-    weaknesses: ["vocab", "grammar"],
-    blockers: ["procrastination", "confused"],
-    kanjiBase: "mid",
-    vocabBase: "weak",
-    grammarBase: "weak",
-    readingBase: "mid",
-    listeningBase: "mid",
-    focusModules: ["vocab", "grammar"],
-    currentProgress: "",
-    resources: "",
-    reviewStyle: "balanced",
-    customRules: "",
-    customPlanInput: "",
-  };
+  return { ...DEFAULT_SETTINGS, examDate: nextJlptExamDate() };
 }
 
 function buildTasksForDay(settings: PlanSettings, phase: string, dayIndex: number, horizon: number, minutes: number, isLightDay: boolean): StudyTask[] {

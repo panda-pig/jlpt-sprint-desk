@@ -118,7 +118,6 @@ export interface GeneratedPlan {
   startDate: string;
   level: Level;
   examDate: string;
-  daysLeft: number | null;
   horizon: number;
   phase: string;
   strategy: {

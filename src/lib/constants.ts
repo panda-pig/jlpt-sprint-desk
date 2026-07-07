@@ -1,4 +1,4 @@
-import type { Level, ModuleKey } from "./types";
+import type { Level, ModuleKey, PlanSettings } from "./types";
 
 export const STORAGE_KEYS = {
   profiles: "jlptSprintDeskProfiles",
@@ -228,7 +228,10 @@ export function nextJlptExamDate(from: Date = new Date(), minPrepDays = 28): str
   return toLocalISODate(firstSundayOf(year + 2, 6)); // safety net, unreachable in practice
 }
 
-export const DEFAULT_SETTINGS = {
+// Single source of truth for a fresh profile's settings. planner.getDefaultSettings()
+// returns a shallow copy of this; the app never mutates it in place (normalizeSettings
+// re-derives all array fields), so sharing the reference is safe.
+export const DEFAULT_SETTINGS: PlanSettings = {
   level: "N1" as Level,
   currentLevel: "N2 边缘",
   examDate: nextJlptExamDate(),
@@ -257,8 +260,8 @@ export const DEFAULT_SETTINGS = {
   readingBase: "mid",
   listeningBase: "mid",
   focusModules: ["vocab", "grammar"],
-  currentProgress: "学过一些，但三天打鱼两天晒网；需要先建立每日底盘。",
-  resources: "无敌绿宝书、蓝宝书/国内文法书、小动物/日本語総まとめ 汉字、真题、NHK News Web Easy",
+  currentProgress: "",
+  resources: "",
   reviewStyle: "balanced",
   customRules: "",
   customPlanInput: "",
