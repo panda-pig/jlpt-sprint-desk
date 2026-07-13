@@ -32,7 +32,7 @@ export function TopBar({ route }: TopBarProps) {
           <span>{activeProfile.name} · {state.settings.level}</span>
         )}
         {daysLeft !== null && !examPast && (
-          <span>{t("common.daysLeft", { n: daysLeft })}</span>
+          <span>{daysLeft === 0 ? t("common.examToday") : t("common.daysLeft", { n: daysLeft })}</span>
         )}
         <span className={todayRecord ? "health-ok" : "health-warn"}>
           {todayRecord ? t("layout.todayRecorded") : t("layout.todayNotRecorded")}

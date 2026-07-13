@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Button, Card, Title, Divider } from "animal-island-ui";
 import { useStudyDesk } from "../lib/studyDeskContext";
-import { daysUntil, clampPercent } from "../lib/utils";
+import { daysUntil, clampPercent, parseISODate } from "../lib/utils";
 import { getTodayTargetMinutes, isExamPast } from "../lib/planner";
 import { LEVEL_CONFIG, nextJlptExamDate } from "../lib/constants";
 import { ReminderBanner } from "../components/Reminder";
@@ -45,6 +45,13 @@ export function DashboardPage() {
   const daysLeft = daysUntil(state.settings.examDate);
   const examPast = isExamPast(state.settings.examDate);
   const nextExamDate = nextJlptExamDate();
+  // Progress-bar denominator: the plan's real span (its start date → exam) so the
+  // bar actually moves day by day. Falls back to a 120-day window when there's no
+  // plan, or when the exam was moved without regenerating (span < daysLeft).
+  const examTs = parseISODate(state.settings.examDate)?.getTime() ?? null;
+  const planStartTs = state.generatedPlan ? parseISODate(state.generatedPlan.startDate)?.getTime() ?? null : null;
+  const planSpanDays = examTs !== null && planStartTs !== null ? Math.ceil((examTs - planStartTs) / 86400000) : null;
+  const countdownSpan = planSpanDays !== null && daysLeft !== null && planSpanDays >= daysLeft && planSpanDays > 0 ? planSpanDays : 120;
   const totalMinutes = state.records.reduce((sum, r) => {
     const mins = Object.values(r.minutes || {}).reduce((a, b) => a + Number(b || 0), 0);
     return sum + mins;
@@ -83,7 +90,9 @@ export function DashboardPage() {
           <Card className="card metric-card">
             <div>
               <p className="metric-label">{t("dashboard.countdown")}</p>
-              {daysLeft !== null && !examPast ? (
+              {daysLeft === 0 && !examPast ? (
+                <p className="metric-value metric-value-today">{t("common.examToday")}</p>
+              ) : daysLeft !== null && !examPast ? (
                 <p className="metric-value">
                   {daysLeft} <small>{t("dashboard.daysLeftSmall")}</small>
                 </p>
@@ -95,7 +104,7 @@ export function DashboardPage() {
             </div>
             {daysLeft !== null && !examPast ? (
               <div className="progress-track">
-                <div className="progress-fill" style={{ ["--value" as string]: `${clampPercent(100 - (daysLeft / 120) * 100)}%` }} />
+                <div className="progress-fill" style={{ ["--value" as string]: `${clampPercent(100 - (daysLeft / countdownSpan) * 100)}%` }} />
               </div>
             ) : examPast ? (
               <button type="button" className="metric-soft-link metric-soft-action" onClick={advanceToNextExam}>

@@ -1272,6 +1272,12 @@ img {
   font-size: clamp(20px, 2.4vw, 26px);
   letter-spacing: -0.01em;
 }
+/* Exam-day callout — same scale as the soft state but emphatic, not muted. */
+.metric-value-today {
+  color: var(--primary-strong);
+  font-size: clamp(20px, 2.4vw, 26px);
+  letter-spacing: -0.01em;
+}
 .metric-soft-link {
   display: inline-flex;
   align-items: center;
