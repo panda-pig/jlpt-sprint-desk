@@ -1272,11 +1272,12 @@ img {
   font-size: clamp(20px, 2.4vw, 26px);
   letter-spacing: -0.01em;
 }
-/* Exam-day callout — same scale as the soft state but emphatic, not muted. */
+/* Exam-day callout — emphatic, sized to stay on one line inside the metric card. */
 .metric-value-today {
   color: var(--primary-strong);
-  font-size: clamp(20px, 2.4vw, 26px);
+  font-size: clamp(17px, 1.8vw, 21px);
   letter-spacing: -0.01em;
+  white-space: nowrap;
 }
 .metric-soft-link {
   display: inline-flex;
