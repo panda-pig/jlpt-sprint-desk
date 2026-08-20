@@ -132,14 +132,14 @@ export function AppLayout({ children }: { children: ReactNode }) {
               {t("layout.about")}
             </Button>
             <Button
-              type="primary"
+              type="default"
               block
               onClick={() => {
                 navigate("/support");
                 setSidebarOpen(false);
               }}
             >
-              ☕ {t("layout.support")}
+              ✨ {t("layout.support")}
             </Button>
             <p>{t("layout.storageNote")}</p>
           </div>

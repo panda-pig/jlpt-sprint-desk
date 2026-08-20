@@ -12,7 +12,7 @@ export const ROUTES = {
   record: { title: "每日记录", eyebrow: "Daily Feedback" },
   analysis: { title: "复盘分析", eyebrow: "Learning Analytics" },
   export: { title: "导出备份", eyebrow: "Export & Backup" },
-  support: { title: "支持作者", eyebrow: "Support" },
+  support: { title: "后续计划", eyebrow: "Roadmap" },
 };
 
 export const MODULES = [

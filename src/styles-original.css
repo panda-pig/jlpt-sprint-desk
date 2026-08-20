@@ -4290,98 +4290,66 @@ tr:last-child td {
   color: var(--ink-soft);
   line-height: 1.55;
 }
-.support-amount-grid {
+.support-roadmap {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 10px;
-}
-.support-amount-chip {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-  min-height: 92px;
-  justify-content: center;
-  padding: 12px 8px;
-  border: 1px solid var(--line-strong);
-  border-radius: var(--radius);
-  background: var(--surface);
-  color: var(--ink);
-  cursor: pointer;
-  transition: border-color 0.16s var(--ease), background 0.16s var(--ease), box-shadow 0.16s var(--ease);
-}
-.support-amount-chip:hover {
-  border-color: var(--primary);
-}
-.support-amount-chip.is-selected {
-  border-color: var(--primary);
-  background: var(--primary-soft);
-  box-shadow: inset 0 0 0 1px var(--primary), var(--shadow-soft);
-}
-.support-amount-emoji {
-  font-size: 26px;
-  line-height: 1;
-}
-.support-amount-chip strong {
-  font-family: var(--display);
-  font-size: 18px;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-}
-.support-amount-chip small {
-  color: var(--muted);
-  font-size: 11.5px;
-}
-.support-amount-custom {
-  text-align: center;
-}
-.support-custom-field {
-  display: inline-flex;
-  align-items: center;
-  gap: 1px;
-  max-width: 100%;
-}
-.support-custom-prefix {
-  font-family: var(--display);
-  font-weight: 600;
-  color: var(--ink);
-}
-.support-custom-field input {
-  width: 56px;
-  min-width: 0;
-  padding: 2px 4px;
-  border: none;
-  border-bottom: 1px solid var(--line-strong);
-  border-radius: 0;
-  background: transparent;
-  font-family: var(--display);
-  font-size: 18px;
-  font-weight: 600;
-  text-align: center;
-  -moz-appearance: textfield;
-}
-.support-custom-field input::-webkit-outer-spin-button,
-.support-custom-field input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
   margin: 0;
+  padding: 0;
+  list-style: none;
 }
-.support-pay-area {
-  margin-top: 22px;
-}
-.support-amount-summary {
+.support-roadmap-item {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 16px;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 13px 14px;
+  border: 1.5px solid var(--ai-cream-border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
 }
-.support-amount-summary > .muted {
+.support-roadmap-icon {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  color: var(--primary-strong);
+  background: var(--primary-soft);
+}
+.support-roadmap-text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.support-roadmap-text strong {
+  display: block;
+  font-weight: 700;
+  font-size: 14.5px;
+}
+.support-roadmap-text p {
+  margin: 3px 0 0;
+  color: var(--ink-soft);
   font-size: 13px;
+  line-height: 1.5;
 }
-.support-pay-hint {
-  margin: 10px 0 0;
+.support-roadmap-badge {
+  flex: 0 0 auto;
+  align-self: center;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--ai-teal-bg);
+  color: var(--primary-strong);
+  font-size: 11.5px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.support-roadmap-note {
+  margin: 14px 0 0;
   font-size: 12.5px;
-  text-align: center;
+}
+@media (max-width: 460px) {
+  .support-roadmap-badge {
+    display: none;
+  }
 }
 .support-free-row {
   display: flex;
@@ -4392,11 +4360,6 @@ tr:last-child td {
   margin: 16px 0 0;
   color: var(--primary-strong);
   font-weight: 600;
-}
-@media (max-width: 460px) {
-  .support-amount-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -4811,23 +4774,6 @@ aside.stack > .card:nth-child(5) {
   border-color: var(--ai-teal-accent);
   border-width: 2.5px;
   box-shadow: 0 2px 0 0 var(--ai-teal-accent);
-}
-
-.support-amount-chip {
-  border: 1.5px solid var(--ai-cream-border);
-  border-radius: var(--radius-lg);
-  background: var(--surface);
-  transition: transform 0.25s var(--ease), border-color 0.25s var(--ease), box-shadow 0.25s var(--ease);
-}
-.support-amount-chip:hover {
-  transform: translateY(-2px);
-  border-color: var(--ai-teal-border);
-}
-.support-amount-chip.is-selected {
-  border-color: var(--ai-teal-accent);
-  border-width: 2.5px;
-  box-shadow: 0 2px 0 0 var(--ai-teal-accent);
-  background: var(--ai-teal-bg);
 }
 
 @keyframes ai-checkbox-pop {

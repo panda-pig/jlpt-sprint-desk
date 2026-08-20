@@ -6,7 +6,7 @@ import {
   PenSquare,
   BarChart3,
   Download,
-  Coffee,
+  Sparkles,
 } from "lucide-react";
 import { useLocale } from "../i18n/LocaleProvider";
 
@@ -16,7 +16,7 @@ const TABS = [
   { key: "record", labelKey: "nav.recordShort", Icon: PenSquare },
   { key: "analysis", labelKey: "nav.analysisShort", Icon: BarChart3 },
   { key: "export", labelKey: "nav.exportShort", Icon: Download },
-  { key: "support", labelKey: "nav.supportShort", Icon: Coffee },
+  { key: "support", labelKey: "nav.supportShort", Icon: Sparkles },
 ];
 
 export function BottomNav() {
