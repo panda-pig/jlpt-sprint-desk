@@ -24,18 +24,11 @@ import {
 } from "./utils";
 import { t, tOption, moduleLabel, levelLabel as i18nLevelLabel } from "../i18n";
 
-/** True when the exam date is set and strictly before today. */
 export function isExamPast(examDate: string): boolean {
   const d = parseISODate(examDate);
   return d !== null && d.getTime() < todayStart().getTime();
 }
 
-/**
- * Planning horizon in days. The exam date is a soft target — an unset date OR a
- * date that has already passed (e.g. someone who left a July date but is now
- * studying toward December) falls back to the level's default span, so the plan
- * never degenerates into a 0/1-day window.
- */
 export function getPlanningHorizon(settings: PlanSettings): number {
   const base = LEVEL_CONFIG[settings.level].baseWeeks * 7;
   const raw = daysUntil(settings.examDate);
@@ -125,8 +118,6 @@ export function buildStudyBudget(settings: PlanSettings): StudyBudget {
 function buildContentBudget(settings: PlanSettings, weeklyMinutes: number) {
   const targets = LEVEL_CONTENT_TARGETS[settings.level] || LEVEL_CONTENT_TARGETS.N2;
   const daysLeft = daysUntil(settings.examDate);
-  // Past/unset dates fall back to the level's default span (see getPlanningHorizon)
-  // so a stale or empty exam date can't collapse the learning-day math to zero.
   const planningDays = getPlanningHorizon(settings);
   const vocabRemaining = Math.max(0, targets.vocab - settings.learnedVocab);
   const grammarRemaining = Math.max(0, targets.grammar - settings.learnedGrammar);
@@ -137,12 +128,10 @@ function buildContentBudget(settings: PlanSettings, weeklyMinutes: number) {
   const availableLearningDays = Math.max(0, planningDays - desiredReviewDays);
   const reviewDaysLeft = Math.max(0, planningDays - (Number.isFinite(learningDays) ? learningDays : 0));
 
-  // Stable keys (translated at display via tOption). Avoids fragile string matching.
   let status = "ample";
   if (!Number.isFinite(learningDays)) {
     status = "lackDaily";
   } else if (daysLeft !== null && daysLeft <= 3 && !isExamPast(settings.examDate) && (vocabRemaining > 0 || grammarRemaining > 0)) {
-    // "Exam imminent" only for a real upcoming date — not a stale/passed one.
     status = "examReview";
   } else if (learningDays > Math.max(1, planningDays)) {
     status = "notEnough";
@@ -219,14 +208,10 @@ function allocateMinutes(total: number, weights: Record<string, number>, minBloc
   const totalWeight = entries.reduce((sum, [, weight]) => sum + weight, 0) || 1;
   const minutes: Record<string, number> = {};
 
-  // When the daily budget is too small to give every module the minimum block,
-  // distribute strictly proportionally (no floor) so the sum can't exceed `total`.
   if (total < entries.length * minBlock) {
     entries.forEach(([key, weight]) => {
       minutes[key] = Math.max(0, Math.round((total * weight) / totalWeight));
     });
-    // Per-module rounding can drift the sum a minute or two off `total`; push the
-    // difference onto the largest-weight module so the total is exact (never over).
     const sum = entries.reduce((acc, [key]) => acc + minutes[key], 0);
     const diff = total - sum;
     if (diff !== 0 && entries.length) {
@@ -240,8 +225,6 @@ function allocateMinutes(total: number, weights: Record<string, number>, minBloc
     minutes[key] = Math.max(minBlock, roundToFive((total * weight) / totalWeight));
   });
 
-  // The min-floor + round-to-five can overshoot the budget. Trim the largest
-  // allocation by 5 at a time (never below minBlock) until the sum fits `total`.
   let sum = entries.reduce((acc, [key]) => acc + minutes[key], 0);
   while (sum > total) {
     let target: string | null = null;
@@ -250,7 +233,7 @@ function allocateMinutes(total: number, weights: Record<string, number>, minBloc
         target = key;
       }
     }
-    if (target === null) break; // every module already at the floor
+    if (target === null) break;
     minutes[target] -= 5;
     sum -= 5;
   }
@@ -319,10 +302,6 @@ function normalizeBase(value: string): string {
   return BASE_LEVELS[value] ? value : "mid";
 }
 
-// Fresh copy of the canonical defaults (constants.DEFAULT_SETTINGS). examDate is
-// recomputed each call because DEFAULT_SETTINGS.examDate = nextJlptExamDate() is
-// evaluated once at module load — re-derive it so a long-lived tab still seeds the
-// next upcoming sitting rather than a stale one.
 function getDefaultSettings(): PlanSettings {
   return { ...DEFAULT_SETTINGS, examDate: nextJlptExamDate() };
 }
@@ -687,7 +666,6 @@ export function mergeDayWithEdit(day: DailyPlanItem, edits: Record<string, strin
         title: t("gen.manualEditTitle"),
         text: editText,
         minutes: day.totalMinutes,
-        // Stable key resolved via tOption("priority", …) at display time.
         priority: "已调整",
       },
     ],
@@ -708,7 +686,6 @@ export function getPlanHealth(plan: GeneratedPlan | null, records: StudyRecord[]
   const base = 86;
   let score = base;
   const stats = getRecentStats(records, 7);
-  // Track each deduction so the UI can explain "why this score".
   const factors: string[] = [t("planner.healthFactorBase", { n: base })];
   if (stats.recordedDays < 3 && records.length >= 3) {
     score -= 14;
@@ -723,7 +700,6 @@ export function getPlanHealth(plan: GeneratedPlan | null, records: StudyRecord[]
     factors.push(t("planner.healthFactorAccuracy", { n: 10, a: stats.avgAccuracy }));
   }
   if (factors.length === 1) {
-    // No deductions applied — say why it's healthy.
     factors.push(records.length === 0 ? t("planner.healthFactorNoData") : t("planner.healthFactorGood"));
   }
 
@@ -935,8 +911,6 @@ function mapCauseToModule(cause: string): string {
   return causeModuleMap[cause] || "review";
 }
 
-/** Stable signature of the last 7 days of records — changes only when the data
- *  that drives the smart adjustment changes. Used to gate re-applying it. */
 export function recordsSignature(records: StudyRecord[]): string {
   const dates = Array.from({ length: 7 }, (_, i) => toISODate(addDays(todayStart(), i - 6)));
   const byDate = new Map(records.map((r) => [r.date, r]));
@@ -950,12 +924,6 @@ export function recordsSignature(records: StudyRecord[]): string {
     .join(";");
 }
 
-/**
- * Apply the data-driven adjustment by changing the underlying time settings
- * (so budget, pie chart, daily target and tasks all stay consistent after a
- * regeneration) plus nudging weak-module focus. Returns null when there is
- * nothing to apply (maintain / not enough data).
- */
 export function adjustSettingsFromRecords(settings: PlanSettings, records: StudyRecord[]): PlanSettings | null {
   const advice = suggestPlanAdjustment(records, settings);
   if (advice.type === "maintain") return null;
@@ -971,7 +939,6 @@ export function adjustSettingsFromRecords(settings: PlanSettings, records: Study
     dailyMinutes: Math.round((settings.dailyMinutes || settings.weekdayMinutes) * factor),
   };
 
-  // If one error cause recurs across recent days, give its module more weight.
   const cause = findConsecutiveCause(recent);
   if (cause) {
     const mod = mapCauseToModule(cause);

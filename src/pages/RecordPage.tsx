@@ -10,8 +10,6 @@ import { useLocale } from "../i18n/LocaleProvider";
 import { moduleLabel, moduleShort, phaseLabel } from "../i18n";
 import type { StudyRecord } from "../lib/types";
 
-/** Split a single "total minutes" figure across the record modules, weighted by
- *  today's plan (falls back to an even split). Sum is preserved exactly. */
 function distributeQuickMinutes(
   total: number,
   todayPlan: { tasks?: { module: string; minutes: number }[] } | null | undefined,
@@ -35,7 +33,6 @@ function distributeQuickMinutes(
   const sumW = keys.reduce((s, k) => s + weights[k], 0) || 1;
   let acc = 0;
   keys.forEach((k) => { out[k] = Math.round((total * weights[k]) / sumW); acc += out[k]; });
-  // Push the rounding drift onto the largest-weight module so the sum is exact.
   const diff = total - acc;
   if (diff !== 0) {
     const maxK = keys.reduce((a, b) => (weights[b] > weights[a] ? b : a), keys[0]);
@@ -67,9 +64,6 @@ export function RecordPage() {
     };
   });
 
-  // Quick log = completion + total minutes only (≈30s). Full log = every field.
-  // New today-record defaults to quick; an existing record opens in full so its
-  // detailed breakdown is visible and not silently overwritten.
   const sumMinutes = (rec?: Partial<StudyRecord> | null) =>
     rec?.minutes ? Object.values(rec.minutes).reduce((a, b) => a + Number(b || 0), 0) : 0;
   const [mode, setMode] = useState<"quick" | "full">(todayRecord ? "full" : "quick");
@@ -79,7 +73,6 @@ export function RecordPage() {
     setForm((prev) => ({ ...prev, [key]: value }));
   }, []);
 
-  // Load a past/other record into the form for editing (always full mode).
   const loadRecord = useCallback((record: StudyRecord) => {
     setForm({ ...record });
     setQuickMinutes(sumMinutes(record));
@@ -133,8 +126,6 @@ export function RecordPage() {
 
   const recentRecords = [...state.records].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 5);
 
-  // The summary/recommendations must reflect the record currently being edited
-  // (which may be a past date), not always today's record.
   const editingDate = form.date || todayISO();
   const summaryRecord = state.records.find((r) => r.date === editingDate) || null;
 

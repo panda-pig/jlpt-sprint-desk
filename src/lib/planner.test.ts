@@ -111,8 +111,8 @@ describe("getPlanHealth factors", () => {
     const lowRecs = [1, 2, 3, 4, 5].map((n) => record(isoDaysAgo(n), "minimum", "10/30"));
     const health = getPlanHealth(plan, lowRecs);
     expect(health.score).toBeLessThan(86);
-    expect(health.factors.length).toBeGreaterThan(1); // baseline + at least one deduction
-    expect(health.factors.join(" ")).toMatch(/86/); // baseline factor present
+    expect(health.factors.length).toBeGreaterThan(1);
+    expect(health.factors.join(" ")).toMatch(/86/);
   });
 
   it("gives a positive factor when there are no deductions", () => {

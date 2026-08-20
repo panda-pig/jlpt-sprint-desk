@@ -7,10 +7,7 @@ import { KeyboardShortcuts } from "./components/KeyboardShortcuts";
 import { ReminderNotifier } from "./components/Reminder";
 import { LocaleProvider } from "./i18n/LocaleProvider";
 import { StudyDeskProvider } from "./lib/StudyDeskProvider";
-// Dashboard is the landing route → keep it eager for instant first paint.
 import { DashboardPage } from "./pages/DashboardPage";
-// The rest are code-split so heavy bits (export HTML builder, charts) stay out
-// of the initial bundle — matters most on mobile first load.
 const SetupPage = lazy(() => import("./pages/SetupPage").then((m) => ({ default: m.SetupPage })));
 const PlanPage = lazy(() => import("./pages/PlanPage").then((m) => ({ default: m.PlanPage })));
 const RecordPage = lazy(() => import("./pages/RecordPage").then((m) => ({ default: m.RecordPage })));

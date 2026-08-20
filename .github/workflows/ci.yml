@@ -1,7 +1,5 @@
 name: CI
 
-# Automated guardrail: every push to main and every PR runs lint, the typed
-# production build (tsc -b + vite build), and the unit test suite.
 on:
   push:
     branches: [main]

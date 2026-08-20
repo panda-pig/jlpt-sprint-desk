@@ -45,9 +45,6 @@ export function DashboardPage() {
   const daysLeft = daysUntil(state.settings.examDate);
   const examPast = isExamPast(state.settings.examDate);
   const nextExamDate = nextJlptExamDate();
-  // Progress-bar denominator: the plan's real span (its start date → exam) so the
-  // bar actually moves day by day. Falls back to a 120-day window when there's no
-  // plan, or when the exam was moved without regenerating (span < daysLeft).
   const examTs = parseISODate(state.settings.examDate)?.getTime() ?? null;
   const planStartTs = state.generatedPlan ? parseISODate(state.generatedPlan.startDate)?.getTime() ?? null : null;
   const planSpanDays = examTs !== null && planStartTs !== null ? Math.ceil((examTs - planStartTs) / 86400000) : null;

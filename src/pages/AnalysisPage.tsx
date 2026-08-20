@@ -122,8 +122,6 @@ export function AnalysisPage() {
     .sort((a, b) => b.date.localeCompare(a.date))
     .slice(0, 7);
 
-  /* ─── 驾驶舱新增数据 ─── */
-
   
   const dayRecords = dates
     .map((date) => {
@@ -191,7 +189,6 @@ export function AnalysisPage() {
   return (
     <div className="page-grid">
       <section className="stack">
-        {/* ─── KPI 驾驶舱 ─── */}
         <div className="dashboard-kpi-row">
           <div className="kpi-card">
             <div className="kpi-header">
@@ -255,7 +252,6 @@ export function AnalysisPage() {
           </div>
         </div>
 
-        {/* ─── 复盘结论 ─── */}
         <Card className="panel analysis-brief-panel">
           <div className="section-head">
             <div>
@@ -305,7 +301,6 @@ export function AnalysisPage() {
 
         <Divider type="line-teal" />
 
-        {/* ─── 学习节奏驾驶舱 ─── */}
         <Card className="panel">
           <div className="section-head">
             <div>
@@ -357,7 +352,6 @@ export function AnalysisPage() {
             </article>
           </div>
 
-          {/* 7 天投入趋势 */}
           <div className="trend-chart" aria-label={t("analysis.trend7Aria")}>
             {dates.map((date) => {
               const record = byDate.get(date);
@@ -400,7 +394,6 @@ export function AnalysisPage() {
           </div>
         </Card>
 
-        {/* ─── 7 天完成度趋势 ─── */}
         <Card className="panel">
           <div className="section-head">
             <div>
@@ -463,7 +456,6 @@ export function AnalysisPage() {
           </div>
         </Card>
 
-        {/* ─── 模块投入深度分析 ─── */}
         <Card className="panel">
           <div className="section-head">
             <div>
@@ -510,7 +502,6 @@ export function AnalysisPage() {
                 </ul>
               </div>
               <div className="module-deep-analysis">
-                {/* 模块柱状图 */}
                 <div className="module-bar-chart">
                   {moduleEntries.map((item) => (
                     <div key={item.key} className="module-bar-row">
@@ -539,7 +530,6 @@ export function AnalysisPage() {
                     </div>
                   ))}
                 </div>
-                {/* 模块洞察 */}
                 <div className="module-insight-grid">
                   {moduleEntries.map((item) => {
                     const share = Math.round(
@@ -589,7 +579,6 @@ export function AnalysisPage() {
 
         <Divider type="line-teal" />
 
-        {/* ─── 错因热力分布 ─── */}
         <Card className="panel">
           <div className="section-head">
             <div>
@@ -650,7 +639,6 @@ export function AnalysisPage() {
           )}
         </Card>
 
-        {/* ─── 学习质量指标 ─── */}
         <Card className="panel">
           <div className="section-head">
             <div>
@@ -691,7 +679,6 @@ export function AnalysisPage() {
           </div>
         </Card>
 
-        {/* ─── 调整建议 ─── */}
         <Card className="panel">
           <div className="section-head">
             <div>
@@ -717,7 +704,6 @@ export function AnalysisPage() {
         </Card>
       </section>
 
-      {/* ─── 侧边栏 ─── */}
       <aside className="stack">
         <Card className="card">
           <div className="section-head">

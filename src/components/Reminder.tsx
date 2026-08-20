@@ -15,7 +15,6 @@ import {
 import { toast } from "../lib/toast";
 import { useLocale } from "../i18n/LocaleProvider";
 
-/** Invisible app-level effect: fire the daily browser notification when due. */
 export function ReminderNotifier() {
   const { todayRecord } = useStudyDesk();
 
@@ -32,14 +31,12 @@ export function ReminderNotifier() {
   return null;
 }
 
-/** Dashboard nudge banner — no permission required, shown when today isn't recorded. */
 export function ReminderBanner() {
   const navigate = useNavigate();
   const { todayRecord, state } = useStudyDesk();
   const { t } = useLocale();
   const [dismissed, setDismissed] = useState(false);
 
-  // Only nudge active users (have a plan or past records); skip brand-new users.
   const isActive = !!state.generatedPlan || state.records.length > 0;
   if (todayRecord || dismissed || !isActive) return null;
 
@@ -62,7 +59,6 @@ export function ReminderBanner() {
   );
 }
 
-/** Setup-page card: enable daily reminder + pick time + grant notification permission. */
 export function ReminderSettings() {
   const { t } = useLocale();
   const [settings, setSettings] = useState<ReminderSettings>(() => getReminderSettings());

@@ -70,8 +70,6 @@ function loadInitialState(): StudyDeskState {
     const defaultSettings = normalizeSettings({});
     savePlanSettings(defaultSettings, defaultProfile.id);
 
-    // New users start with a clean slate — no fabricated records.
-    // They'll see proper empty-state guidance on Dashboard / Record pages.
     saveRecords([], defaultProfile.id);
 
     return {
@@ -108,26 +106,14 @@ function loadInitialState(): StudyDeskState {
 
 export function StudyDeskProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<StudyDeskState>(loadInitialState);
-  // Mirror of what's currently persisted, used by commit() to (a) write only the
-  // slices that actually changed and (b) detect write failures (quota exceeded /
-  // private mode) so we never falsely report a save as successful.
   const lastSavedRef = useRef<StudyDeskState>(state);
-  // Recompute locale-dependent derived values (plan health, next action,
-  // suggestions — all built from planner phrase tables) when language switches.
   const [locale, setLocaleTick] = useState(getLocale());
   useEffect(() => subscribeLocale(() => setLocaleTick(getLocale())), []);
 
-  // loadInitialState() (in the useState initializer above) already read every
-  // slice; if any failed to parse, the raw value was backed up to a __corrupt
-  // key. Warn the user once so they know the blank state isn't a real data loss.
   useEffect(() => {
     if (getCorruptionCount() > 0) toast(t("toast.dataCorrupt"));
   }, []);
 
-  // The plan is generated once and stored, with task prose baked in the active
-  // language. When the user switches language, regenerate so the stored plan's
-  // task titles/strategy/roadmap follow the new language too. Manual day-edits
-  // (planEdits) are preserved.
   const prevLocaleRef = useRef(locale);
   useEffect(() => {
     if (prevLocaleRef.current === locale) return;
@@ -138,8 +124,7 @@ export function StudyDeskProvider({ children }: { children: ReactNode }) {
       plan.adjustmentSignature = prev.generatedPlan.adjustmentSignature;
       saveGeneratedPlan(plan, prev.activeProfileId);
       const next = { ...prev, generatedPlan: plan };
-      lastSavedRef.current = next; // the regenerated plan is now persisted
-      // The stored plan's prose just changed → mark local + mirror to cloud.
+      lastSavedRef.current = next;
       schedulePush();
       return next;
     });
@@ -152,9 +137,6 @@ export function StudyDeskProvider({ children }: { children: ReactNode }) {
     let ok = true;
     if (next.activeProfileId) {
       const pid = next.activeProfileId;
-      // Only re-serialize a slice when it actually changed (a record edit must not
-      // rewrite the whole — potentially 100KB+ — generated plan). When the active
-      // profile changed, every slice belongs to a new profile and must be written.
       if (!samePid || next.settings !== prev.settings) ok = savePlanSettings(next.settings, pid) && ok;
       if ((!samePid || next.generatedPlan !== prev.generatedPlan) && next.generatedPlan) ok = saveGeneratedPlan(next.generatedPlan, pid) && ok;
       if (!samePid || next.planEdits !== prev.planEdits) ok = savePlanEdits(next.planEdits, pid) && ok;
@@ -162,7 +144,6 @@ export function StudyDeskProvider({ children }: { children: ReactNode }) {
     }
     if (next.profiles !== prev.profiles) ok = saveProfiles(next.profiles) && ok;
     lastSavedRef.current = next;
-    // Mirror every local write up to the cloud (no-op when sync is disabled).
     schedulePush();
     if (!ok) toast(t("toast.saveFailed"));
     return ok;
@@ -174,8 +155,6 @@ export function StudyDeskProvider({ children }: { children: ReactNode }) {
 
   const todayPlan = useMemo(() => getTodayPlanDay(state.generatedPlan), [state.generatedPlan]);
   const upcomingDays = useMemo(() => getUpcomingDays(state.generatedPlan, 14), [state.generatedPlan]);
-  // `locale` is intentionally in deps: these values are built from planner phrase
-  // tables (via module-level t()), so they must recompute when language switches.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const health = useMemo(() => getPlanHealth(state.generatedPlan, state.records), [state.generatedPlan, state.records, locale]);
   const stats = useMemo(() => getRecentStats(state.records, 7), [state.records]);
@@ -190,8 +169,6 @@ export function StudyDeskProvider({ children }: { children: ReactNode }) {
     return buildTomorrowSuggestion(todayRecord);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [todayRecord, locale]);
-  // Data-driven plan-adjustment advice (increase/decrease/maintain) from the
-  // last 7 days; locale-reactive because the strings come from the dict.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const planAdjustment = useMemo(() => suggestPlanAdjustment(state.records, state.settings), [state.records, state.settings, locale]);
 
@@ -213,9 +190,6 @@ export function StudyDeskProvider({ children }: { children: ReactNode }) {
   const deleteProfile = useCallback((id: string) => {
     deleteProfileStorage(id);
     const nextProfiles = state.profiles.filter((p) => p.id !== id);
-    // Only re-point the active profile when we deleted the one that was active.
-    // (deleteProfileStorage already keeps localStorage's active id in sync the
-    //  same way — deleting a NON-active profile must not switch the UI/storage.)
     const wasActive = state.activeProfileId === id;
     const next: StudyDeskState = wasActive
       ? (() => {
@@ -232,8 +206,8 @@ export function StudyDeskProvider({ children }: { children: ReactNode }) {
         })()
       : { ...state, profiles: nextProfiles };
     setState(next);
-    lastSavedRef.current = next; // slices loaded from storage are already persisted
-    schedulePush(); // profile data changed → mirror to cloud
+    lastSavedRef.current = next;
+    schedulePush();
     toast(t("toast.profileDeleted"));
   }, [state]);
 
@@ -249,8 +223,8 @@ export function StudyDeskProvider({ children }: { children: ReactNode }) {
     };
     toast(t("toast.profileSwitched"));
     setState(next);
-    lastSavedRef.current = next; // slices loaded from storage are already persisted
-    schedulePush(); // active profile pointer changed → mirror to cloud
+    lastSavedRef.current = next;
+    schedulePush();
   }, [state]);
 
   const updateProfileName = useCallback((id: string, name: string) => {
@@ -259,7 +233,7 @@ export function StudyDeskProvider({ children }: { children: ReactNode }) {
       ...prev,
       profiles: prev.profiles.map((p) => (p.id === id ? { ...p, name } : p)),
     }));
-    schedulePush(); // profile name changed → mirror to cloud
+    schedulePush();
   }, []);
 
   const updateSettings = useCallback((patch: Partial<PlanSettings>) => {
@@ -275,9 +249,6 @@ export function StudyDeskProvider({ children }: { children: ReactNode }) {
     if (commit(next)) toast(t("toast.planGenerated"));
   }, [state, commit]);
 
-  // After the exam passes, roll the (soft) exam date forward to the next JLPT
-  // sitting and regenerate the plan in a single commit — so the horizon, tasks
-  // and countdown all reflect the new target atomically.
   const advanceToNextExam = useCallback(() => {
     if (!state.activeProfileId) return;
     const nextSettings = normalizeSettings({ ...state.settings, examDate: nextJlptExamDate() });
@@ -287,9 +258,6 @@ export function StudyDeskProvider({ children }: { children: ReactNode }) {
     }
   }, [state, commit]);
 
-  // Apply the data-driven adjustment by changing the time settings and
-  // regenerating the plan, so the budget/pie/daily-target/tasks all stay
-  // consistent. A records signature blocks re-applying for unchanged data.
   const applyAutoAdjust = useCallback(() => {
     if (!state.generatedPlan || !state.activeProfileId) {
       toast(t("adjust.noPlan"));

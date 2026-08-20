@@ -360,7 +360,6 @@ p { line-height: 1.68; }
 </html>`;
 }
 
-// Escape text for an iCalendar property value (RFC 5545).
 function icsEscape(text: string): string {
   return String(text || "")
     .replace(/\\/g, "\\\\")
@@ -369,7 +368,6 @@ function icsEscape(text: string): string {
     .replace(/\r?\n/g, "\\n");
 }
 
-// Fold lines longer than 75 octets per RFC 5545 (continuation lines start with a space).
 function icsFold(line: string): string {
   if (line.length <= 75) return line;
   const parts: string[] = [];
@@ -389,17 +387,11 @@ function icsDate(isoDate: string): string {
 }
 
 function icsDatePlusOne(isoDate: string): string {
-  // Use UTC math so the +1 day isn't cancelled by the local timezone offset
-  // when formatting back (all-day DTEND is exclusive → must be start + 1 day).
   const [y, m, d] = isoDate.split("-").map(Number);
   const next = new Date(Date.UTC(y, m - 1, d + 1));
   return next.toISOString().slice(0, 10).replace(/-/g, "");
 }
 
-/**
- * Build an iCalendar (.ics) file: one all-day event per plan day, with the
- * day's tasks in the description. Importable into Google/Apple/Outlook calendars.
- */
 export function buildICS(plan: GeneratedPlan, profileName: string): string {
   const stamp = new Date().toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
   const lines: string[] = [

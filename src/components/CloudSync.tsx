@@ -43,7 +43,6 @@ export function CloudSync() {
 
   useEffect(() => {
     if (!supabase) return;
-    // Pick up an existing session on load.
     supabase.auth.getUser().then(({ data }) => {
       if (data.user?.email) {
         setUserEmail(data.user.email);

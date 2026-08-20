@@ -67,7 +67,6 @@ export const zh = {
     export: "导出备份",
     support: "支持作者",
     primaryNav: "主导航",
-    // mobile short labels
     dashboardShort: "总览",
     planShort: "计划",
     recordShort: "记录",

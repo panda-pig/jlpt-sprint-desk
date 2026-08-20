@@ -6,19 +6,14 @@ import { toast } from "../lib/toast";
 
 const REPO_URL = "https://github.com/panda-pig/jlpt-sprint-desk";
 
-// ── Owner config ────────────────────────────────────────────────────────────
-// Your Afdian (爱发电) page, e.g. "https://afdian.com/a/yourname". Afdian hosts
-// the WeChat/Alipay payment + amount, so no backend / merchant keys are needed.
-// Leave empty until you've set it — the pay button stays disabled with a hint.
+// 爱发电主页地址，留空时支付按钮保持禁用
 const AFDIAN_URL = "";
 
-// Preset amounts (CNY). Tweak freely; the custom field covers anything else.
 const PRESETS: { value: number; emoji: string; key: "amtCoffee" | "amtMeal" | "amtBook" }[] = [
   { value: 6, emoji: "☕", key: "amtCoffee" },
   { value: 18, emoji: "🍜", key: "amtMeal" },
   { value: 30, emoji: "📚", key: "amtBook" },
 ];
-// ─────────────────────────────────────────────────────────────────────────────
 
 export function SupportPage() {
   const { t } = useLocale();
@@ -31,9 +26,6 @@ export function SupportPage() {
 
   const handlePay = () => {
     if (!canPay) return;
-    // Afdian handles the actual WeChat/Alipay collection + amount on its page.
-    // The amount param is best-effort (harmless if Afdian ignores it) — the
-    // chosen amount is shown here and re-confirmed on Afdian.
     const url = `${AFDIAN_URL}${AFDIAN_URL.includes("?") ? "&" : "?"}amount=${amount}`;
     window.open(url, "_blank", "noopener,noreferrer");
   };
@@ -45,9 +37,7 @@ export function SupportPage() {
         await navigator.share({ title: t("common.appName"), url });
         return;
       }
-    } catch {
-      /* user cancelled — fall through to copy */
-    }
+    } catch { /* ignore */ }
     try {
       await navigator.clipboard.writeText(url);
       toast(t("support.shareCopied"));

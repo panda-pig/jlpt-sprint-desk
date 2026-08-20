@@ -216,13 +216,11 @@ export function SetupPage() {
                         const data = JSON.parse(String(reader.result));
                         const profileId = state.activeProfileId;
                         if (data.data && typeof data.data === "object") {
-                          // Format: { data: { jlptSprintDesk...: "..." } }
                           Object.entries(data.data).forEach(([key, value]) => {
                             localStorage.setItem(key, String(value));
                           });
                           window.location.reload();
                         } else if (profileId && (data.planSettings || data.generatedPlan || data.records)) {
-                          // Format: { planSettings, generatedPlan, planEdits, records }
                           if (data.planSettings) localStorage.setItem(`jlptSprintDesk:${profileId}:planSettings`, JSON.stringify(data.planSettings));
                           if (data.generatedPlan) localStorage.setItem(`jlptSprintDesk:${profileId}:generatedPlan`, JSON.stringify(data.generatedPlan));
                           if (data.planEdits) localStorage.setItem(`jlptSprintDesk:${profileId}:planEdits`, JSON.stringify(data.planEdits));

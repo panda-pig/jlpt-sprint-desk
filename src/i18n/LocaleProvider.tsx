@@ -31,7 +31,6 @@ export function useLocale(): LocaleContextValue {
   return ctx;
 }
 
-/** Convenience hook returning just the translate function. */
 export function useT() {
   return useLocale().t;
 }

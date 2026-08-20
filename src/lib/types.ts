@@ -134,8 +134,6 @@ export interface GeneratedPlan {
   dailyPlan: DailyPlanItem[];
   methodBasis: string;
   settingsSnapshot: PlanSettings;
-  /** Signature of the records that the smart adjustment was last applied for —
-   *  prevents re-applying (compounding) the same adjustment for unchanged data. */
   adjustmentSignature?: string;
 }
 
@@ -156,7 +154,6 @@ export interface StudyRecord {
   tomorrowFocus: string;
   causes: string[];
   notes: string;
-  // Backward-compatible fields from original app
   wrongQuestions?: string[];
   wrongQuestionDetails?: string;
   actualTime?: string;
@@ -175,7 +172,6 @@ export interface PlanHealth {
   level: "ok" | "warn" | "danger";
   label: string;
   message: string;
-  /** Human-readable factors explaining how the score was reached ("why"). */
   factors: string[];
 }
 

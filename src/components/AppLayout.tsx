@@ -10,7 +10,6 @@ import { toast } from "../lib/toast";
 import type { ReactNode } from "react";
 
 function renderBold(text: string): ReactNode {
-  // Render **bold** segments inside a translated string.
   const parts = text.split(/(\*\*[^*]+\*\*)/g);
   return parts.map((p, i) =>
     p.startsWith("**") && p.endsWith("**") ? <strong key={i}>{p.slice(2, -2)}</strong> : p,

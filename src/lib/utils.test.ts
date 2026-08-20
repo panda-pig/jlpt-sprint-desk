@@ -17,8 +17,8 @@ describe("readJSON / writeJSON", () => {
     const before = getCorruptionCount();
     localStorage.setItem("bad", "[{not valid json");
     const result = readJSON<unknown[]>("bad", []);
-    expect(result).toEqual([]); // graceful fallback, no throw
-    expect(localStorage.getItem("bad__corrupt")).toBe("[{not valid json"); // raw preserved
+    expect(result).toEqual([]);
+    expect(localStorage.getItem("bad__corrupt")).toBe("[{not valid json");
     expect(getCorruptionCount()).toBe(before + 1);
   });
 

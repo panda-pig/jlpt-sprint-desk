@@ -23,7 +23,6 @@ export function KeyboardShortcuts() {
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
-      // 忽略输入框内的快捷键
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLSelectElement) {
         if (e.key === "Escape") {
           (e.target as HTMLElement).blur();
@@ -34,21 +33,17 @@ export function KeyboardShortcuts() {
       const key = e.key.toLowerCase();
       setPressedKeys((prev) => [...prev.slice(-2), key]);
 
-      // Help panel. "?" usually requires Shift (Shift + /), so don't exclude
-      // Shift here — only block Ctrl/Cmd combinations.
       if (key === "?" && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
         setShowHelp(true);
         return;
       }
 
-      // Escape 关闭帮助
       if (key === "escape") {
         setShowHelp(false);
         return;
       }
 
-      // g + 字母导航
       if (key === "g") {
         setPressedKeys(["g"]);
         return;

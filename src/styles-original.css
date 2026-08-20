@@ -1,6 +1,4 @@
 :root {
-  /* Animal-Island design language — warm parchment + mint teal + game-UI 3D.
-     Inspired by animal-island-ui's design tokens (non-commercial, educational). */
   --bg: #f8f8f0;
   --bg-strong: #f0e8d8;
   --surface: rgb(247, 243, 223);
@@ -21,7 +19,6 @@
   --coral: #e05a5a;
   --green: #6fba2c;
   --red: #e05a5a;
-  /* Game-special colors. */
   --focus-yellow: #ffcc00;
   --focus-yellow-dark: #e0b800;
   --sidebar-active-bg: #b7c6e5;
@@ -29,21 +26,17 @@
   --accent-yellow: #f5c31c;
   --accent-coral: #f8a6b2;
   --accent-blue: #889df0;
-  /* 3D shadow colors — pixel-stack bottom shadows for game-button feel. */
   --shadow-btn: #bdaea0;
   --shadow-input: #d4c9b4;
   --shadow-switch-on: #5a9e1e;
-  /* Elevation — warm-tinted, soft. Used for default/dashed/text buttons, NOT primary. */
   --shadow-soft: 0 2px 4px 0 rgba(61, 52, 40, 0.06);
   --shadow: 0 3px 10px 0 rgba(61, 52, 40, 0.1);
   --shadow-lift: 0 8px 24px 0 rgba(61, 52, 40, 0.14);
-  /* Shape scale — pill-first, generous, rounded. */
   --radius-sm: 12px;
   --radius: 18px;
   --radius-lg: 20px;
   --radius-xl: 24px;
   --radius-pill: 50px;
-  /* Spacing scale (4px base). */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -58,7 +51,6 @@
   font-family:
     "Nunito", "Noto Sans SC", -apple-system, "PingFang SC", "Hiragino Sans GB",
     "Microsoft YaHei", system-ui, sans-serif;
-  /* Display face for numerals + large headings — Nunito rounded weights. */
   --display:
     "Nunito", "Noto Sans SC", "PingFang SC", "Hiragino Sans GB",
     "Microsoft YaHei", system-ui, sans-serif;
@@ -90,8 +82,6 @@ body {
   letter-spacing: -0.003em;
 }
 
-/* Subtle warm cream grain + scattered soft dots — island-life texture.
-   Fixed + non-interactive so it never affects layout. */
 body::before {
   content: "";
   position: fixed;
@@ -112,7 +102,6 @@ body::before {
   z-index: 1;
 }
 
-/* Headings balance onto even lines; body paragraphs avoid orphans. */
 h1, h2, h3, h4 {
   text-wrap: balance;
 }
@@ -349,7 +338,6 @@ img {
   letter-spacing: -0.02em;
 }
 
-/* Small leaf accent before topbar titles — sticker/note feel. */
 .topbar h1::before {
   content: "";
   display: inline-block;
@@ -459,7 +447,6 @@ img {
   align-items: start;
 }
 
-/* Skeleton fallback while a code-split page chunk loads. */
 .page-loading {
   display: grid;
   gap: 18px;
@@ -527,14 +514,12 @@ img {
   padding: 24px;
 }
 
-/* Cards gently float on hover — game-card feel, no default shadow. */
 .card:hover,
 .panel:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow);
 }
 
-/* Flat, light hero — no photo, warm text on cream (island-life style). */
 .hero-panel {
   position: relative;
   overflow: hidden;
@@ -581,7 +566,6 @@ img {
   margin-bottom: 20px;
 }
 
-/* Wood-sign accent: a small rounded leaf-dot before section titles. */
 .section-head h2::before,
 .section-head h3::before {
   content: "";
@@ -743,7 +727,6 @@ img {
   padding: clamp(22px, 2.8vw, 34px);
 }
 
-/* One-click quick start: 3 inputs + generate, shown before the first plan. */
 .quick-start-panel {
   padding: clamp(20px, 2.6vw, 30px);
   border-color: var(--primary);
@@ -1072,7 +1055,6 @@ img {
   gap: 14px;
 }
 
-/* Weekly grouping (collapsible) for the detailed plan */
 .plan-week-list {
   display: grid;
   gap: 12px;
@@ -1265,14 +1247,11 @@ img {
   font-weight: 650;
 }
 
-/* Soft state for the countdown when the exam date is unset or already passed —
-   neutral, not alarming. */
 .metric-value-soft {
   color: var(--muted);
   font-size: clamp(20px, 2.4vw, 26px);
   letter-spacing: -0.01em;
 }
-/* Exam-day callout — emphatic, sized to stay on one line inside the metric card. */
 .metric-value-today {
   color: var(--primary-strong);
   font-size: clamp(17px, 1.8vw, 21px);
@@ -1289,8 +1268,6 @@ img {
 .metric-soft-link:hover {
   text-decoration: underline;
 }
-/* Button variant (e.g. "switch to next exam") — reset native button chrome so it
-   reads as a soft link, but keeps a pointer + left alignment. */
 .metric-soft-action {
   background: none;
   border: none;
@@ -1314,7 +1291,6 @@ img {
   transition: width 0.4s ease;
 }
 
-/* "Why this score" — native disclosure that explains a derived number. */
 .score-why {
   margin-top: 14px;
   font-size: 13px;
@@ -1783,7 +1759,6 @@ img {
   box-shadow: var(--shadow-soft);
 }
 
-/* Disabled buttons read as inactive and don't respond to hover/press. */
 .primary-button:disabled,
 .secondary-button:disabled,
 .ghost-button:disabled,
@@ -2128,8 +2103,6 @@ textarea:hover {
   border-color: #a89878;
 }
 
-/* Only apply the game-yellow focus ring to raw inputs/selects that are NOT
-   inside an animal-island-ui component (those handle their own focus styling). */
 input:not([class*="animal-"]):focus,
 select:not([class*="animal-"]):focus,
 textarea:not([class*="animal-"]):focus {
@@ -2137,8 +2110,6 @@ textarea:not([class*="animal-"]):focus {
   box-shadow: 0 0 0 3px rgba(255, 204, 0, 0.15);
 }
 
-/* Baseline keyboard focus ring for every interactive element — game-style yellow.
-   Skip animal-island-ui components which have their own focus styling. */
 a:focus-visible,
 button:not([class*="animal-"]):focus-visible,
 select:not([class*="animal-"]):focus-visible,
@@ -2258,7 +2229,6 @@ input[type="number"] {
   margin-top: 6px;
 }
 
-/* Quick / full segmented toggle at the top of the record form. */
 .record-mode-switch {
   display: inline-flex;
   gap: 2px;
@@ -3117,7 +3087,6 @@ tr:last-child td {
   border-left-color: var(--red);
 }
 
-/* ── Cloud sync panel ── */
 .cloud-sync-panel {
   border-color: rgba(25, 200, 185, 0.2);
   background: linear-gradient(135deg, rgba(25, 200, 185, 0.06), var(--surface));
@@ -3162,7 +3131,6 @@ tr:last-child td {
   flex-wrap: wrap;
 }
 
-/* Sign-in data conflict: ask which side to keep instead of silent overwrite. */
 .cloud-conflict {
   margin-bottom: 14px;
   padding: 16px;
@@ -3242,7 +3210,6 @@ tr:last-child td {
   }
 }
 
-/* ── Reminder banner (dashboard nudge) ── */
 .reminder-banner {
   display: flex;
   align-items: center;
@@ -3306,7 +3273,6 @@ tr:last-child td {
   color: var(--ink);
 }
 
-/* ── Reminder settings card ── */
 .reminder-settings-head {
   display: flex;
   align-items: flex-start;
@@ -3346,7 +3312,6 @@ tr:last-child td {
   font-size: 12px;
 }
 
-/* Toggle switch */
 .reminder-switch {
   display: inline-flex;
   align-items: center;
@@ -3568,7 +3533,6 @@ tr:last-child td {
     display: none;
   }
 
-  /* 6-up KPI strip → 3 columns (two rows) on tablets/large phones. */
   .dashboard-kpi-row {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -3594,12 +3558,10 @@ tr:last-child td {
   .quality-grid {
     grid-template-columns: 1fr;
   }
-  /* .module-record-grid is flex, not grid — force single column on mobile. */
   .module-record-grid {
     flex-direction: column;
   }
 
-  /* KPI strip: 2 columns on small phones (3 rows of 2). */
   .dashboard-kpi-row {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -3634,7 +3596,6 @@ tr:last-child td {
     font-size: 22px;
   }
 
-  /* Tighten the bumped desktop card padding + rhythm for small screens. */
   .card,
   .panel {
     padding: 18px;
@@ -3740,7 +3701,6 @@ tr:last-child td {
   }
 }
 
-/* ── Smart plan-adjustment card ── */
 .adjust-panel .adjust-reason {
   margin: 0 0 12px;
   color: var(--ink-soft);
@@ -3776,8 +3736,6 @@ tr:last-child td {
   border: 2px solid var(--line);
 }
 
-/* Sticky mobile save bar on the record page — hidden on desktop, shown above
-   the bottom nav on phones so users don't scroll a long form to save. */
 .record-mobile-save {
   display: none;
 }
@@ -3799,12 +3757,9 @@ tr:last-child td {
     min-height: 46px;
     font-size: 15px;
   }
-  /* The inline submit button row is redundant on mobile; the sticky bar covers it. */
   .record-form > .button-row {
     display: none;
   }
-  /* Reserve bottom room so the sticky save bar + bottom nav don't cover the
-     last content (recent records live in the aside, which stacks last). */
   .record-page-root > aside:last-child {
     padding-bottom: 132px;
   }
@@ -3884,7 +3839,6 @@ tr:last-child td {
   animation: animal-fade-in 0.25s ease;
 }
 
-/* Organic blob-shape modal — Animal-Island signature clip-path. */
 .modal-content {
   background: var(--surface);
   clip-path: url(#animal-modal-clip);
@@ -4302,7 +4256,6 @@ tr:last-child td {
   }
 }
 
-/* ── Support / tip page ─────────────────────────────────────────────────── */
 .support-page {
   width: min(640px, 100%);
   margin: 0 auto;
@@ -4337,7 +4290,6 @@ tr:last-child td {
   color: var(--ink-soft);
   line-height: 1.55;
 }
-/* Amount selector (preset chips + custom) → pay via Afdian. */
 .support-amount-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -4447,7 +4399,6 @@ tr:last-child td {
   }
 }
 
-/* Accessibility: honor reduced-motion — collapse all transitions/animations. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -4459,7 +4410,6 @@ tr:last-child td {
   }
 }
 
-/* ── Animal-Island animation keyframes ─────────────────────────────────── */
 @keyframes animal-zoom-in {
   from {
     opacity: 0;
@@ -4487,30 +4437,11 @@ tr:last-child td {
   }
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   ANIMAL-ISLAND ENHANCEMENT LAYER (v4 — text contrast fix)
-   References the animal-island-ui DESIGN_PROMPT.md color spec:
-   - Headings/sidebar: #794f27  (darkest brown)
-   - Body in components: #725d42  (medium brown)
-   - Secondary text:    #8a7b66  (was #9f927d — too light on pastel cards)
-   - Disabled only:     #c4b89e  (NEVER for readable text)
-   Polka-dot cards, Title ribbons, Divider lines, sea footer, game-UI accents.
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-/* ── 0. Text contrast fix — align with animal-island-ui official spec ─────────── */
-/* The original --muted (#9f927d) is too light on pastel card backgrounds.
-   animal-island-ui's own DESIGN_PROMPT.md defines:
-     Body text:     #725d42
-     Secondary:     #8a7b66  (darker than #9f927d)
-     Muted/placeholder: #c4b89e (disabled-level, ONLY for placeholders)
-   We deepen --muted to #8a7b66 so descriptive text is readable everywhere. */
-
 :root {
-  --muted: #8a7b66;       /* was #9f927d — official "muted" value */
-  --faint: #b0a48c;       /* was #c4b89e — still light but slightly darker for non-placeholder use */
+  --muted: #8a7b66;
+  --faint: #b0a48c;
 }
 
-/* Ensure .muted class and section descriptions use readable body color. */
 .muted,
 .section-head p,
 .panel > .section-head p,
@@ -4524,10 +4455,9 @@ tr:last-child td {
 .quick-record-note,
 .diagnostic-value,
 .adjust-reason {
-  color: var(--ink-soft);  /* #725d42 — official body text color */
+  color: var(--ink-soft);
 }
 
-/* Truly muted labels (metric-label, eyebrow, nav small) stay lighter but readable. */
 .metric-label,
 .eyebrow,
 .brand small,
@@ -4535,42 +4465,30 @@ tr:last-child td {
 .calendar-meta,
 .plan-week-meta,
 .reference-meta .tag {
-  color: var(--muted);    /* #8a7b66 — now darker, still secondary */
+  color: var(--muted);
 }
 
-/* ── 0. Soft pastel palette (mirrors animal-island-ui Card colors at ~12% strength) ── */
-
 :root {
-  /* Mint teal — the primary island accent, softened */
   --ai-teal-bg: #f0f8f5;
   --ai-teal-border: #b5d9cf;
   --ai-teal-accent: #6fb5a8;
 
-  /* Warm cream / sand — replaces harsh amber */
   --ai-cream-bg: #faf5ea;
   --ai-cream-border: #e0d4b8;
   --ai-cream-accent: #c4a860;
 
-  /* Soft pink */
   --ai-pink-bg: #faf0f1;
   --ai-pink-border: #e6c5c8;
 
-  /* Soft blue */
   --ai-blue-bg: #f0f2fa;
   --ai-blue-border: #c5cce8;
 
-  /* Soft green */
   --ai-green-bg: #f0f5ee;
   --ai-green-border: #c5d8c0;
 
-  /* Neutral dot color — very subtle, warm */
   --ai-dot: rgba(180, 165, 135, 0.06);
   --ai-dot-2: rgba(180, 165, 135, 0.03);
 }
-
-/* ── 1. Cards — whisper-light polka dots on cream ──────────────────────────── */
-/* The blog case study uses Card color="..." with soft pastel fills.
-   Here we apply the same pastel feel to existing CSS-class cards. */
 
 .card,
 .panel {
@@ -4582,7 +4500,6 @@ tr:last-child td {
   border-width: 1.5px;
 }
 
-/* Adjacent cards get soft pastel families — very light, like watercolor. */
 .page-grid > section.stack > .panel:nth-child(2),
 .page-grid > section.stack > .card:nth-child(2),
 aside.stack > .card:nth-child(2) {
@@ -4623,7 +4540,6 @@ aside.stack > .card:nth-child(5) {
   border-color: var(--ai-green-border);
 }
 
-/* Metric cards — warm cream dots, gentle. */
 .metric-card {
   background:
     radial-gradient(circle, rgba(190, 175, 140, 0.05) 1px, transparent 1px) 0 0 / 24px 24px,
@@ -4632,7 +4548,6 @@ aside.stack > .card:nth-child(5) {
   border-color: var(--ai-cream-border);
 }
 
-/* Hero panel — soft teal wash like island sky. */
 .hero-panel {
   background:
     radial-gradient(circle, rgba(159, 207, 198, 0.06) 1px, transparent 1px) 0 0 / 32px 32px,
@@ -4642,22 +4557,15 @@ aside.stack > .card:nth-child(5) {
   border-color: var(--ai-teal-border);
 }
 
-/* ── 2. Section titles — now using animal-island-ui <Title> ribbon component.
-   The Title component renders its own swallowtail ribbon, so we remove
-   the old CSS leaf-dot prefix to avoid double decoration. ─────────────────── */
-
 .section-head h2::before,
 .section-head h3::before {
   content: none;
 }
 
-/* Title component renders as inline-block div — give it breathing room. */
 .section-head .animal-island-title,
 .section-head [class*="animal-title"] {
   margin-bottom: 4px;
 }
-
-/* ── 3. Sidebar — clean cream, gentle active ────────────────────────────────── */
 
 .sidebar {
   background:
@@ -4666,7 +4574,6 @@ aside.stack > .card:nth-child(5) {
   border-color: var(--ai-cream-border);
 }
 
-/* Active nav — soft teal tint + left bar, like a gentle highlighter. */
 .side-nav a.is-active {
   color: var(--ink);
   background: var(--ai-teal-bg);
@@ -4681,24 +4588,19 @@ aside.stack > .card:nth-child(5) {
   border-color: var(--ai-teal-accent);
 }
 
-/* Nav icon — soft warm square. */
 .nav-icon {
   border-color: var(--ai-cream-border);
   background: var(--surface);
 }
 
-/* Brand mark — leaf shape. */
 .brand-mark {
   border-radius: 50% 0 50% 0;
   box-shadow: 0 2px 0 0 var(--ai-teal-accent);
 }
 
-/* Language switch active — gentle. */
 .lang-switch button.is-active {
   box-shadow: 0 2px 0 0 var(--shadow-btn);
 }
-
-/* ── 4. Topbar — clean, no heavy texture ────────────────────────────────────── */
 
 .topbar {
   background: rgba(248, 248, 240, 0.92);
@@ -4714,8 +4616,6 @@ aside.stack > .card:nth-child(5) {
   opacity: 0.8;
 }
 
-/* ── 5. Progress / charts — soft teal fills ──────────────────────────────────── */
-
 .progress-track {
   background: var(--surface-muted);
   border-radius: var(--radius-pill);
@@ -4728,7 +4628,6 @@ aside.stack > .card:nth-child(5) {
   transition: width 0.6s var(--ease);
 }
 
-/* KPI cards — soft pastel borders. */
 .kpi-card:nth-child(1) { border-color: var(--ai-teal-border); }
 .kpi-card:nth-child(2) { border-color: var(--ai-cream-border); }
 .kpi-card:nth-child(3) { border-color: var(--ai-pink-border); }
@@ -4746,8 +4645,6 @@ aside.stack > .card:nth-child(5) {
   border-radius: var(--radius-pill);
 }
 
-/* ── 6. Empty state — gentle dashed ─────────────────────────────────────────── */
-
 .empty-state {
   border: 2px dashed var(--ai-cream-border);
   border-radius: var(--radius-lg);
@@ -4760,20 +4657,12 @@ aside.stack > .card:nth-child(5) {
   color: var(--ai-teal-accent);
 }
 
-/* ── 7. Notice — warm cream ─────────────────────────────────────────────────── */
-
 .notice {
   border: 1.5px solid var(--ai-cream-border);
   border-radius: var(--radius);
   background: var(--ai-cream-bg);
   padding: 14px 18px;
 }
-
-/* ── 8. Footer — now using animal-island-ui <Footer type="sea" seamless />
-   The CSS ::after tree decoration is removed in favor of the real
-   component. No CSS needed here. ─────────────────────────────────────────── */
-
-/* ── 9. Buttons — keep 3D for primary only ──────────────────────────────────── */
 
 .primary-button {
   box-shadow: 0 5px 0 0 var(--shadow-btn);
@@ -4787,8 +4676,6 @@ aside.stack > .card:nth-child(5) {
   box-shadow: 0 1px 0 0 var(--shadow-btn);
   transform: translateY(2px);
 }
-
-/* ── 10. Calendar / task blocks ─────────────────────────────────────────────── */
 
 .calendar-day.is-today {
   border-color: var(--ai-teal-border);
@@ -4815,8 +4702,6 @@ aside.stack > .card:nth-child(5) {
   box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.05);
 }
 
-/* ── 11. Chips & tags ───────────────────────────────────────────────────────── */
-
 .chip {
   border-radius: var(--radius-pill);
   background: var(--ai-teal-bg);
@@ -4829,8 +4714,6 @@ aside.stack > .card:nth-child(5) {
   border-radius: var(--radius-pill);
   font-weight: 700;
 }
-
-/* ── 12. Time pill / metric chip ────────────────────────────────────────────── */
 
 .time-pill {
   border-radius: var(--radius-pill);
@@ -4849,8 +4732,6 @@ aside.stack > .card:nth-child(5) {
 .metric-chip strong {
   color: var(--ai-teal-accent);
 }
-
-/* ── 13. Insight / quality / action cards ───────────────────────────────────── */
 
 .insight-card.is-primary {
   border-color: var(--ai-teal-border);
@@ -4871,8 +4752,6 @@ aside.stack > .card:nth-child(5) {
   transform: translateY(-2px);
   border-color: var(--ai-teal-border);
 }
-
-/* ── 14. Plan week accordion ────────────────────────────────────────────────── */
 
 .plan-week {
   border: 1.5px solid var(--ai-cream-border);
@@ -4897,15 +4776,11 @@ aside.stack > .card:nth-child(5) {
   padding: 2px 10px;
 }
 
-/* ── 15. Choice cards ──────────────────────────────────────────────────────── */
-
 .choice-card.selected {
   border-color: var(--ai-teal-accent);
   background: var(--ai-teal-bg);
   box-shadow: 0 2px 0 0 var(--ai-teal-accent);
 }
-
-/* ── 16. Record history cards ──────────────────────────────────────────────── */
 
 .history-card {
   border: 1.5px solid var(--ai-cream-border);
@@ -4918,13 +4793,9 @@ aside.stack > .card:nth-child(5) {
   border-color: var(--ai-teal-border);
 }
 
-/* ── 17. Health gauge ──────────────────────────────────────────────────────── */
-
 .health-ring {
   border-color: var(--ai-teal-accent);
 }
-
-/* ── 18. Export cards ──────────────────────────────────────────────────────── */
 
 .export-card {
   border: 1.5px solid var(--ai-cream-border);
@@ -4942,8 +4813,6 @@ aside.stack > .card:nth-child(5) {
   box-shadow: 0 2px 0 0 var(--ai-teal-accent);
 }
 
-/* ── 19. Support amount chips ──────────────────────────────────────────────── */
-
 .support-amount-chip {
   border: 1.5px solid var(--ai-cream-border);
   border-radius: var(--radius-lg);
@@ -4960,8 +4829,6 @@ aside.stack > .card:nth-child(5) {
   box-shadow: 0 2px 0 0 var(--ai-teal-accent);
   background: var(--ai-teal-bg);
 }
-
-/* ── 20. Checkbox pop animation (native inputs styled like animal-island-ui) ── */
 
 @keyframes ai-checkbox-pop {
   0% { transform: scale(0.4); }
@@ -5015,8 +4882,6 @@ aside.stack > .card:nth-child(5) {
   outline-offset: 2px;
 }
 
-/* ── 21. Scrollbar ──────────────────────────────────────────────────────────── */
-
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
@@ -5034,33 +4899,20 @@ aside.stack > .card:nth-child(5) {
   background: var(--ai-teal-accent);
 }
 
-/* ── 21. Selection color ─────────────────────────────────────────────────────── */
-
 ::selection {
   background: rgba(111, 181, 168, 0.15);
   color: var(--ink);
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   CONTRAST FIX LAYER (v4.1)
-   Fixes text-on-color issues where enhancement layer backgrounds
-   overrode original text colors, making content invisible.
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-/* ── A. Task-block index (01/02 badges) — white text was washed out on soft teal.
-   Use a DEEPER teal background so white text reads clearly. ──────────────── */
 .task-block-index {
-  background: var(--primary-strong) !important;  /* #11a89b — deep teal */
+  background: var(--primary-strong) !important;
   color: #fff !important;
   font-weight: 900;
-  text-shadow: 0 1px 1px rgba(0,0,0,0.15);     /* subtle stroke for legibility */
+  text-shadow: 0 1px 1px rgba(0,0,0,0.15);
 }
 
-/* ── B. Insight-card.is-primary — was bg:var(--primary) + color:#fff, but
-   enhancement layer changed it to var(--ai-teal-bg) (very light) while
-   keeping white text → invisible. Fix: use deep teal bg + white text. ──── */
 .insight-card.is-primary {
-  background: var(--primary) !important;         /* #19c8b9 — proper teal */
+  background: var(--primary) !important;
   border-color: var(--primary-strong) !important;
   color: #fff !important;
 }
@@ -5073,16 +4925,12 @@ aside.stack > .card:nth-child(5) {
   color: #fff !important;
 }
 
-/* ── C. Record fieldset / choice options — border + bg were softened to
-   cream, but legend and option text stayed --ink-soft which is fine.
-   The issue is the CHOICE-CARD checkbox labels getting covered. Ensure
-   legend, option label, and custom field text are all dark brown. ────── */
 .record-fieldset {
   background: var(--surface) !important;
   border-color: var(--ai-cream-border);
 }
 .record-fieldset legend {
-  color: var(--ink) !important;                 /* #794f27 — darkest, clearly visible */
+  color: var(--ink) !important;
   font-weight: 800;
 }
 .record-choice-field legend {
@@ -5090,7 +4938,7 @@ aside.stack > .card:nth-child(5) {
   font-weight: 800;
 }
 .record-option span {
-  color: var(--ink-soft) !important;            /* #725d42 — readable body */
+  color: var(--ink-soft) !important;
 }
 .record-option input:checked + span {
   color: var(--primary-strong) !important;
@@ -5103,8 +4951,6 @@ aside.stack > .card:nth-child(5) {
   color: var(--ink) !important;
 }
 
-/* ── D. Choice-card text (Setup page) — ensure label text is readable
-   on both normal and selected (teal bg) states. ─────────────────────────── */
 .choice-card {
   background: var(--surface);
 }
@@ -5112,7 +4958,7 @@ aside.stack > .card:nth-child(5) {
   color: var(--ink-soft);
 }
 .choice-card.selected .choice-text {
-  color: var(--ink);                             /* darker on teal bg */
+  color: var(--ink);
 }
 .choice-card label,
 .choice-card .choice-label {
@@ -5123,7 +4969,6 @@ aside.stack > .card:nth-child(5) {
   color: var(--ink) !important;
 }
 
-/* ── E. Summary items / diagnostic values — ensure readable on pastel ──────── */
 .summary-label {
   color: var(--muted) !important;
 }
@@ -5141,13 +4986,12 @@ aside.stack > .card:nth-child(5) {
   font-weight: 800;
 }
 .diagnostic-value.warning {
-  color: #c4801e !important;                     /* darker amber for warning */
+  color: #c4801e !important;
 }
 .diagnostic-value.good {
-  color: #4a8a1e !important;                     /* darker green for good */
+  color: #4a8a1e !important;
 }
 
-/* ── F. Cursor — same asset + hotspot as animal-island-ui's demo-site Cursor. ── */
 .animal-cursor--force,
 .animal-cursor--force * {
   cursor: url("./assets/animal-island-cursor.png") 4 0, default !important;

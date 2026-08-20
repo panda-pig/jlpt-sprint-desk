@@ -47,7 +47,6 @@ export function PlanPage() {
 
   const [editingDay, setEditingDay] = useState<number | null>(null);
   const [editText, setEditText] = useState("");
-  // null = "not touched yet" → default to opening only the week that contains today.
   const [openWeeks, setOpenWeeks] = useState<Set<number> | null>(null);
   const todayCardRef = useRef<HTMLElement | null>(null);
 
@@ -98,13 +97,11 @@ export function PlanPage() {
 
   const todayDay = upcomingDays[0];
   const budget = buildStudyBudget(state.settings);
-  // Recompute the countdown live (the stored daysLeft can be stale once time passes).
   const examDaysLeft = daysUntil(generatedPlan.examDate);
   const examPast = isExamPast(generatedPlan.examDate);
   const REFERENCE_PLAN = getReferencePlan();
   const recordDates = new Set(records.map((record) => record.date));
 
-  // Group the detailed 14-day plan into weeks so the long list can collapse.
   const todayStr = todayISO();
   const detailDays = upcomingDays.slice(0, 14);
   const detailWeeks: typeof detailDays[] = [];
@@ -125,7 +122,6 @@ export function PlanPage() {
     requestAnimationFrame(() => todayCardRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }));
   };
 
-  // 模块饼图数据
   const pieEntries = RECORD_MODULE_KEYS.map((key) => ({
     key,
     label: moduleLabel(key),
@@ -146,7 +142,6 @@ export function PlanPage() {
   return (
     <div className="page-grid">
       <section className="stack">
-        {/* 计划结果 Hero */}
         <Card className="panel plan-result-hero">
           <div className="section-head">
             <div>
@@ -186,7 +181,6 @@ export function PlanPage() {
           </div>
         </Card>
 
-        {/* Plan sanity check */}
         <Card className="panel">
           <div className="section-head">
             <div>
@@ -214,7 +208,6 @@ export function PlanPage() {
           </div>
         </Card>
 
-        {/* Smart adjustment (data-driven, from the last 7 days) */}
         <Card className="panel adjust-panel">
           <div className="section-head">
             <div>
@@ -248,7 +241,6 @@ export function PlanPage() {
           )}
         </Card>
 
-        {/* 14-day calendar */}
         <Card className="panel plan-calendar-panel">
           <div className="section-head">
             <div>
@@ -285,7 +277,6 @@ export function PlanPage() {
           </div>
         </Card>
 
-        {/* 今日任务 */}
         <Card className="panel">
           <div className="section-head">
             <div>
@@ -322,7 +313,6 @@ export function PlanPage() {
           )}
         </Card>
 
-        {/* 14-day detailed plan */}
         <Card className="panel">
           <div className="section-head">
             <div>
@@ -432,7 +422,6 @@ export function PlanPage() {
       </section>
 
       <aside className="stack">
-        {/* 学习预算 */}
         <Card className="card">
           <div className="section-head">
             <div>
@@ -463,7 +452,6 @@ export function PlanPage() {
           )}
         </Card>
 
-        {/* Minimum version */}
         <Card className="card">
           <div className="section-head">
             <div>
@@ -478,7 +466,6 @@ export function PlanPage() {
           </ul>
         </Card>
 
-        {/* 路线图 */}
         <Card className="card">
           <div className="section-head">
             <div>
@@ -498,7 +485,6 @@ export function PlanPage() {
           </ul>
         </Card>
 
-        {/* 执行原则 */}
         <Card className="card">
           <div className="section-head">
             <div>
@@ -513,7 +499,6 @@ export function PlanPage() {
           </ul>
         </Card>
 
-        {/* 教材锚点 */}
         <Card className="card">
           <div className="section-head">
             <div>

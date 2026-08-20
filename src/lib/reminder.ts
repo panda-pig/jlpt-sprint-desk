@@ -1,11 +1,3 @@
-// Daily study reminder.
-//
-// Constraint: this is a static PWA with no push backend, so true scheduled
-// background push isn't available. We do the two things that work reliably:
-//   1. An in-app nudge banner (no permission needed).
-//   2. An optional browser notification fired while the app is open, once per
-//      day, after the user's chosen time, if today isn't recorded yet.
-
 import { t } from "../i18n";
 
 const SETTINGS_KEY = "jlptSprintDeskReminder";
@@ -64,10 +56,6 @@ function isPastReminderTime(time: string): boolean {
   return now.getHours() > h || (now.getHours() === h && now.getMinutes() >= m);
 }
 
-/**
- * Fire a browser notification at most once/day if conditions are met.
- * Safe to call repeatedly (on load, on visibility change).
- */
 export function maybeNotify(todayRecorded: boolean): void {
   if (todayRecorded) return;
   const settings = getReminderSettings();
@@ -89,7 +77,5 @@ export function maybeNotify(todayRecorded: boolean): void {
       n.close();
     };
     localStorage.setItem(LAST_NOTIFIED_KEY, todayKey());
-  } catch {
-    // Notification construction can throw on some platforms; ignore.
-  }
+  } catch { /* ignore */ }
 }

@@ -10,7 +10,6 @@ const LOCALE_KEY = "jlptSprintDeskLocale";
 let listeners: Array<() => void> = [];
 let currentLocale: Locale = detectInitialLocale();
 
-/** Keep <html lang> in step with the UI language for screen readers / SEO. */
 function syncHtmlLang(locale: Locale): void {
   if (typeof document !== "undefined") {
     document.documentElement.lang = locale === "en" ? "en" : "zh-CN";
@@ -22,9 +21,7 @@ function detectInitialLocale(): Locale {
   try {
     const saved = localStorage.getItem(LOCALE_KEY);
     if (saved === "zh" || saved === "en") return saved;
-  } catch {
-    /* ignore */
-  }
+  } catch { /* ignore */ }
   const nav = typeof navigator !== "undefined" ? navigator.language.toLowerCase() : "zh";
   return nav.startsWith("zh") ? "zh" : "en";
 }
@@ -39,9 +36,7 @@ export function setLocale(locale: Locale): void {
   syncHtmlLang(locale);
   try {
     localStorage.setItem(LOCALE_KEY, locale);
-  } catch {
-    /* ignore */
-  }
+  } catch { /* ignore */ }
   listeners.forEach((fn) => fn());
 }
 
@@ -52,7 +47,6 @@ export function subscribeLocale(fn: () => void): () => void {
   };
 }
 
-/** Resolve a dotted key path against the active dictionary, with {param} interpolation. */
 export function t(key: string, params?: Record<string, string | number>): string {
   const dict = DICTS[currentLocale];
   const fallback = DICTS.zh;
@@ -77,11 +71,6 @@ export function t(key: string, params?: Record<string, string | number>): string
   return str;
 }
 
-/**
- * Translate an option label by (group, value) without splitting the value on
- * dots — needed for values like "0.3" that would otherwise break dotted-key
- * resolution.
- */
 export function tOption(group: string, value: string): string {
   const fromNs = (d: Dict, ns: string): string | undefined => {
     const opts = d[ns];
@@ -98,7 +87,6 @@ export function tOption(group: string, value: string): string {
   return lookup(DICTS[currentLocale]) ?? lookup(DICTS.zh) ?? value;
 }
 
-/** Locale-aware module label (kanji/vocab/...) and short badge. */
 export function moduleLabel(key: string): string {
   return t(`module.${key}`);
 }
@@ -106,15 +94,12 @@ export function moduleShort(key: string): string {
   return t(`moduleShort.${key}`);
 }
 
-/** Translate a level label (e.g. "N1 冲刺") — falls back to the input when the
- *  value is a bare level code like "N1" that has no dictionary entry. */
 export function levelLabel(chineseLabel: string): string {
   const key = `level.${chineseLabel}`;
   const out = t(key);
   return out === key ? chineseLabel : out;
 }
 
-/** Display a stored plan phase (Chinese in data) in the active language. */
 export function phaseLabel(stored: string): string {
   return tOption("dayPhase", stored);
 }

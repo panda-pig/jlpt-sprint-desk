@@ -96,12 +96,10 @@ export function ExportPage() {
       try {
         const data = JSON.parse(String(reader.result));
         if (data.data && typeof data.data === "object") {
-          // Format: { data: { jlptSprintDesk...: "..." } } from SetupPage export
           Object.entries(data.data).forEach(([key, value]) => {
             localStorage.setItem(key, String(value));
           });
         } else {
-          // Format: { planSettings, generatedPlan, planEdits, records } from ExportPage
           const profileId = state.activeProfileId;
           if (data.planSettings) localStorage.setItem(`jlptSprintDesk:${profileId}:planSettings`, JSON.stringify(data.planSettings));
           if (data.generatedPlan) localStorage.setItem(`jlptSprintDesk:${profileId}:generatedPlan`, JSON.stringify(data.generatedPlan));

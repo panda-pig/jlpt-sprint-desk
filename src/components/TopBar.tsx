@@ -15,8 +15,6 @@ export function TopBar({ route }: TopBarProps) {
   const routeInfo = ROUTES[route as keyof typeof ROUTES] || ROUTES.dashboard;
   const navKey = (route in ROUTES ? route : "dashboard");
   const activeProfile = state.profiles.find((p) => p.id === state.activeProfileId);
-  // Live countdown from the current exam date — NOT the plan's baked-in daysLeft,
-  // which is a snapshot frozen at generation time and would never tick down.
   const daysLeft = daysUntil(state.settings.examDate);
   const examPast = isExamPast(state.settings.examDate);
 
